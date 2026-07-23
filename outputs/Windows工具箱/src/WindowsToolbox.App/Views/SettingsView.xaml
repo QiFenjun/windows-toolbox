@@ -1,0 +1,58 @@
+<UserControl x:Class="WindowsToolbox.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" MaxWidth="760" HorizontalAlignment="Left">
+            <Border Style="{DynamicResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="外观" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="选择应用使用的颜色主题。跟随系统会读取 Windows 的应用主题设置。"
+                               Style="{DynamicResource SecondaryTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,6,0,18"/>
+                    <TextBlock Text="主题模式" Style="{DynamicResource FieldLabelStyle}"/>
+                    <ComboBox ItemsSource="{Binding ThemeOptions}"
+                              SelectedItem="{Binding SelectedTheme}"
+                              DisplayMemberPath="DisplayName"
+                              Style="{DynamicResource ModernComboBoxStyle}"
+                              Width="260"
+                              HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="启动与交互" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="这些偏好保存在当前用户的 AppData 目录中。"
+                               Style="{DynamicResource SecondaryTextStyle}"
+                               Margin="0,6,0,18"/>
+                    <TextBlock Text="启动时打开" Style="{DynamicResource FieldLabelStyle}"/>
+                    <ComboBox ItemsSource="{Binding StartupOptions}"
+                              SelectedItem="{Binding SelectedStartupPage}"
+                              DisplayMemberPath="DisplayName"
+                              Style="{DynamicResource ModernComboBoxStyle}"
+                              Width="260"
+                              HorizontalAlignment="Left"/>
+                    <CheckBox Content="执行关机或取消操作前显示确认"
+                              IsChecked="{Binding ConfirmOperations}"
+                              Style="{DynamicResource ModernCheckBoxStyle}"
+                              Margin="0,20,0,0"/>
+                    <CheckBox Content="记住侧边栏展开状态"
+                              IsChecked="{Binding RememberSidebarExpanded}"
+                              Style="{DynamicResource ModernCheckBoxStyle}"
+                              Margin="0,12,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <Button Content="保存设置"
+                        Command="{Binding SaveCommand}"
+                        Style="{DynamicResource PrimaryButtonStyle}"/>
+                <TextBlock Text="{Binding SaveStatus}"
+                           Style="{DynamicResource SuccessTextStyle}"
+                           VerticalAlignment="Center"
+                           Margin="14,0,0,0"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

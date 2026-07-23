@@ -1,0 +1,10 @@
+构建说明
+========
+
+本项目使用 Windows 自带的 .NET Framework C# 编译器构建，无需额外 SDK。
+
+在“Windows工具箱”目录打开命令提示符，执行：
+
+%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\csc.exe /nologo /target:winexe /optimize+ /platform:anycpu /reference:System.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /out:Windows工具箱.exe WindowsToolbox.cs
+
+运行环境：Windows 10 / Windows 11，.NET Framework 4.x。

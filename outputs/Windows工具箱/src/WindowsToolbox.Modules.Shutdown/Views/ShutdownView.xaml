@@ -1,0 +1,239 @@
+<UserControl x:Class="WindowsToolbox.Modules.Shutdown.Views.ShutdownView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="560">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    Visibility="{Binding HasNotification, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="NotificationIcon"
+                               Text="&#xE946;"
+                               Style="{DynamicResource FluentIconStyle}"
+                               Foreground="{DynamicResource AccentBrush}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,12,0"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding NotificationMessage}"
+                               Style="{DynamicResource BodyTextStyle}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                    <Button Grid.Column="2"
+                            Command="{Binding DismissNotificationCommand}"
+                            Style="{DynamicResource IconButtonStyle}"
+                            ToolTip="关闭提示"
+                            Margin="12,0,0,0">
+                        <TextBlock Text="&#xE711;" Style="{DynamicResource FluentIconStyle}"/>
+                    </Button>
+                </Grid>
+                <Border.Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource NotificationCardStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding NotificationKind}" Value="Success">
+                                <Setter Property="Background" Value="{DynamicResource SuccessSurfaceBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource SuccessBorderBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding NotificationKind}" Value="Error">
+                                <Setter Property="Background" Value="{DynamicResource DangerSurfaceBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource DangerBorderBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+
+            <Border Grid.Row="2" Style="{DynamicResource CardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Width="52" Height="52"
+                            CornerRadius="14"
+                            Background="{DynamicResource AccentSoftBrush}"
+                            VerticalAlignment="Top">
+                        <TextBlock Text="{Binding StatusIconKey, Converter={StaticResource IconKeyToGlyphConverter}}"
+                                   Style="{DynamicResource LargeFluentIconStyle}"
+                                   Foreground="{DynamicResource AccentBrush}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="18,0,20,0">
+                        <TextBlock Text="当前状态" Style="{DynamicResource CaptionTextStyle}"/>
+                        <TextBlock Text="{Binding StatusTitle}"
+                                   Style="{DynamicResource SectionTitleStyle}"
+                                   Margin="0,5,0,5"/>
+                        <TextBlock Text="{Binding StatusDescription}"
+                                   Style="{DynamicResource SecondaryTextStyle}"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding RemainingText}"
+                                   Style="{DynamicResource CountdownTextStyle}"
+                                   Margin="0,14,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="2"
+                            Content="取消关机"
+                            Command="{Binding RequestCancelCommand}"
+                            Style="{DynamicResource DangerOutlineButtonStyle}"
+                            Visibility="{Binding HasActivePlan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="4" Style="{DynamicResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="快捷设置" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="选择后会显示具体时间，再由你确认创建计划。"
+                               Style="{DynamicResource SecondaryTextStyle}"
+                               Margin="0,6,0,18"/>
+                    <UniformGrid Columns="4">
+                        <Button Style="{DynamicResource QuickActionButtonStyle}"
+                                Command="{Binding PrepareQuickCommand}"
+                                CommandParameter="30"
+                                Margin="0,0,9,0">
+                            <StackPanel>
+                                <TextBlock Text="30" Style="{DynamicResource QuickNumberStyle}"/>
+                                <TextBlock Text="分钟后" Style="{DynamicResource CaptionTextStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{DynamicResource QuickActionButtonStyle}"
+                                Command="{Binding PrepareQuickCommand}"
+                                CommandParameter="60"
+                                Margin="3,0,6,0">
+                            <StackPanel>
+                                <TextBlock Text="1" Style="{DynamicResource QuickNumberStyle}"/>
+                                <TextBlock Text="小时后" Style="{DynamicResource CaptionTextStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{DynamicResource QuickActionButtonStyle}"
+                                Command="{Binding PrepareQuickCommand}"
+                                CommandParameter="120"
+                                Margin="6,0,3,0">
+                            <StackPanel>
+                                <TextBlock Text="2" Style="{DynamicResource QuickNumberStyle}"/>
+                                <TextBlock Text="小时后" Style="{DynamicResource CaptionTextStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{DynamicResource QuickActionButtonStyle}"
+                                Command="{Binding PrepareQuickCommand}"
+                                CommandParameter="tonight"
+                                Margin="9,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="23:00" Style="{DynamicResource QuickNumberStyle}"/>
+                                <TextBlock Text="今晚" Style="{DynamicResource CaptionTextStyle}"/>
+                            </StackPanel>
+                        </Button>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="6" Style="{DynamicResource CardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="18"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="18"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="自定义设置" Style="{DynamicResource SectionTitleStyle}"/>
+                        <TextBlock Text="选择日期与时间，所有命令参数均由软件内部生成。"
+                                   Style="{DynamicResource SecondaryTextStyle}"
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="日期" Style="{DynamicResource FieldLabelStyle}"/>
+                            <DatePicker SelectedDate="{Binding SelectedDate}"
+                                        Style="{DynamicResource ModernDatePickerStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="小时" Style="{DynamicResource FieldLabelStyle}"/>
+                            <ComboBox ItemsSource="{Binding Hours}"
+                                      SelectedItem="{Binding SelectedHour}"
+                                      Style="{DynamicResource ModernComboBoxStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="分钟" Style="{DynamicResource FieldLabelStyle}"/>
+                            <ComboBox ItemsSource="{Binding Minutes}"
+                                      SelectedItem="{Binding SelectedMinute}"
+                                      Style="{DynamicResource ModernComboBoxStyle}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="计划时间"
+                                       Style="{DynamicResource CaptionTextStyle}"/>
+                            <TextBlock Text="{Binding SelectedShutdownTime, StringFormat={}{0:yyyy年MM月dd日 HH:mm}}"
+                                       Style="{DynamicResource CardTitleStyle}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Content="设置关机"
+                                Command="{Binding RequestScheduleCommand}"
+                                Style="{DynamicResource PrimaryButtonStyle}"
+                                MinWidth="132"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="8"
+                    Style="{DynamicResource ConfirmationCardStyle}"
+                    Visibility="{Binding IsConfirmationVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="{Binding ConfirmationTitle}"
+                                   Style="{DynamicResource CardTitleStyle}"/>
+                        <TextBlock Text="{Binding ConfirmationMessage}"
+                                   Style="{DynamicResource SecondaryTextStyle}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,7,20,0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="返回"
+                                Command="{Binding DismissConfirmationCommand}"
+                                Style="{DynamicResource SecondaryButtonStyle}"
+                                Margin="0,0,8,0"/>
+                        <Button Content="确认"
+                                Command="{Binding ConfirmCommand}"
+                                Style="{DynamicResource PrimaryButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

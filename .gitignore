@@ -1,0 +1,71 @@
+# Workspace-local development tools
+work/
+
+# Visual Studio
+.vs/
+**/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Bb]in/
+**/[Bb]in/
+[Oo]bj/
+**/[Oo]bj/
+[Dd]ebug/
+**/[Dd]ebug/
+[Rr]elease/
+**/[Rr]elease/
+artifacts/
+**/artifacts/
+publish/
+**/publish/
+dist/
+**/dist/
+release/
+**/release/
+TestResults/
+**/TestResults/
+*.exe
+*.pdb
+*.zip
+
+# Local .NET caches
+.dotnet/
+.packages/
+packages/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# Local configuration
+.env
+.env.*
+!.env.example
+secrets.json
+appsettings.Local.json
+appsettings.Development.local.json
+
+# Certificates and keys
+*.pfx
+*.p12
+*.pem
+*.key
+*.snk
+
+# IDE state
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+# Operating system
+Thumbs.db
+Desktop.ini
+.DS_Store

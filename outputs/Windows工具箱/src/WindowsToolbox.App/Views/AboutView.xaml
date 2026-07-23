@@ -1,0 +1,56 @@
+<UserControl x:Class="WindowsToolbox.App.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" MaxWidth="760" HorizontalAlignment="Left">
+            <Border Style="{DynamicResource HeroCardStyle}">
+                <StackPanel>
+                    <Border Width="64" Height="64"
+                            CornerRadius="18"
+                            Background="{DynamicResource AccentBrush}"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="&#xE90F;"
+                                   Style="{DynamicResource LargeFluentIconStyle}"
+                                   FontSize="28"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Windows 工具箱"
+                               Style="{DynamicResource HeroTitleStyle}"
+                               Margin="0,18,0,0"/>
+                    <TextBlock Margin="0,8,0,0" Style="{DynamicResource SecondaryTextStyle}">
+                        <Run Text="版本 "/>
+                        <Run Text="{Binding Version, Mode=OneWay}"/>
+                        <Run Text=" · "/>
+                        <Run Text="{Binding Runtime, Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="安全与隐私" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="本软件完全离线运行，不收集数据、不联网，也不请求管理员权限。定时关机功能仅调用 Windows 自带的 shutdown.exe。"
+                               Style="{DynamicResource BodyTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"/>
+                    <TextBlock Text="软件未使用商业代码签名证书，因此 Windows Defender SmartScreen 可能显示“未知发布者”提示。"
+                               Style="{DynamicResource SecondaryTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="模块化架构" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="主程序通过模块注册表发现工具。新增模块只需实现 IToolModule、提供 ViewModel 和页面，并在应用启动处注册。"
+                               Style="{DynamicResource BodyTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

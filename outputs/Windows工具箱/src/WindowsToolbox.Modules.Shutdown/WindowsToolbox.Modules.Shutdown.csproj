@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>WindowsToolbox.Modules.Shutdown</RootNamespace>
+    <AssemblyName>WindowsToolbox.Modules.Shutdown</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WindowsToolbox.Core\WindowsToolbox.Core.csproj" />
+  </ItemGroup>
+</Project>

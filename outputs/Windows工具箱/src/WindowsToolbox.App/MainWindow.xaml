@@ -1,0 +1,323 @@
+<Window x:Class="WindowsToolbox.App.MainWindow"
+        x:Name="RootWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="Windows 工具箱"
+        Width="1120"
+        Height="760"
+        MinWidth="960"
+        MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="{DynamicResource AppBackgroundBrush}"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        SnapsToDevicePixels="True">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0"
+                            CornerRadius="10"
+                            GlassFrameThickness="0"
+                            ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Border BorderBrush="{DynamicResource WindowBorderBrush}"
+            BorderThickness="1"
+            Background="{DynamicResource AppBackgroundBrush}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToSidebarWidthConverter}}"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Background="{DynamicResource SidebarBackgroundBrush}"
+                    BorderBrush="{DynamicResource DividerBrush}"
+                    BorderThickness="0,0,1,0">
+                <Grid Margin="12,18,12,14">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="54"/>
+                        <RowDefinition Height="14"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42"
+                                CornerRadius="12"
+                                Background="{DynamicResource AccentBrush}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="&#xE90F;"
+                                       Style="{DynamicResource LargeFluentIconStyle}"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Margin="8,0,0,0"
+                                    Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Windows 工具箱"
+                                       Style="{DynamicResource SidebarBrandStyle}"/>
+                            <TextBlock Text="轻量桌面工具集"
+                                       Style="{DynamicResource SidebarCaptionStyle}"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Button Grid.Row="2"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="home"
+                            Style="{DynamicResource SidebarNavButtonStyle}"
+                            ToolTip="首页">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="36"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE80F;"
+                                       Style="{DynamicResource FluentIconStyle}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="首页"
+                                       Style="{DynamicResource NavTextStyle}"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        </Grid>
+                        <Button.Tag>
+                            <Binding Path="CurrentPageId"
+                                     Converter="{StaticResource StringEqualsConverter}"
+                                     ConverterParameter="home"/>
+                        </Button.Tag>
+                    </Button>
+
+                    <StackPanel Grid.Row="4">
+                        <TextBlock Text="系统工具"
+                                   Style="{DynamicResource NavCategoryStyle}"
+                                   Margin="12,0,0,8"
+                                   Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <ItemsControl ItemsSource="{Binding Modules}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding Id}"
+                                            Style="{DynamicResource SidebarNavButtonStyle}"
+                                            ToolTip="{Binding DisplayName}"
+                                            Tag="{Binding IsSelected}"
+                                            Margin="0,0,0,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="36"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding IconKey, Converter={StaticResource IconKeyToGlyphConverter}}"
+                                                       Style="{DynamicResource FluentIconStyle}"
+                                                       Foreground="{Binding IsSelected, Converter={StaticResource SelectionToBrushConverter}}"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding DisplayName}"
+                                                       Style="{DynamicResource NavTextStyle}"
+                                                       Visibility="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="6">
+                        <Button Command="{Binding NavigateCommand}"
+                                CommandParameter="settings"
+                                Style="{DynamicResource SidebarNavButtonStyle}"
+                                ToolTip="设置"
+                                Margin="0,0,0,4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE713;" Style="{DynamicResource FluentIconStyle}"/>
+                                <TextBlock Grid.Column="1" Text="设置"
+                                           Style="{DynamicResource NavTextStyle}"
+                                           Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </Grid>
+                            <Button.Tag>
+                                <Binding Path="CurrentPageId"
+                                         Converter="{StaticResource StringEqualsConverter}"
+                                         ConverterParameter="settings"/>
+                            </Button.Tag>
+                        </Button>
+                        <Button Command="{Binding NavigateCommand}"
+                                CommandParameter="about"
+                                Style="{DynamicResource SidebarNavButtonStyle}"
+                                ToolTip="关于"
+                                Margin="0,0,0,8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE946;" Style="{DynamicResource FluentIconStyle}"/>
+                                <TextBlock Grid.Column="1" Text="关于"
+                                           Style="{DynamicResource NavTextStyle}"
+                                           Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </Grid>
+                            <Button.Tag>
+                                <Binding Path="CurrentPageId"
+                                         Converter="{StaticResource StringEqualsConverter}"
+                                         ConverterParameter="about"/>
+                            </Button.Tag>
+                        </Button>
+                        <Button Command="{Binding ToggleSidebarCommand}"
+                                Style="{DynamicResource SidebarNavButtonStyle}"
+                                ToolTip="收起或展开侧边栏">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE700;" Style="{DynamicResource FluentIconStyle}"/>
+                                <TextBlock Grid.Column="1" Text="收起侧边栏"
+                                           Style="{DynamicResource NavTextStyle}"
+                                           Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="82"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Background="{DynamicResource TopbarBackgroundBrush}"
+                        BorderBrush="{DynamicResource DividerBrush}"
+                        BorderThickness="0,0,0,1"
+                        MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                    <Grid Margin="24,0,8,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="270"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="42"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="138"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding CurrentTitle}"
+                                       Style="{DynamicResource PageTitleStyle}"/>
+                            <TextBlock Text="{Binding CurrentDescription}"
+                                       Style="{DynamicResource SecondaryTextStyle}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <Grid Grid.Column="1" VerticalAlignment="Center">
+                            <Border Style="{DynamicResource SearchBoxBorderStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="32"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="30"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE721;"
+                                               Style="{DynamicResource FluentIconStyle}"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1"
+                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{DynamicResource SearchTextBoxStyle}"
+                                             ToolTip="按名称、说明或关键词搜索模块"/>
+                                    <Button Grid.Column="2"
+                                            Command="{Binding ClearSearchCommand}"
+                                            Style="{DynamicResource InlineIconButtonStyle}"
+                                            Visibility="{Binding SearchText.Length, Converter={StaticResource PositiveNumberToVisibilityConverter}}">
+                                        <TextBlock Text="&#xE711;" Style="{DynamicResource SmallFluentIconStyle}"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                            <Popup IsOpen="{Binding IsSearchOpen, Mode=OneWay}"
+                                   Placement="Bottom"
+                                   PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Grid}}"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True">
+                                <Border Width="270"
+                                        MaxHeight="280"
+                                        Style="{DynamicResource SearchPopupStyle}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl ItemsSource="{Binding SearchResults}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button Command="{Binding DataContext.NavigateCommand, Source={x:Reference RootWindow}}"
+                                                            CommandParameter="{Binding Id}"
+                                                            Style="{DynamicResource SearchResultButtonStyle}">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="36"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding IconKey, Converter={StaticResource IconKeyToGlyphConverter}}"
+                                                                       Style="{DynamicResource FluentIconStyle}"
+                                                                       Foreground="{DynamicResource AccentBrush}"/>
+                                                            <StackPanel Grid.Column="1">
+                                                                <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource CardTitleStyle}"/>
+                                                                <TextBlock Text="{Binding Description}"
+                                                                           Style="{DynamicResource CaptionTextStyle}"
+                                                                           TextTrimming="CharacterEllipsis"/>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <Button Grid.Column="3"
+                                Command="{Binding ToggleThemeCommand}"
+                                Style="{DynamicResource TopbarIconButtonStyle}"
+                                ToolTip="切换浅色/深色主题">
+                            <TextBlock Text="&#xE706;" Style="{DynamicResource FluentIconStyle}"/>
+                        </Button>
+
+                        <StackPanel Grid.Column="5" Orientation="Horizontal">
+                            <Button Style="{DynamicResource WindowControlButtonStyle}"
+                                    Click="MinimizeButton_Click"
+                                    ToolTip="最小化">
+                                <TextBlock Text="&#xE921;" Style="{DynamicResource SmallFluentIconStyle}"/>
+                            </Button>
+                            <Button Style="{DynamicResource WindowControlButtonStyle}"
+                                    Click="MaximizeButton_Click"
+                                    ToolTip="最大化/还原">
+                                <TextBlock Text="&#xE922;" Style="{DynamicResource SmallFluentIconStyle}"/>
+                            </Button>
+                            <Button Style="{DynamicResource CloseWindowButtonStyle}"
+                                    Click="CloseButton_Click"
+                                    ToolTip="关闭">
+                                <TextBlock Text="&#xE8BB;" Style="{DynamicResource SmallFluentIconStyle}"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <ContentControl Grid.Row="1"
+                                Content="{Binding CurrentContent}"
+                                Focusable="False"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
