@@ -3,6 +3,7 @@ using WindowsToolbox.App.Services;
 using WindowsToolbox.App.ViewModels;
 using WindowsToolbox.Core.Interfaces;
 using WindowsToolbox.Core.Services;
+using WindowsToolbox.Modules.InstalledApps;
 using WindowsToolbox.Modules.Shutdown;
 using WindowsToolbox.Modules.Shutdown.Services;
 
@@ -25,6 +26,7 @@ public partial class App : Application
         IShutdownService shutdownService = new ShutdownService();
 
         moduleRegistry.Register(new ShutdownModule(shutdownService, settingsService));
+        moduleRegistry.Register(new InstalledAppsModule());
         foreach (IToolModule module in moduleRegistry.Modules)
         {
             if (string.IsNullOrWhiteSpace(module.ResourceDictionaryPath))

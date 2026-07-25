@@ -17,7 +17,8 @@ public sealed class IconKeyToGlyphConverter : IValueConverter
             ["Theme"] = "\uE706",
             ["Menu"] = "\uE700",
             ["Toolbox"] = "\uE90F",
-            ["Recent"] = "\uE823"
+            ["Recent"] = "\uE823",
+            ["Apps"] = "\uE74C"
         };
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>

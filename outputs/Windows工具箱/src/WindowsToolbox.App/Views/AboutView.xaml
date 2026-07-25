@@ -31,7 +31,7 @@
             <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
                 <StackPanel>
                     <TextBlock Text="安全与隐私" Style="{DynamicResource SectionTitleStyle}"/>
-                    <TextBlock Text="本软件完全离线运行，不收集数据、不联网，也不请求管理员权限。定时关机功能仅调用 Windows 自带的 shutdown.exe。"
+                    <TextBlock Text="本软件完全离线运行，不收集或上传数据。主程序默认使用普通用户权限；只有软件自身的卸载程序明确要求时，Windows 才可能显示管理员权限确认。定时关机功能仅调用 Windows 自带的 shutdown.exe。"
                                Style="{DynamicResource BodyTextStyle}"
                                TextWrapping="Wrap"
                                Margin="0,10,0,0"/>

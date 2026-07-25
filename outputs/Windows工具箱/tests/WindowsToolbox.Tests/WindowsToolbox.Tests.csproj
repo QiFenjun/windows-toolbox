@@ -11,6 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\WindowsToolbox.Core\WindowsToolbox.Core.csproj" />
+    <ProjectReference Include="..\..\src\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
   </ItemGroup>
 </Project>

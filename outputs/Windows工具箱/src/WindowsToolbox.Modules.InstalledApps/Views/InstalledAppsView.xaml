@@ -1,0 +1,383 @@
+<UserControl x:Class="WindowsToolbox.Modules.InstalledApps.Views.InstalledAppsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="700">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Visibility="{Binding HasNotification, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="&#xE946;"
+                           Style="{DynamicResource FluentIconStyle}"
+                           Foreground="{DynamicResource AccentBrush}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding NotificationMessage}"
+                           Style="{DynamicResource BodyTextStyle}"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="2"
+                        Command="{Binding DismissNotificationCommand}"
+                        Style="{DynamicResource IconButtonStyle}"
+                        ToolTip="关闭提示">
+                    <TextBlock Text="&#xE711;" Style="{DynamicResource FluentIconStyle}"/>
+                </Button>
+            </Grid>
+            <Border.Style>
+                <Style TargetType="Border" BasedOn="{StaticResource NotificationCardStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding NotificationKind}" Value="Success">
+                            <Setter Property="Background" Value="{DynamicResource SuccessSurfaceBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource SuccessBorderBrush}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding NotificationKind}" Value="Error">
+                            <Setter Property="Background" Value="{DynamicResource DangerSurfaceBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource DangerBorderBrush}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+
+        <Border Grid.Row="2" Style="{DynamicResource CardStyle}" Padding="12">
+            <UniformGrid Columns="5">
+                <StackPanel Margin="8,4">
+                    <TextBlock Text="已安装软件" Style="{DynamicResource CaptionTextStyle}"/>
+                    <TextBlock Text="{Binding TotalCount}" Style="{DynamicResource SectionTitleStyle}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Margin="8,4">
+                    <TextBlock Text="已知大小" Style="{DynamicResource CaptionTextStyle}"/>
+                    <TextBlock Text="{Binding KnownSizeCount}" Style="{DynamicResource SectionTitleStyle}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Margin="8,4">
+                    <TextBlock Text="已知大小合计" Style="{DynamicResource CaptionTextStyle}" ToolTip="仅汇总安装程序报告或已扫描的已知条目"/>
+                    <TextBlock Text="{Binding KnownSizeTotalText}" Style="{DynamicResource SectionTitleStyle}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Margin="8,4">
+                    <TextBlock Text="未知大小" Style="{DynamicResource CaptionTextStyle}"/>
+                    <TextBlock Text="{Binding UnknownSizeCount}" Style="{DynamicResource SectionTitleStyle}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Margin="8,4">
+                    <TextBlock Text="筛选结果" Style="{DynamicResource CaptionTextStyle}"/>
+                    <TextBlock Text="{Binding VisibleCount}" Style="{DynamicResource SectionTitleStyle}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </UniformGrid>
+        </Border>
+
+        <Border Grid.Row="4" Style="{DynamicResource CardStyle}" Padding="12">
+            <WrapPanel VerticalAlignment="Center">
+                <Border Style="{DynamicResource SearchBoxBorderStyle}" Width="230" Margin="0,0,8,6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE721;"
+                                   Style="{DynamicResource FluentIconStyle}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{DynamicResource SearchTextBoxStyle}"
+                                 ToolTip="搜索名称、版本或发布者"/>
+                    </Grid>
+                </Border>
+                <ComboBox ItemsSource="{Binding SortModes}"
+                          SelectedItem="{Binding SelectedSortMode}"
+                          Style="{DynamicResource ModernComboBoxStyle}"
+                          Width="172"
+                          Margin="0,0,8,6"/>
+                <ComboBox ItemsSource="{Binding PublisherFilters}"
+                          SelectedItem="{Binding SelectedPublisher}"
+                          Style="{DynamicResource ModernComboBoxStyle}"
+                          Width="176"
+                          Margin="0,0,8,6"/>
+                <ComboBox ItemsSource="{Binding SourceFilters}"
+                          SelectedItem="{Binding SelectedSource}"
+                          Style="{DynamicResource ModernComboBoxStyle}"
+                          Width="150"
+                          Margin="0,0,8,6"/>
+                <CheckBox Content="显示系统组件"
+                          IsChecked="{Binding ShowSystemComponents}"
+                          Style="{DynamicResource ModernCheckBoxStyle}"
+                          VerticalAlignment="Center"
+                          Margin="4,0,12,6"/>
+                <Button Content="刷新"
+                        Command="{Binding RefreshCommand}"
+                        Style="{DynamicResource SecondaryButtonStyle}"
+                        Margin="0,0,8,6"/>
+                <Button Content="取消刷新"
+                        Command="{Binding CancelRefreshCommand}"
+                        Style="{DynamicResource SecondaryButtonStyle}"
+                        Margin="0,0,0,6"/>
+            </WrapPanel>
+        </Border>
+
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{DynamicResource CardStyle}" Padding="0">
+                <Grid>
+                    <ListBox ItemsSource="{Binding VisibleApplications}"
+                             SelectedItem="{Binding SelectedApplication}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="8,4"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="RowBorder"
+                                                    Background="{TemplateBinding Background}"
+                                                    CornerRadius="9"
+                                                    Padding="12">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource AccentSoftBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="42"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="108"/>
+                                        <ColumnDefinition Width="104"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="36" Height="36"
+                                            CornerRadius="10"
+                                            Background="{DynamicResource AccentSoftBrush}"
+                                            VerticalAlignment="Top">
+                                        <TextBlock Text="&#xE74C;"
+                                                   Style="{DynamicResource FluentIconStyle}"
+                                                   Foreground="{DynamicResource AccentBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="10,0,12,0">
+                                        <TextBlock Text="{Binding DisplayName}"
+                                                   Style="{DynamicResource CardTitleStyle}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Style="{DynamicResource CaptionTextStyle}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Margin="0,4,0,0">
+                                            <Run Text="{Binding VersionText, Mode=OneWay}"/>
+                                            <Run Text=" · "/>
+                                            <Run Text="{Binding PublisherText, Mode=OneWay}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="{Binding SizeText}" Style="{DynamicResource BodyTextStyle}"/>
+                                        <TextBlock Text="{Binding SizeSourceText}" Style="{DynamicResource CaptionTextStyle}" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3">
+                                        <TextBlock Text="{Binding InstallDateText}" Style="{DynamicResource BodyTextStyle}"/>
+                                        <TextBlock Text="{Binding SourceText}" Style="{DynamicResource CaptionTextStyle}" Margin="0,3,0,0" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding VisibleCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24">
+                            <TextBlock Text="&#xE74C;"
+                                       Style="{DynamicResource LargeFluentIconStyle}"
+                                       Foreground="{DynamicResource TertiaryTextBrush}"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="没有符合条件的软件"
+                                       Style="{DynamicResource CardTitleStyle}"
+                                       Margin="0,12,0,0"/>
+                            <TextBlock Text="请调整搜索条件或刷新列表。"
+                                       Style="{DynamicResource SecondaryTextStyle}"
+                                       Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Style="{DynamicResource CardStyle}" Padding="0">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20"
+                                    Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="软件详情" Style="{DynamicResource SectionTitleStyle}"/>
+                            <TextBlock Text="{Binding SelectedApplication.DisplayName}"
+                                       Style="{DynamicResource CardTitleStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,14,0,4"/>
+                            <TextBlock Text="{Binding SelectedApplication.PublisherText}"
+                                       Style="{DynamicResource SecondaryTextStyle}"/>
+
+                            <Grid Margin="0,18,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="118"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="版本" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SelectedApplication.VersionText}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="1" Text="安装日期" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedApplication.InstallDateText}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="2" Text="系统报告大小" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedApplication.ReportedSizeText}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="3" Text="目录扫描大小" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedApplication.ScannedSizeText}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="4" Text="扫描时间" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SelectedApplication.ScannedAtText}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="5" Text="应用来源" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SelectedApplication.SourceText}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="6" Text="架构" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding SelectedApplication.Architecture}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="7" Text="WinGet ID" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding SelectedApplication.PackageIdText}" Style="{DynamicResource BodyTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="8" Text="安装位置" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SelectedApplication.InstallLocationText}" Style="{DynamicResource BodyTextStyle}" TextWrapping="Wrap" Margin="0,5"/>
+                                <TextBlock Grid.Row="9" Text="注册表来源" Style="{DynamicResource CaptionTextStyle}" Margin="0,5"/>
+                                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding SelectedApplication.RegistryPath}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,5"/>
+                            </Grid>
+
+                            <TextBlock Text="部分软件的占用大小由安装程序报告，可能与实际磁盘占用不同。目录扫描仅统计已知安装目录，不包含共享运行库、用户数据和系统缓存。"
+                                       Style="{DynamicResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,16,0,0"/>
+                            <TextBlock Text="{Binding ScanProgressText}"
+                                       Style="{DynamicResource AccentLabelStyle}"
+                                       Margin="0,10,0,0"/>
+
+                            <WrapPanel Margin="0,18,0,0">
+                                <Button Content="打开安装位置"
+                                        Command="{Binding OpenLocationCommand}"
+                                        Style="{DynamicResource SecondaryButtonStyle}"
+                                        Margin="0,0,8,8"/>
+                                <Button Content="计算实际大小"
+                                        Command="{Binding ScanSizeCommand}"
+                                        Style="{DynamicResource SecondaryButtonStyle}"
+                                        Margin="0,0,8,8"/>
+                                <Button Content="取消扫描"
+                                        Command="{Binding CancelScanCommand}"
+                                        Style="{DynamicResource SecondaryButtonStyle}"
+                                        Margin="0,0,8,8"/>
+                                <Button Content="复制软件信息"
+                                        Command="{Binding CopyInformationCommand}"
+                                        Style="{DynamicResource SecondaryButtonStyle}"
+                                        Margin="0,0,8,8"/>
+                                <Button Content="卸载"
+                                        Command="{Binding RequestUninstallCommand}"
+                                        Style="{DynamicResource DangerOutlineButtonStyle}"
+                                        Margin="0,0,0,8"/>
+                            </WrapPanel>
+
+                            <Border Style="{DynamicResource ConfirmationCardStyle}"
+                                    Margin="0,12,0,0"
+                                    Visibility="{Binding IsUninstallConfirmationVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel>
+                                    <TextBlock Text="确认卸载" Style="{DynamicResource CardTitleStyle}"/>
+                                    <TextBlock Text="{Binding SelectedApplication.DisplayName, StringFormat=即将卸载：{0}}"
+                                               Style="{DynamicResource BodyTextStyle}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,10,0,0"/>
+                                    <TextBlock Text="{Binding SelectedApplication.PublisherText, StringFormat=发布者：{0}}"
+                                               Style="{DynamicResource SecondaryTextStyle}"
+                                               Margin="0,5,0,0"/>
+                                    <TextBlock Text="{Binding SelectedApplication.VersionText, StringFormat=版本：{0}}"
+                                               Style="{DynamicResource SecondaryTextStyle}"
+                                               Margin="0,5,0,0"/>
+                                    <TextBlock Text="{Binding SelectedApplication.SizeText, StringFormat=预计占用：{0}}"
+                                               Style="{DynamicResource SecondaryTextStyle}"
+                                               Margin="0,5,0,0"/>
+                                    <TextBlock Text="{Binding UninstallRiskText}"
+                                               Foreground="{DynamicResource DangerBrush}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,12,0,0"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                                        <Button Content="取消"
+                                                Command="{Binding CancelUninstallCommand}"
+                                                Style="{DynamicResource SecondaryButtonStyle}"
+                                                Margin="0,0,8,0"/>
+                                        <Button Content="继续卸载"
+                                                Command="{Binding ConfirmUninstallCommand}"
+                                                Style="{DynamicResource DangerOutlineButtonStyle}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="24"
+                                Visibility="{Binding HasSelection, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <TextBlock Text="&#xE946;"
+                                   Style="{DynamicResource LargeFluentIconStyle}"
+                                   Foreground="{DynamicResource TertiaryTextBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="选择一个软件查看详情"
+                                   Style="{DynamicResource CardTitleStyle}"
+                                   Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

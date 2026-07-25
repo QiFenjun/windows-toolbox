@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\WindowsToolbox.Core\WindowsToolbox.Core.csproj" />
+    <ProjectReference Include="..\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
   </ItemGroup>
 </Project>

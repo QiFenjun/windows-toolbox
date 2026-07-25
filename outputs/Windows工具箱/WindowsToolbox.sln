@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -9,6 +9,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.App", "src\WindowsToolbox.App\WindowsToolbox.App.csproj", "{AC01A4AB-3C49-4CB8-861C-028E66CC8BA8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Tests", "tests\WindowsToolbox.Tests\WindowsToolbox.Tests.csproj", "{9D3FB8BC-C3EE-4C8B-AF2F-0BA9E74B4912}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.InstalledApps", "src\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj", "{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,5 +36,12 @@ Global
 		{9D3FB8BC-C3EE-4C8B-AF2F-0BA9E74B4912}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D3FB8BC-C3EE-4C8B-AF2F-0BA9E74B4912}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D3FB8BC-C3EE-4C8B-AF2F-0BA9E74B4912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 	EndGlobalSection
 EndGlobal

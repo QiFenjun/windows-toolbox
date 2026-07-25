@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.0.0`
+当前版本：`v1.1.0`
 
 ## 当前模块
 
@@ -15,6 +15,17 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 关闭应用后不取消已经创建的系统计划
 - 旧版 WinForms 计划状态自动迁移
 
+### 应用管理
+
+- 从明确的 32 位和 64 位注册表视图读取传统桌面软件
+- 查看软件名称、版本、发布者、安装日期、架构和安装位置
+- 显示安装程序提供的系统报告大小，并支持按需扫描安装目录
+- 支持按名称、大小、安装日期和发布者排序
+- 支持名称、版本、发布者搜索，以及发布者、来源和系统组件筛选
+- 打开软件安装位置、复制软件信息
+- 经二次确认后调用软件自身登记的卸载程序
+- 不直接删除软件文件、注册表项或所谓“残留”
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -26,14 +37,18 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 
 ## 项目截图
 
-项目截图将在后续版本补充，计划存放在 `.github/images/` 目录。
+项目截图将在后续版本补充，计划存放在 `.github/images/` 目录。当前预留：
+
+- `.github/images/home.png`
+- `.github/images/shutdown.png`
+- `.github/images/installed-apps.png`
 
 ## 安装与运行
 
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.0.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.1.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -77,9 +92,15 @@ windows-toolbox/
 │  │  ├─ Models/
 │  │  ├─ Services/
 │  │  └─ Utilities/
-│  └─ WindowsToolbox.Modules.Shutdown/    # 独立定时关机模块
+│  ├─ WindowsToolbox.Modules.Shutdown/    # 独立定时关机模块
 │     ├─ Models/
 │     ├─ Services/
+│     ├─ ViewModels/
+│     └─ Views/
+│  └─ WindowsToolbox.Modules.InstalledApps/ # 独立应用管理模块
+│     ├─ Models/
+│     ├─ Services/
+│     ├─ Utilities/
 │     ├─ ViewModels/
 │     └─ Views/
 │  ├─ tests/WindowsToolbox.Tests/
@@ -207,7 +228,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
   -p:DebugSymbols=false `
-  --output artifacts/release/v1.0.0/WindowsToolbox-win-x64
+  --output artifacts/release/v1.1.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。
@@ -215,20 +236,30 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 ## 安全与隐私
 
 - 完全离线运行，不收集或上传数据
+- 已安装软件列表和目录大小缓存只保存在本机，不会上传
 - 不请求管理员权限
 - 不修改 Windows 安全或关键系统设置
 - `shutdown.exe` 参数由程序内部生成，不接收任意命令文本
+- 应用管理只调用软件自身登记的卸载程序，不直接删除目录或注册表残留
+- 默认不使用静默卸载命令，不提供批量卸载或“一键清理”
 - 不伪造或绕过代码签名、安全提示
 - 未签名版本可能触发 Windows Defender SmartScreen 的“未知发布者”提示
+
+应用管理中的“系统报告大小”来自安装程序写入的 `EstimatedSize`，可能与实际磁盘占用不同。“目录扫描”只统计已知安装位置，不包括共享运行库、用户数据和系统缓存。
 
 ## 已知问题
 
 - Windows 没有为普通桌面应用提供可靠的“查询全部待执行关机计划”接口，因此界面只跟踪本应用创建并保存的计划；取消操作仍调用系统的 `shutdown /a`。
 - 跟随系统主题在应用启动时读取；Windows 运行期间切换系统主题后，需要重新打开应用或在设置页重新选择。
+- 应用管理 v1.1.0 以传统桌面软件注册表数据为可靠基础；Microsoft Store / MSIX 枚举和 WinGet 精确匹配尚未启用。
+- 部分软件没有登记安装位置、大小或可靠卸载命令，此时对应信息显示为“未知”，相关操作会被禁用。
+- 应用图标目前使用统一的 Fluent 默认图标，避免启动时一次性加载大量高分辨率资源。
 - 未购买商业代码签名证书，发布的 EXE 为未签名程序。
 
 ## 后续规划
 
+- 增加 Microsoft Store / MSIX 官方 API 支持
+- 在具有可靠唯一 ID 时补充 WinGet 信息
 - 增加独立的小型工具模块
 - 增加多语言资源切换
 - 增加模块级诊断日志（保持本地、可关闭）
