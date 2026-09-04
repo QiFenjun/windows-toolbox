@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Shared motion tokens keep UI transitions short, calm and predictable. -->
+    <Duration x:Key="MotionDurationFast">0:0:0.12</Duration>
+    <Duration x:Key="MotionDurationNormal">0:0:0.18</Duration>
+    <Duration x:Key="MotionDurationSlow">0:0:0.24</Duration>
+    <CubicEase x:Key="StandardEase" EasingMode="EaseOut"/>
+    <CubicEase x:Key="EmphasizedEase" EasingMode="EaseInOut"/>
+</ResourceDictionary>

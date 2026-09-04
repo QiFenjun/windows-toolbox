@@ -14,6 +14,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly ISettingsService _settingsService;
     private readonly IThemeService _themeService;
+    private readonly IMotionService _motionService;
     private readonly HomeViewModel _homeViewModel;
     private object? _currentContent;
     private string _currentPageId = "home";
@@ -27,12 +28,14 @@ public sealed class MainWindowViewModel : ObservableObject
         IModuleRegistry moduleRegistry,
         INavigationService navigationService,
         ISettingsService settingsService,
-        IThemeService themeService)
+        IThemeService themeService,
+        IMotionService motionService)
     {
         _moduleRegistry = moduleRegistry;
         _navigationService = navigationService;
         _settingsService = settingsService;
         _themeService = themeService;
+        _motionService = motionService;
         _isSidebarExpanded = settingsService.Settings.RememberSidebarExpanded
             ? settingsService.Settings.IsSidebarExpanded
             : true;
@@ -49,7 +52,8 @@ public sealed class MainWindowViewModel : ObservableObject
             settingsService,
             themeService,
             moduleRegistry,
-            new WindowsStartupRegistrationService()));
+            new WindowsStartupRegistrationService(),
+            motionService));
         navigationService.Register("about", () => new AboutViewModel());
         navigationService.Navigated += OnNavigated;
 
@@ -121,6 +125,7 @@ public sealed class MainWindowViewModel : ObservableObject
     }
 
     public bool IsSidebarCollapsed => !IsSidebarExpanded;
+    public ReducedMotionMode ReducedMotion => _motionService.CurrentMode;
     public RelayCommand<string> NavigateCommand { get; }
     public RelayCommand ToggleSidebarCommand { get; }
     public RelayCommand ToggleThemeCommand { get; }

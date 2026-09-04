@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.2.2`
+当前版本：`v1.2.3`
 
 ## 当前模块
 
@@ -63,7 +63,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.2.2-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.2.3-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -201,8 +201,12 @@ moduleRegistry.Register(new ClipboardModule());
 - `ButtonStyles.xaml`：按钮和导航样式
 - `CardStyles.xaml`：卡片和提示条样式
 - `ControlStyles.xaml`：输入控件样式
+- `Motion.xaml`：统一动画时长与 Easing
+- `ScrollBarStyles.xaml`：全局深浅主题滚动条模板
 
 主题由 `ThemeService` 切换。跟随系统模式只读取当前用户的 Windows 应用主题，不修改系统设置。
+
+设置页的“界面动画”可选择完整、减少或关闭。完整使用全部过渡，减少将时长减半，关闭会跳过主题、侧边栏和窗口内容动画；三档设置均保存到 `%AppData%\\WindowsToolbox\\settings.json`。
 
 ## 用户设置
 
@@ -258,7 +262,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
   -p:DebugSymbols=false `
-  --output artifacts/release/v1.2.2/WindowsToolbox-win-x64
+  --output artifacts/release/v1.2.3/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。

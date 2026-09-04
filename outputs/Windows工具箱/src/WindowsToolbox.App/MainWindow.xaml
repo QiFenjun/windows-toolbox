@@ -13,7 +13,8 @@
         ResizeMode="CanResize"
         Background="{DynamicResource AppBackgroundBrush}"
         TextOptions.TextFormattingMode="Display"
-        TextOptions.TextRenderingMode="ClearType"
+        TextOptions.TextRenderingMode="Auto"
+        UseLayoutRounding="True"
         SnapsToDevicePixels="True">
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="0"
@@ -28,7 +29,7 @@
             Background="{DynamicResource AppBackgroundBrush}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToSidebarWidthConverter}}"/>
+                <ColumnDefinition x:Name="SidebarColumn" Width="232"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -63,10 +64,9 @@
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
                         </Border>
-                        <StackPanel Grid.Column="1"
+                        <StackPanel x:Name="SidebarBrandPanel" Grid.Column="1"
                                     VerticalAlignment="Center"
-                                    Margin="8,0,0,0"
-                                    Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    Margin="8,0,0,0">
                             <TextBlock Text="Windows 工具箱"
                                        Style="{DynamicResource SidebarBrandStyle}"/>
                             <TextBlock Text="轻量桌面工具集"
@@ -90,8 +90,7 @@
                                        Foreground="{DynamicResource SecondaryTextBrush}"/>
                             <TextBlock Grid.Column="1"
                                        Text="首页"
-                                       Style="{DynamicResource NavTextStyle}"
-                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                       Style="{DynamicResource NavTextStyle}"/>
                         </Grid>
                         <Button.Tag>
                             <Binding Path="CurrentPageId"
@@ -101,10 +100,9 @@
                     </Button>
 
                     <StackPanel Grid.Row="4">
-                        <TextBlock Text="系统工具"
+                        <TextBlock x:Name="SidebarCategoryLabel" Text="系统工具"
                                    Style="{DynamicResource NavCategoryStyle}"
-                                   Margin="12,0,0,8"
-                                   Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                   Margin="12,0,0,8"/>
                         <ItemsControl ItemsSource="{Binding Modules}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -124,8 +122,7 @@
                                                        Foreground="{Binding IsSelected, Converter={StaticResource SelectionToBrushConverter}}"/>
                                             <TextBlock Grid.Column="1"
                                                        Text="{Binding DisplayName}"
-                                                       Style="{DynamicResource NavTextStyle}"
-                                                       Visibility="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                       Style="{DynamicResource NavTextStyle}"/>
                                         </Grid>
                                     </Button>
                                 </DataTemplate>
@@ -145,9 +142,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="&#xE713;" Style="{DynamicResource FluentIconStyle}"/>
-                                <TextBlock Grid.Column="1" Text="设置"
-                                           Style="{DynamicResource NavTextStyle}"
-                                           Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBlock Grid.Column="1" Text="设置" Style="{DynamicResource NavTextStyle}"/>
                             </Grid>
                             <Button.Tag>
                                 <Binding Path="CurrentPageId"
@@ -166,9 +161,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="&#xE946;" Style="{DynamicResource FluentIconStyle}"/>
-                                <TextBlock Grid.Column="1" Text="关于"
-                                           Style="{DynamicResource NavTextStyle}"
-                                           Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBlock Grid.Column="1" Text="关于" Style="{DynamicResource NavTextStyle}"/>
                             </Grid>
                             <Button.Tag>
                                 <Binding Path="CurrentPageId"
@@ -185,9 +178,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="&#xE700;" Style="{DynamicResource FluentIconStyle}"/>
-                                <TextBlock Grid.Column="1" Text="收起侧边栏"
-                                           Style="{DynamicResource NavTextStyle}"
-                                           Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBlock Grid.Column="1" Text="收起侧边栏" Style="{DynamicResource NavTextStyle}"/>
                             </Grid>
                         </Button>
                     </StackPanel>
@@ -314,10 +305,22 @@
                     </Grid>
                 </Border>
 
-                <ContentControl Grid.Row="1"
+                <ContentControl x:Name="MainContentHost"
+                                Grid.Row="1"
                                 Content="{Binding CurrentContent}"
-                                Focusable="False"/>
+                                Focusable="False"
+                                RenderTransformOrigin="0.5,0"
+                                SnapsToDevicePixels="True">
+                    <ContentControl.RenderTransform>
+                        <TranslateTransform x:Name="MainContentTransform" Y="0"/>
+                    </ContentControl.RenderTransform>
+                </ContentControl>
             </Grid>
+            <Border x:Name="ThemeTransitionOverlay"
+                    Panel.ZIndex="100"
+                    Background="{DynamicResource AppBackgroundBrush}"
+                    Opacity="0"
+                    IsHitTestVisible="False"/>
         </Grid>
     </Border>
 </Window>

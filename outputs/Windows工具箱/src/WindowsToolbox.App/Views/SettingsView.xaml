@@ -17,6 +17,17 @@
                               Style="{DynamicResource ModernComboBoxStyle}"
                               Width="260"
                               HorizontalAlignment="Left"/>
+                    <TextBlock Text="界面动画" Style="{DynamicResource FieldLabelStyle}" Margin="0,18,0,7"/>
+                    <ComboBox ItemsSource="{Binding MotionOptions}"
+                              SelectedItem="{Binding SelectedMotion}"
+                              DisplayMemberPath="DisplayName"
+                              Style="{DynamicResource ModernComboBoxStyle}"
+                              Width="260"
+                              HorizontalAlignment="Left"/>
+                    <TextBlock Text="完整使用全部过渡；减少会缩短动画；关闭会保留必要的淡入效果。"
+                               Style="{DynamicResource CaptionTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
 

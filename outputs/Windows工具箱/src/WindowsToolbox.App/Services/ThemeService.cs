@@ -8,9 +8,12 @@ namespace WindowsToolbox.App.Services;
 public sealed class ThemeService : IThemeService
 {
     public ThemeMode CurrentMode { get; private set; } = ThemeMode.System;
+    public event EventHandler? ThemeChanging;
+    public event EventHandler? ThemeChanged;
 
     public void Apply(ThemeMode mode)
     {
+        ThemeChanging?.Invoke(this, EventArgs.Empty);
         CurrentMode = mode;
         ThemeMode effectiveMode = mode == ThemeMode.System ? GetSystemTheme() : mode;
         string dictionaryName = effectiveMode == ThemeMode.Dark
@@ -34,6 +37,7 @@ public sealed class ThemeService : IThemeService
             int index = dictionaries.IndexOf(existing);
             dictionaries[index] = replacement;
         }
+        ThemeChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private static ThemeMode GetSystemTheme()

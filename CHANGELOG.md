@@ -2,6 +2,30 @@
 
 本项目使用语义化版本号记录正式发布。
 
+## [1.2.3] - 2026-09-04
+
+### Improved
+
+- 新增统一 Motion 资源，规范 120/180/240ms 动画时长与 Easing
+- 新增浅色与深色主题平滑切换遮罩，连续切换时安全替代上一动画
+- 新增侧边栏 232px ↔ 72px GridLength 展开/收起动画，文字使用淡入淡出
+- 优化窗口最大化/还原后的内容视觉过渡，不改变 Windows 原生 DWM、Snap 和 DPI 行为
+- 启用 UseLayoutRounding、SnapsToDevicePixels 与 Display 文本格式化，移除全局 ClearType 强制和所有 ScaleTransform 动画
+- 新增完整、减少、关闭三档界面动画设置，并保存到用户 AppData
+- 统一深浅主题 ScrollBar、ToolTip、ContextMenu、CalendarDayButton 与键盘 Focus Ring
+
+### Fixed
+
+- 修复深色模式下内部 ScrollViewer、ListView 和详情页滚动条可能回落到系统浅色样式的问题
+- 修复部分公共控件在主题切换时出现默认浅色 Hover、Focus 或 Popup 的问题
+- 修复 Motion 触发器资源顺序与可冻结性问题，避免启动时 XamlParseException
+
+### Validation
+
+- Release 编译 0 警告 / 0 错误
+- 原有 85 项测试与新增 8 项 UI 资源、Motion 和设置回归测试全部通过（93/93）
+- 本地 Release 程序启动冒烟通过，未再出现 XamlParseException 或 .NET Runtime 崩溃
+
 ## [1.2.2] - 2026-09-04
 
 ### Fixed

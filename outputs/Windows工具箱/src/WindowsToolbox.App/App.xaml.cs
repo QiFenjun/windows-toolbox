@@ -31,8 +31,9 @@ public partial class App : System.Windows.Application
         ISettingsService settingsService = new SettingsService();
         await settingsService.LoadAsync();
 
-        IThemeService themeService = new ThemeService();
+        ThemeService themeService = new();
         themeService.Apply(settingsService.Settings.Theme);
+        IMotionService motionService = new MotionService(settingsService.Settings.ReducedMotion);
 
         bool backgroundStartup = e.Args.Any(argument =>
             string.Equals(argument, "--background-network-monitor", StringComparison.Ordinal));
@@ -59,9 +60,10 @@ public partial class App : System.Windows.Application
             moduleRegistry,
             navigationService,
             settingsService,
-            themeService);
+            themeService,
+            motionService);
 
-        MainWindow window = new()
+        MainWindow window = new(themeService, motionService)
         {
             DataContext = mainViewModel
         };

@@ -17,5 +17,6 @@ public sealed class AppSettings
     public bool NetworkTrafficContinueInBackground { get; set; }
     public bool NetworkTrafficStartWithWindows { get; set; }
     public bool IsSidebarExpanded { get; set; } = true;
+    public ReducedMotionMode ReducedMotion { get; set; } = ReducedMotionMode.Full;
     public List<string> RecentModuleIds { get; set; } = [];
 }

@@ -9,24 +9,29 @@ namespace WindowsToolbox.App.ViewModels;
 
 public sealed record ThemeOption(ThemeMode Value, string DisplayName);
 public sealed record StartupOption(string Id, string DisplayName);
+public sealed record MotionOption(ReducedMotionMode Value, string DisplayName);
 
 public sealed class SettingsViewModel : ObservableObject
 {
     private readonly ISettingsService _settingsService;
     private readonly IThemeService _themeService;
     private readonly WindowsStartupRegistrationService _startupRegistrationService;
+    private readonly IMotionService _motionService;
     private ThemeOption _selectedTheme;
     private StartupOption _selectedStartupPage;
+    private MotionOption _selectedMotion;
 
     public SettingsViewModel(
         ISettingsService settingsService,
         IThemeService themeService,
         IModuleRegistry moduleRegistry,
-        WindowsStartupRegistrationService startupRegistrationService)
+        WindowsStartupRegistrationService startupRegistrationService,
+        IMotionService motionService)
     {
         _settingsService = settingsService;
         _themeService = themeService;
         _startupRegistrationService = startupRegistrationService;
+        _motionService = motionService;
 
         ThemeOptions =
         [
@@ -41,15 +46,24 @@ public sealed class SettingsViewModel : ObservableObject
                 .Where(module => module.IsAvailable)
                 .Select(module => new StartupOption(module.Id, module.DisplayName))
         ];
+        MotionOptions =
+        [
+            new(ReducedMotionMode.Full, "完整"),
+            new(ReducedMotionMode.Reduced, "减少"),
+            new(ReducedMotionMode.Off, "关闭")
+        ];
 
         _selectedTheme = ThemeOptions.First(option => option.Value == settingsService.Settings.Theme);
         _selectedStartupPage = StartupOptions.FirstOrDefault(
             option => option.Id == settingsService.Settings.StartupPageId) ?? StartupOptions[0];
+        _selectedMotion = MotionOptions.FirstOrDefault(
+            option => option.Value == settingsService.Settings.ReducedMotion) ?? MotionOptions[0];
         SaveCommand = new AsyncRelayCommand(SaveAsync);
     }
 
     public IReadOnlyList<ThemeOption> ThemeOptions { get; }
     public IReadOnlyList<StartupOption> StartupOptions { get; }
+    public IReadOnlyList<MotionOption> MotionOptions { get; }
 
     public ThemeOption SelectedTheme
     {
@@ -71,6 +85,19 @@ public sealed class SettingsViewModel : ObservableObject
         {
             if (SetProperty(ref _selectedStartupPage, value))
                 _settingsService.Settings.StartupPageId = value.Id;
+        }
+    }
+
+    public MotionOption SelectedMotion
+    {
+        get => _selectedMotion;
+        set
+        {
+            if (SetProperty(ref _selectedMotion, value))
+            {
+                _settingsService.Settings.ReducedMotion = value.Value;
+                _motionService.SetMode(value.Value);
+            }
         }
     }
 

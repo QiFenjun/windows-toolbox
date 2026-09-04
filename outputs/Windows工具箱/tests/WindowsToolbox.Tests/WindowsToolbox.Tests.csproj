@@ -10,6 +10,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="3.6.4" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\WindowsToolbox.App\WindowsToolbox.App.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Core\WindowsToolbox.Core.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.NetworkTraffic\WindowsToolbox.Modules.NetworkTraffic.csproj" />

@@ -19,4 +19,8 @@
     <SolidColorBrush x:Key="DangerSurfaceBrush" Color="#FFF1F2"/>
     <SolidColorBrush x:Key="DangerBorderBrush" Color="#F4C5CA"/>
     <SolidColorBrush x:Key="OverlayBrush" Color="#1A1D2433"/>
+    <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="#F0F2F7"/>
+    <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#B8C0CE"/>
+    <SolidColorBrush x:Key="ScrollBarThumbHoverBrush" Color="#98A3B5"/>
+    <SolidColorBrush x:Key="ScrollBarThumbPressedBrush" Color="#7C879A"/>
 </ResourceDictionary>
