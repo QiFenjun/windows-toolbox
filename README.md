@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.2.0`
+当前版本：`v1.2.1`
 
 ## 当前模块
 
@@ -19,6 +19,8 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 
 - 从明确的 32 位和 64 位注册表视图读取传统桌面软件
 - 查看软件名称、版本、发布者、安装日期、架构和安装位置
+- 优先使用注册表 `DisplayIcon` 和 Windows Shell 显示软件真实图标；不可用时才显示统一占位图标
+- 图标异步限流加载并按源文件修改时间缓存，不阻塞软件基础信息显示
 - 显示安装程序提供的系统报告大小，并支持按需扫描安装目录
 - 支持按名称、大小、安装日期和发布者排序
 - 支持名称、版本、发布者搜索，以及发布者、来源和系统组件筛选
@@ -59,7 +61,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.2.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.2.1-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -254,7 +256,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
   -p:DebugSymbols=false `
-  --output artifacts/release/v1.2.0/WindowsToolbox-win-x64
+  --output artifacts/release/v1.2.1/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。
@@ -278,9 +280,9 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 
 - Windows 没有为普通桌面应用提供可靠的“查询全部待执行关机计划”接口，因此界面只跟踪本应用创建并保存的计划；取消操作仍调用系统的 `shutdown /a`。
 - 跟随系统主题在应用启动时读取；Windows 运行期间切换系统主题后，需要重新打开应用或在设置页重新选择。
-- 应用管理 v1.1.0 以传统桌面软件注册表数据为可靠基础；Microsoft Store / MSIX 枚举和 WinGet 精确匹配尚未启用。
+- 应用管理以传统桌面软件注册表数据为可靠基础；Microsoft Store / MSIX 枚举和 WinGet 精确匹配尚未启用。
 - 部分软件没有登记安装位置、大小或可靠卸载命令，此时对应信息显示为“未知”，相关操作会被禁用。
-- 应用图标目前使用统一的 Fluent 默认图标，避免启动时一次性加载大量高分辨率资源。
+- 应用管理目前以传统桌面软件注册表数据为基础；没有可靠 `DisplayIcon` 或顶层主程序候选的软件会继续使用统一占位图标。MSIX/AppX 专用图标和开始菜单快捷方式匹配尚未启用。
 - 网络流量的 ETW 应用归因依赖 Windows 提供的 Kernel Network 事件；透明 WFP/NDIS 重定向若无法可靠归因，会显示“未知”而不会猜测。当前不包含驱动、WFP Callout、VPN/代理配置或网络拦截功能。
 - 网络接口实时统计使用 Windows IP Helper/网络接口信息；应用流量与接口流量是独立概念，不能相加。真实 VPN 或本地代理环境仅在系统已存在时可验证，项目不会安装第三方 VPN/代理。
 - 未购买商业代码签名证书，发布的 EXE 为未签名程序。

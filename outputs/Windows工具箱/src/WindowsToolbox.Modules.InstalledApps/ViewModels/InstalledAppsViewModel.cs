@@ -14,10 +14,12 @@ public sealed class InstalledAppsViewModel : ObservableObject
     private readonly ApplicationSizeService _sizeService;
     private readonly IApplicationActionService _actionService;
     private readonly IApplicationClipboardService _clipboardService;
+    private readonly IApplicationIconService _iconService;
     private readonly List<InstalledApplication> _allApplications = [];
     private CancellationTokenSource? _refreshCancellation;
     private CancellationTokenSource? _scanCancellation;
     private CancellationTokenSource? _searchCancellation;
+    private CancellationTokenSource? _iconCancellation;
     private InstalledApplication? _selectedApplication;
     private string _searchText = string.Empty;
     private string _selectedSortMode = "名称";
@@ -37,12 +39,14 @@ public sealed class InstalledAppsViewModel : ObservableObject
         InstalledAppService installedAppService,
         ApplicationSizeService sizeService,
         IApplicationActionService actionService,
-        IApplicationClipboardService clipboardService)
+        IApplicationClipboardService clipboardService,
+        IApplicationIconService? iconService = null)
     {
         _installedAppService = installedAppService;
         _sizeService = sizeService;
         _actionService = actionService;
         _clipboardService = clipboardService;
+        _iconService = iconService ?? new ApplicationIconService();
 
         SortModes = ["名称", "大小（从大到小）", "安装日期（从新到旧）", "发布者"];
         SourceFilters = ["全部来源", "注册表", "Microsoft Store / MSIX"];
@@ -256,6 +260,7 @@ public sealed class InstalledAppsViewModel : ObservableObject
             _allApplications.AddRange(applications);
             RebuildPublisherFilters();
             ApplyFilters();
+            BeginIconLoading(applications, token);
             ShowNotification($"已加载 {_allApplications.Count} 个软件条目。", "Success");
         }
         catch (OperationCanceledException)
@@ -431,6 +436,44 @@ public sealed class InstalledAppsViewModel : ObservableObject
     }
 
     private void CancelRefresh() => _refreshCancellation?.Cancel();
+
+    private void BeginIconLoading(
+        IReadOnlyList<InstalledApplication> applications,
+        CancellationToken refreshCancellationToken)
+    {
+        _iconCancellation?.Cancel();
+        _iconCancellation?.Dispose();
+        _iconCancellation = CancellationTokenSource.CreateLinkedTokenSource(refreshCancellationToken);
+        _ = LoadIconsAsync(applications, _iconCancellation.Token);
+    }
+
+    private async Task LoadIconsAsync(
+        IReadOnlyList<InstalledApplication> applications,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Task[] loads = applications.Select(async application =>
+            {
+                ApplicationIconResult result = await _iconService.GetIconResultAsync(
+                    application,
+                    desiredSize: 48,
+                    cancellationToken);
+                application.Icon = result.Icon;
+                application.IconSourceText = result.Source switch
+                {
+                    ApplicationIconSource.DisplayIcon => "注册表 DisplayIcon",
+                    ApplicationIconSource.InstallLocation => "安装目录主程序",
+                    _ => "默认占位图标"
+                };
+            }).ToArray();
+            await Task.WhenAll(loads);
+        }
+        catch (OperationCanceledException)
+        {
+            // 刷新或离开页面后停止未完成的读取；已缓存图标可供下次复用。
+        }
+    }
     private void CancelScan() => _scanCancellation?.Cancel();
 
     private void DebounceFilters()

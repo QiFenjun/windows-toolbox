@@ -32,6 +32,7 @@ public sealed class InstalledAppsModule : IToolModule
             appService,
             sizeService,
             new ApplicationActionService(),
-            new ApplicationClipboardService());
+            new ApplicationClipboardService(),
+            new ApplicationIconService());
     }
 }

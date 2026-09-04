@@ -53,7 +53,8 @@ public static class RegistryEntryMapper
             Publisher = publisher.Trim(),
             InstallDate = ParseInstallDate(GetString(values, "InstallDate")),
             InstallLocation = ExpandPath(GetString(values, "InstallLocation")),
-            DisplayIconPath = ExpandPath(GetString(values, "DisplayIcon")),
+            // 保留原始 DisplayIcon，交由 DisplayIconParser 正确处理引号、环境变量和图标索引。
+            DisplayIconPath = GetString(values, "DisplayIcon").Trim(),
             ReportedSizeBytes = estimatedSizeBytes,
             UninstallString = uninstall.Trim(),
             QuietUninstallString = quietUninstall.Trim(),

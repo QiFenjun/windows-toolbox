@@ -18,7 +18,7 @@ public sealed class AboutViewModel
 
         Version? version = assembly.GetName().Version;
         return version is null
-            ? "1.2.0"
+            ? "1.2.1"
             : $"{version.Major}.{version.Minor}.{version.Build}";
     }
 }

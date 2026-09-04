@@ -1,4 +1,5 @@
 using System.IO;
+using System.Windows.Media;
 using WindowsToolbox.Core.Utilities;
 using WindowsToolbox.Modules.InstalledApps.Utilities;
 
@@ -9,6 +10,8 @@ public sealed class InstalledApplication : ObservableObject
     private long? _scannedSizeBytes;
     private DateTime? _scannedAt;
     private bool _isScanning;
+    private ImageSource? _icon;
+    private string _iconSourceText = "默认占位图标";
 
     public string Id { get; init; } = string.Empty;
     public string DisplayName { get; init; } = string.Empty;
@@ -33,6 +36,27 @@ public sealed class InstalledApplication : ObservableObject
     public string PackageId { get; set; } = string.Empty;
     public ApplicationSource Source { get; init; } = ApplicationSource.Registry;
     public string RegistryPath { get; init; } = string.Empty;
+
+    /// <summary>由图标服务异步提供的冻结图像；为空时由视图显示主题占位图标。</summary>
+    public ImageSource? Icon
+    {
+        get => _icon;
+        set
+        {
+            if (!SetProperty(ref _icon, value))
+                return;
+
+            OnPropertyChanged(nameof(HasRealIcon));
+        }
+    }
+
+    public string IconSourceText
+    {
+        get => _iconSourceText;
+        set => SetProperty(ref _iconSourceText, value);
+    }
+
+    public bool HasRealIcon => Icon is not null;
 
     public long? ScannedSizeBytes
     {
