@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.2.1`
+当前版本：`v1.2.2`
 
 ## 当前模块
 
@@ -33,8 +33,10 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 通过 Windows Kernel Network ETW 按进程统计 TCP/UDP 上传和下载元数据
 - 仅在用户启动高级监控时按需提升辅助模式；主程序及其他模块保持普通用户权限
 - 支持 IPv4/IPv6 端点、PID + 进程启动时间身份、多进程软件聚合和本次监控累计
+- 优先使用 ETW payload 中的真实 PID，并拒绝 PID 0、负 PID 与旧版非法历史记录
+- 使用固定专属 ETW 会话、单 Helper 互斥和双向管道优雅停止，异常退出后仅回收本软件孤儿会话
 - 应用流量与网络接口实际流量分开显示，避免 VPN/Tunnel 或本地代理重复相加
-- 基于 IP Helper 连接表识别 Loopback 与本地代理监听端口；接口类型结合 PPP、Tunnel、Wintun/WireGuard/TAP 等信息标记 VPN/Tunnel
+- 基于系统代理端口、代理进程和外联状态高置信识别本地代理；接口类型结合 PPP、Tunnel、Wintun/WireGuard/TAP 等信息标记 VPN/Tunnel
 - 提供最近 60 秒上传/下载曲线与当日仅字节数本地汇总
 - 可选关闭主窗口后最小化到系统托盘继续监控；可选登记当前用户的 Windows Run 启动项，默认均关闭
 - 不读取数据包正文、URL、Cookie、密码或 HTTPS 内容，也不会上传网络活动记录
@@ -61,7 +63,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.2.1-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.2.2-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -256,7 +258,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
   -p:DebugSymbols=false `
-  --output artifacts/release/v1.2.1/WindowsToolbox-win-x64
+  --output artifacts/release/v1.2.2/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。

@@ -16,4 +16,5 @@ public sealed record TrafficProcessSnapshot(
     bool IsVpn,
     bool IsProxy,
     bool IsLoopback,
-    bool IsAttributionUncertain);
+    bool IsAttributionUncertain,
+    TrafficIdentityStatus IdentityStatus);

@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text.Json;
 using System.Windows.Media;
 using System.Windows.Threading;
 using WindowsToolbox.Core.Commands;
@@ -79,6 +81,7 @@ public sealed class NetworkTrafficViewModel : ObservableObject, IDisposable
             {
                 StartCommand.NotifyCanExecuteChanged();
                 StopCommand.NotifyCanExecuteChanged();
+                OnPropertyChanged(nameof(MonitoringStateText));
             }
         }
     }
@@ -140,9 +143,20 @@ public sealed class NetworkTrafficViewModel : ObservableObject, IDisposable
     private async Task InitializeAsync()
     {
         IsLoading = true;
-        _todayHistory = await _historyStore.LoadTodayAsync(CancellationToken.None);
-        RefreshSnapshot();
-        IsLoading = false;
+        try
+        {
+            _todayHistory = await _historyStore.LoadTodayAsync(CancellationToken.None);
+            RefreshSnapshot();
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            StatusText = "历史流量记录暂时不可用；实时监控仍可正常启动。";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+
         if (_settingsService.Settings.NetworkTrafficAutoStart)
             await StartAsync();
     }
@@ -241,7 +255,8 @@ public sealed class NetworkTrafficViewModel : ObservableObject, IDisposable
                 group.DisplayName,
                 group.Id,
                 (existing?.DownloadBytes ?? 0) + group.SessionDownloadBytes,
-                (existing?.UploadBytes ?? 0) + group.SessionUploadBytes);
+                (existing?.UploadBytes ?? 0) + group.SessionUploadBytes,
+                group.IdentityStatus);
         }).ToList();
         await _historyStore.SaveTodayAsync(records, CancellationToken.None);
     }

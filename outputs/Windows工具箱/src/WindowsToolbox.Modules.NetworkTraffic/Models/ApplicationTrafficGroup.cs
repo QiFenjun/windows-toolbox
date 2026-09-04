@@ -24,6 +24,7 @@ public sealed class ApplicationTrafficGroup : ObservableObject
     public string InterfaceName { get; init; } = "未知";
     public string ProxyProcessName { get; init; } = string.Empty;
     public bool IsAttributionUncertain { get; init; }
+    public TrafficIdentityStatus IdentityStatus { get; init; }
     public IReadOnlyList<TrafficProcessSnapshot> Processes { get; init; } = [];
 
     public bool IsExpanded

@@ -17,7 +17,8 @@ public sealed class NetworkTrafficAggregator
 
     public void Add(NetworkTrafficEvent trafficEvent)
     {
-        if (trafficEvent.SizeBytes <= 0)
+        // 未能归属进程的 ETW 事件不能显示为“PID -1”应用，也不能计入任意应用总量。
+        if (trafficEvent.SizeBytes <= 0 || trafficEvent.ProcessId <= 0)
             return;
 
         TrafficProcessIdentity identity = ResolveIdentity(trafficEvent.ProcessId);
@@ -46,7 +47,7 @@ public sealed class NetworkTrafficAggregator
             NetworkTrafficEvent? last = counter.LastEvent;
             NetworkPathResolution path = last is null
                 ? new(NetworkPathKind.Unknown, IsAttributionUncertain: true)
-                : _pathResolver.Resolve(last, connections, processNames, interfaces);
+                : _pathResolver.Resolve(last, connections, processNames, interfaces, processConnections);
             (double uploadRate, double downloadRate) = counter.TakeRates(elapsed);
             processes.Add(_processResolver.Resolve(
                 identity,
@@ -149,6 +150,9 @@ public sealed class NetworkTrafficAggregator
             InterfaceName = processes.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.InterfaceName))?.InterfaceName ?? "未知",
             ProxyProcessName = processes.Select(item => item.NetworkPath).Any(item => item == NetworkPathKind.LocalProxy) ? "本地代理" : string.Empty,
             IsAttributionUncertain = processes.Any(item => item.IsAttributionUncertain),
+            IdentityStatus = processes.Any(item => item.IdentityStatus == TrafficIdentityStatus.Resolved)
+                ? TrafficIdentityStatus.Resolved
+                : TrafficIdentityStatus.SyntheticProcessId,
             Processes = processes
         };
     }

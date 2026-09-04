@@ -20,11 +20,13 @@ public sealed class ProcessTrafficResolver
         string pathName = string.Empty;
         string productName = string.Empty;
         string companyName = string.Empty;
+        bool identityResolved = false;
 
         try
         {
             using Process process = Process.GetProcessById(identity.ProcessId);
             name = process.ProcessName;
+            identityResolved = true;
             try { pathName = process.MainModule?.FileName ?? string.Empty; } catch (Win32Exception) { }
             if (!string.IsNullOrWhiteSpace(pathName) && File.Exists(pathName))
             {
@@ -53,6 +55,7 @@ public sealed class ProcessTrafficResolver
             path.Kind == NetworkPathKind.Vpn,
             path.Kind == NetworkPathKind.LocalProxy,
             path.Kind == NetworkPathKind.Loopback,
-            path.IsAttributionUncertain);
+            path.IsAttributionUncertain,
+            identityResolved ? TrafficIdentityStatus.Resolved : TrafficIdentityStatus.SyntheticProcessId);
     }
 }
