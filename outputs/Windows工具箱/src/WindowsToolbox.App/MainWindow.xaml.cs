@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using WindowsToolbox.App.Services;
 using WindowsToolbox.App.Utilities;
 using WindowsToolbox.App.ViewModels;
@@ -16,6 +17,8 @@ public partial class MainWindow : Window
     private readonly ThemeService? _themeService;
     private readonly IMotionService? _motionService;
     private MainWindowViewModel? _viewModel;
+    private WindowState _lastWindowState;
+    private int _windowTransitionVersion;
 
     public MainWindow(ThemeService? themeService = null, IMotionService? motionService = null)
     {
@@ -40,9 +43,10 @@ public partial class MainWindow : Window
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        _lastWindowState = WindowState;
         if (_viewModel is not null)
             AnimateSidebar(_viewModel.IsSidebarExpanded, immediate: true);
-        AnimateContentTransition();
+        ResetContentTransition();
     }
 
     private void MainWindow_Closed(object? sender, EventArgs e)
@@ -77,7 +81,12 @@ public partial class MainWindow : Window
             AnimateSidebar(_viewModel.IsSidebarExpanded, immediate: false);
     }
 
-    private void MotionService_Changed(object? sender, EventArgs e) => ApplyMotionResources();
+    private void MotionService_Changed(object? sender, EventArgs e)
+    {
+        ApplyMotionResources();
+        if (IsLoaded && _viewModel is not null && _motionService?.CurrentMode == ReducedMotionMode.Off)
+            AnimateSidebar(_viewModel.IsSidebarExpanded, immediate: true);
+    }
 
     private void ApplyMotionResources()
     {
@@ -91,23 +100,100 @@ public partial class MainWindow : Window
 
     private void AnimateSidebar(bool expanded, bool immediate)
     {
-        GridLength target = new(expanded ? 232 : 72);
-        if (immediate || _motionService?.CurrentMode == ReducedMotionMode.Off)
+        ReducedMotionMode mode = _motionService?.CurrentMode ?? ReducedMotionMode.Off;
+        double targetWidth = expanded ? SidebarMotionMetrics.ExpandedWidth : SidebarMotionMetrics.CollapsedWidth;
+        double currentWidth = SidebarColumn.Width.IsAbsolute
+            ? SidebarColumn.Width.Value
+            : SidebarColumn.ActualWidth;
+        double currentOffset = MainContentTransform.X;
+
+        // Commit the final geometry once. The content transform carries the visual transition,
+        // so the chart/list on the active page is not repeatedly measured during the motion.
+        SidebarColumn.BeginAnimation(ColumnDefinition.WidthProperty, null);
+        SidebarColumn.Width = new GridLength(targetWidth);
+        AnimateSidebarText(expanded, immediate || mode == ReducedMotionMode.Off);
+
+        if (immediate || mode == ReducedMotionMode.Off)
         {
-            SidebarColumn.BeginAnimation(ColumnDefinition.WidthProperty, null);
-            SidebarColumn.Width = target;
+            MainContentTransform.BeginAnimation(TranslateTransform.XProperty, null);
+            MainContentTransform.X = 0;
             return;
         }
 
-        Duration duration = new(_motionService?.GetDuration(TimeSpan.FromMilliseconds(190)) ?? TimeSpan.FromMilliseconds(190));
-        GridLengthAnimation animation = new()
+        double startOffset = SidebarMotionMetrics.CalculateContentStartOffset(
+            currentWidth,
+            currentOffset,
+            targetWidth);
+        MainContentTransform.BeginAnimation(TranslateTransform.XProperty, null);
+        MainContentTransform.X = startOffset;
+
+        TimeSpan duration = SidebarMotionMetrics.Scale(SidebarMotionMetrics.GeometryDuration, mode);
+        TimeSpan beginTime = expanded
+            ? TimeSpan.Zero
+            : SidebarMotionMetrics.Scale(SidebarMotionMetrics.TextFadeOutDuration, mode);
+        DoubleAnimation animation = new(0, new Duration(duration))
         {
-            From = SidebarColumn.Width,
-            To = target,
-            Duration = duration,
-            EasingFunction = (IEasingFunction?)TryFindResource("StandardEase")
+            BeginTime = beginTime,
+            EasingFunction = (IEasingFunction?)TryFindResource("StandardEase"),
+            FillBehavior = FillBehavior.HoldEnd
         };
-        SidebarColumn.BeginAnimation(ColumnDefinition.WidthProperty, animation, HandoffBehavior.SnapshotAndReplace);
+        MainContentTransform.BeginAnimation(TranslateTransform.XProperty, animation, HandoffBehavior.SnapshotAndReplace);
+    }
+
+    private void AnimateSidebarText(bool expanded, bool immediate)
+    {
+        foreach (TextBlock textBlock in FindSidebarTextBlocks())
+        {
+            double currentOpacity = textBlock.Opacity;
+            textBlock.BeginAnimation(UIElement.OpacityProperty, null);
+            textBlock.Opacity = currentOpacity;
+
+            if (immediate)
+            {
+                textBlock.Opacity = expanded ? 1 : 0;
+                continue;
+            }
+
+            ReducedMotionMode mode = _motionService?.CurrentMode ?? ReducedMotionMode.Off;
+            TimeSpan duration = SidebarMotionMetrics.Scale(
+                expanded ? SidebarMotionMetrics.TextFadeInDuration : SidebarMotionMetrics.TextFadeOutDuration,
+                mode);
+            TimeSpan beginTime = expanded
+                ? SidebarMotionMetrics.Scale(SidebarMotionMetrics.RecentExpandDelay, mode)
+                : TimeSpan.Zero;
+            textBlock.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(
+                expanded ? 1 : 0,
+                new Duration(duration))
+            {
+                BeginTime = beginTime,
+                EasingFunction = (IEasingFunction?)TryFindResource("StandardEase"),
+                FillBehavior = FillBehavior.HoldEnd
+            }, HandoffBehavior.SnapshotAndReplace);
+        }
+    }
+
+    private IEnumerable<TextBlock> FindSidebarTextBlocks()
+    {
+        foreach (DependencyObject child in EnumerateVisualChildren(SidebarContainer))
+        {
+            if (child is not TextBlock textBlock)
+                continue;
+
+            string source = textBlock.FontFamily?.Source ?? string.Empty;
+            if (!source.Contains("Fluent Icons", StringComparison.OrdinalIgnoreCase))
+                yield return textBlock;
+        }
+    }
+
+    private static IEnumerable<DependencyObject> EnumerateVisualChildren(DependencyObject parent)
+    {
+        for (int index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(parent, index);
+            yield return child;
+            foreach (DependencyObject descendant in EnumerateVisualChildren(child))
+                yield return descendant;
+        }
     }
 
     private void ThemeService_ThemeChanging(object? sender, EventArgs e)
@@ -138,28 +224,45 @@ public partial class MainWindow : Window
         ThemeTransitionOverlay.BeginAnimation(OpacityProperty, fadeOut, HandoffBehavior.SnapshotAndReplace);
     }
 
-    private void MainWindow_StateChanged(object? sender, EventArgs e) => AnimateContentTransition();
+    private void MainWindow_StateChanged(object? sender, EventArgs e)
+    {
+        WindowState previousState = _lastWindowState;
+        _lastWindowState = WindowState;
+        if (!IsLoaded || previousState == WindowState || !IsMaximizeRestoreTransition(previousState, WindowState))
+            return;
+
+        int transitionVersion = ++_windowTransitionVersion;
+        Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() =>
+        {
+            if (transitionVersion == _windowTransitionVersion)
+                AnimateContentTransition();
+        }));
+    }
+
+    private static bool IsMaximizeRestoreTransition(WindowState previousState, WindowState currentState) =>
+        (previousState == WindowState.Normal && currentState == WindowState.Maximized) ||
+        (previousState == WindowState.Maximized && currentState == WindowState.Normal);
 
     private void AnimateContentTransition()
     {
         if (!IsLoaded || _motionService?.CurrentMode == ReducedMotionMode.Off)
         {
             MainContentHost.BeginAnimation(OpacityProperty, null);
-            MainContentTransform.BeginAnimation(TranslateTransform.YProperty, null);
             MainContentHost.Opacity = 1;
-            MainContentTransform.Y = 0;
             return;
         }
 
-        Duration duration = new(_motionService?.GetDuration(TimeSpan.FromMilliseconds(140)) ?? TimeSpan.FromMilliseconds(140));
-        MainContentHost.BeginAnimation(OpacityProperty, new DoubleAnimation(0.94, 1, duration)
+        Duration duration = new(SidebarMotionMetrics.Scale(TimeSpan.FromMilliseconds(100), _motionService?.CurrentMode ?? ReducedMotionMode.Full));
+        MainContentHost.BeginAnimation(OpacityProperty, new DoubleAnimation(0.97, 1, duration)
         {
             EasingFunction = (IEasingFunction?)TryFindResource("StandardEase")
         }, HandoffBehavior.SnapshotAndReplace);
-        MainContentTransform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(3, 0, duration)
-        {
-            EasingFunction = (IEasingFunction?)TryFindResource("StandardEase")
-        }, HandoffBehavior.SnapshotAndReplace);
+    }
+
+    private void ResetContentTransition()
+    {
+        MainContentHost.BeginAnimation(OpacityProperty, null);
+        MainContentHost.Opacity = 1;
     }
 
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

@@ -33,7 +33,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0"
+            <Border x:Name="SidebarContainer"
+                    Grid.Column="0"
                     Background="{DynamicResource SidebarBackgroundBrush}"
                     BorderBrush="{DynamicResource DividerBrush}"
                     BorderThickness="0,0,1,0">
@@ -312,7 +313,7 @@
                                 RenderTransformOrigin="0.5,0"
                                 SnapsToDevicePixels="True">
                     <ContentControl.RenderTransform>
-                        <TranslateTransform x:Name="MainContentTransform" Y="0"/>
+                        <TranslateTransform x:Name="MainContentTransform" X="0" Y="0"/>
                     </ContentControl.RenderTransform>
                 </ContentControl>
             </Grid>

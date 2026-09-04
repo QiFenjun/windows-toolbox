@@ -14,11 +14,13 @@ public sealed class HomeViewModel : ObservableObject
     public HomeViewModel(
         IModuleRegistry moduleRegistry,
         ISettingsService settingsService,
-        Action<string> navigate)
+        Action<string> navigate,
+        IMotionService motionService)
     {
         _moduleRegistry = moduleRegistry;
         _settingsService = settingsService;
         _navigate = navigate;
+        MotionService = motionService;
         OpenModuleCommand = new RelayCommand<string>(id =>
         {
             if (!string.IsNullOrWhiteSpace(id))
@@ -29,6 +31,7 @@ public sealed class HomeViewModel : ObservableObject
 
     public ObservableCollection<ModuleItemViewModel> Modules { get; } = [];
     public ObservableCollection<ModuleItemViewModel> RecentModules { get; } = [];
+    public IMotionService MotionService { get; }
     public int InstalledModuleCount => Modules.Count;
     public bool HasRecentModules => RecentModules.Count > 0;
     public RelayCommand<string> OpenModuleCommand { get; }

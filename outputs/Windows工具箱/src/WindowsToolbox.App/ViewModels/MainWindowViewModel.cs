@@ -46,7 +46,7 @@ public sealed class MainWindowViewModel : ObservableObject
             navigationService.Register(module.Id, module.CreateViewModel);
         }
 
-        _homeViewModel = new HomeViewModel(moduleRegistry, settingsService, Navigate);
+        _homeViewModel = new HomeViewModel(moduleRegistry, settingsService, Navigate, motionService);
         navigationService.Register("home", () => _homeViewModel);
         navigationService.Register("settings", () => new SettingsViewModel(
             settingsService,

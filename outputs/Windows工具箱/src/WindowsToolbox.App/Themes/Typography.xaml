@@ -95,28 +95,12 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Opacity" Value="1"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                <DataTrigger.EnterActions>
-                    <BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard>
-                </DataTrigger.EnterActions>
-                <DataTrigger.ExitActions>
-                    <BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" BeginTime="0:0:0.08" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard>
-                </DataTrigger.ExitActions>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
     <Style x:Key="SidebarCaptionStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}"/>
         <Setter Property="Foreground" Value="{DynamicResource TertiaryTextBrush}"/>
         <Setter Property="FontSize" Value="11"/>
         <Setter Property="Opacity" Value="1"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                <DataTrigger.EnterActions><BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard></DataTrigger.EnterActions>
-                <DataTrigger.ExitActions><BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" BeginTime="0:0:0.08" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard></DataTrigger.ExitActions>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
     <Style x:Key="NavTextStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}"/>
@@ -124,12 +108,6 @@
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Opacity" Value="1"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                <DataTrigger.EnterActions><BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard></DataTrigger.EnterActions>
-                <DataTrigger.ExitActions><BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" BeginTime="0:0:0.08" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard></DataTrigger.ExitActions>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
     <Style x:Key="NavCategoryStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}"/>
@@ -137,12 +115,6 @@
         <Setter Property="FontSize" Value="11"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Opacity" Value="1"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                <DataTrigger.EnterActions><BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard></DataTrigger.EnterActions>
-                <DataTrigger.ExitActions><BeginStoryboard HandoffBehavior="SnapshotAndReplace"><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" BeginTime="0:0:0.08" Duration="{StaticResource MotionDurationFast}"/></Storyboard></BeginStoryboard></DataTrigger.ExitActions>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
     <Style x:Key="AccentLabelStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}"/>
