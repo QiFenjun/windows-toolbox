@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
+using WindowsToolbox.App.Services;
 using WindowsToolbox.Core.Commands;
 using WindowsToolbox.Core.Interfaces;
 using WindowsToolbox.Core.Models;
@@ -44,7 +45,11 @@ public sealed class MainWindowViewModel : ObservableObject
 
         _homeViewModel = new HomeViewModel(moduleRegistry, settingsService, Navigate);
         navigationService.Register("home", () => _homeViewModel);
-        navigationService.Register("settings", () => new SettingsViewModel(settingsService, themeService, moduleRegistry));
+        navigationService.Register("settings", () => new SettingsViewModel(
+            settingsService,
+            themeService,
+            moduleRegistry,
+            new WindowsStartupRegistrationService()));
         navigationService.Register("about", () => new AboutViewModel());
         navigationService.Navigated += OnNavigated;
 

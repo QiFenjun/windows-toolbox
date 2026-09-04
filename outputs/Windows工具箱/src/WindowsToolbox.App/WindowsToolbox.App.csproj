@@ -3,6 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>WindowsToolbox.App</RootNamespace>
     <AssemblyName>Windows工具箱</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -10,6 +11,11 @@
   <ItemGroup>
     <ProjectReference Include="..\WindowsToolbox.Core\WindowsToolbox.Core.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj" />
+    <ProjectReference Include="..\WindowsToolbox.Modules.NetworkTraffic\WindowsToolbox.Modules.NetworkTraffic.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Forms" />
   </ItemGroup>
 </Project>

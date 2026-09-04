@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.1.1`
+当前版本：`v1.2.0`
 
 ## 当前模块
 
@@ -26,6 +26,17 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 经二次确认后调用软件自身登记的卸载程序
 - 不直接删除软件文件、注册表项或所谓“残留”
 
+### 网络流量
+
+- 通过 Windows Kernel Network ETW 按进程统计 TCP/UDP 上传和下载元数据
+- 仅在用户启动高级监控时按需提升辅助模式；主程序及其他模块保持普通用户权限
+- 支持 IPv4/IPv6 端点、PID + 进程启动时间身份、多进程软件聚合和本次监控累计
+- 应用流量与网络接口实际流量分开显示，避免 VPN/Tunnel 或本地代理重复相加
+- 基于 IP Helper 连接表识别 Loopback 与本地代理监听端口；接口类型结合 PPP、Tunnel、Wintun/WireGuard/TAP 等信息标记 VPN/Tunnel
+- 提供最近 60 秒上传/下载曲线与当日仅字节数本地汇总
+- 可选关闭主窗口后最小化到系统托盘继续监控；可选登记当前用户的 Windows Run 启动项，默认均关闭
+- 不读取数据包正文、URL、Cookie、密码或 HTTPS 内容，也不会上传网络活动记录
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -48,12 +59,12 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.1.1-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.2.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
 
-正式 Release 包为 Windows 10/11 64 位系统准备，已经包含所需的 .NET 运行时，无需另外安装 .NET。软件无需管理员权限，也不会创建网络连接。
+正式 Release 包为 Windows 10/11 64 位系统准备，已经包含所需的 .NET 运行时，无需另外安装 .NET。主程序默认无需管理员权限；只有用户启动网络流量的高级 ETW 监控时，辅助模式才会按需显示 Windows UAC 确认。
 
 ### 从源码启动
 
@@ -71,7 +82,7 @@ dotnet run --project src/WindowsToolbox.App/WindowsToolbox.App.csproj
 - WPF
 - C# 12
 
-生产项目没有第三方运行时依赖；测试项目仅使用 MSTest。
+网络流量模块使用 Microsoft 的 `Microsoft.Diagnostics.Tracing.TraceEvent` 读取 Windows ETW；测试项目使用 MSTest。
 
 ## 项目目录
 
@@ -101,6 +112,11 @@ windows-toolbox/
 │     ├─ Models/
 │     ├─ Services/
 │     ├─ Utilities/
+│     ├─ ViewModels/
+│     └─ Views/
+│  └─ WindowsToolbox.Modules.NetworkTraffic/ # 独立网络流量模块
+│     ├─ Models/
+│     ├─ Services/
 │     ├─ ViewModels/
 │     └─ Views/
 │  ├─ tests/WindowsToolbox.Tests/
@@ -200,6 +216,16 @@ moduleRegistry.Register(new ClipboardModule());
 
 这些状态文件不改变 Windows 的关机机制。实际计划仍由系统自带的 `shutdown.exe` 管理。
 
+网络流量“今天”汇总仅保存于：
+
+```text
+%LocalAppData%\WindowsToolbox\NetworkTraffic\daily-traffic.json
+```
+
+文件仅保存应用标识、应用名、必要路径哈希、日期及上传/下载总字节数；不保存地址、域名、URL、数据包或通信正文。
+
+用户在设置页主动启用“随 Windows 启动后台监控”后，程序才会在当前用户的 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` 增加 `WindowsToolbox.NetworkTraffic` 启动项；关闭该选项并保存会删除该项。默认不创建启动项。
+
 ## 编译与测试
 
 ```powershell
@@ -228,7 +254,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
   -p:DebugSymbols=false `
-  --output artifacts/release/v1.1.1/WindowsToolbox-win-x64
+  --output artifacts/release/v1.2.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。
@@ -237,7 +263,8 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 
 - 完全离线运行，不收集或上传数据
 - 已安装软件列表和目录大小缓存只保存在本机，不会上传
-- 不请求管理员权限
+- 主程序不请求管理员权限；网络流量高级 ETW 采集仅在用户明确启动时以命名管道辅助模式按需提升
+- 网络流量模块只处理时间、PID、协议、字节数和端点等统计元数据，不抓取数据包正文、不解密 HTTPS、不读取 Cookie、密码或网页内容
 - 不修改 Windows 安全或关键系统设置
 - `shutdown.exe` 参数由程序内部生成，不接收任意命令文本
 - 应用管理只调用软件自身登记的卸载程序，不直接删除目录或注册表残留
@@ -254,6 +281,8 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 - 应用管理 v1.1.0 以传统桌面软件注册表数据为可靠基础；Microsoft Store / MSIX 枚举和 WinGet 精确匹配尚未启用。
 - 部分软件没有登记安装位置、大小或可靠卸载命令，此时对应信息显示为“未知”，相关操作会被禁用。
 - 应用图标目前使用统一的 Fluent 默认图标，避免启动时一次性加载大量高分辨率资源。
+- 网络流量的 ETW 应用归因依赖 Windows 提供的 Kernel Network 事件；透明 WFP/NDIS 重定向若无法可靠归因，会显示“未知”而不会猜测。当前不包含驱动、WFP Callout、VPN/代理配置或网络拦截功能。
+- 网络接口实时统计使用 Windows IP Helper/网络接口信息；应用流量与接口流量是独立概念，不能相加。真实 VPN 或本地代理环境仅在系统已存在时可验证，项目不会安装第三方 VPN/代理。
 - 未购买商业代码签名证书，发布的 EXE 为未签名程序。
 
 ## 后续规划

@@ -3,6 +3,7 @@ using WindowsToolbox.Core.Commands;
 using WindowsToolbox.Core.Interfaces;
 using WindowsToolbox.Core.Models;
 using WindowsToolbox.Core.Utilities;
+using WindowsToolbox.App.Services;
 
 namespace WindowsToolbox.App.ViewModels;
 
@@ -13,16 +14,19 @@ public sealed class SettingsViewModel : ObservableObject
 {
     private readonly ISettingsService _settingsService;
     private readonly IThemeService _themeService;
+    private readonly WindowsStartupRegistrationService _startupRegistrationService;
     private ThemeOption _selectedTheme;
     private StartupOption _selectedStartupPage;
 
     public SettingsViewModel(
         ISettingsService settingsService,
         IThemeService themeService,
-        IModuleRegistry moduleRegistry)
+        IModuleRegistry moduleRegistry,
+        WindowsStartupRegistrationService startupRegistrationService)
     {
         _settingsService = settingsService;
         _themeService = themeService;
+        _startupRegistrationService = startupRegistrationService;
 
         ThemeOptions =
         [
@@ -94,6 +98,42 @@ public sealed class SettingsViewModel : ObservableObject
         }
     }
 
+    public bool NetworkTrafficAutoStart
+    {
+        get => _settingsService.Settings.NetworkTrafficAutoStart;
+        set
+        {
+            if (_settingsService.Settings.NetworkTrafficAutoStart == value)
+                return;
+            _settingsService.Settings.NetworkTrafficAutoStart = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool NetworkTrafficContinueInBackground
+    {
+        get => _settingsService.Settings.NetworkTrafficContinueInBackground;
+        set
+        {
+            if (_settingsService.Settings.NetworkTrafficContinueInBackground == value)
+                return;
+            _settingsService.Settings.NetworkTrafficContinueInBackground = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool NetworkTrafficStartWithWindows
+    {
+        get => _settingsService.Settings.NetworkTrafficStartWithWindows;
+        set
+        {
+            if (_settingsService.Settings.NetworkTrafficStartWithWindows == value)
+                return;
+            _settingsService.Settings.NetworkTrafficStartWithWindows = value;
+            OnPropertyChanged();
+        }
+    }
+
     public string SaveStatus { get; private set; } = string.Empty;
     public AsyncRelayCommand SaveCommand { get; }
 
@@ -102,11 +142,13 @@ public sealed class SettingsViewModel : ObservableObject
         try
         {
             await _settingsService.SaveAsync();
+            _startupRegistrationService.Apply(NetworkTrafficStartWithWindows);
             SaveStatus = "设置已保存";
         }
         catch (Exception exception) when (
-            exception is IOException ||
-            exception is UnauthorizedAccessException)
+            exception is IOException or
+            UnauthorizedAccessException or
+            InvalidOperationException)
         {
             SaveStatus = "无法保存设置，请检查用户目录权限。";
         }

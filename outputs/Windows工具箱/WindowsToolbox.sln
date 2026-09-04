@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C23875AE-CE3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.InstalledApps", "src\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj", "{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.NetworkTraffic", "src\WindowsToolbox.Modules.NetworkTraffic\WindowsToolbox.Modules.NetworkTraffic.csproj", "{A9D917AC-2272-48C7-BB09-8303AD771AD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,8 +42,13 @@ Global
 		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9D917AC-2272-48C7-BB09-8303AD771AD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9D917AC-2272-48C7-BB09-8303AD771AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9D917AC-2272-48C7-BB09-8303AD771AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9D917AC-2272-48C7-BB09-8303AD771AD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
+		{A9D917AC-2272-48C7-BB09-8303AD771AD4} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 	EndGlobalSection
 EndGlobal
