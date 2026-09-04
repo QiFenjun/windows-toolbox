@@ -12,9 +12,15 @@
                     <Grid Background="{TemplateBinding Background}">
                         <Track x:Name="PART_Track"
                                IsDirectionReversed="False"
+                               Minimum="{TemplateBinding Minimum}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Value="{TemplateBinding Value}"
+                               ViewportSize="{TemplateBinding ViewportSize}"
+                               Orientation="{TemplateBinding Orientation}"
                                Focusable="False">
                             <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="{x:Static ScrollBar.LineUpCommand}"
+                                <RepeatButton x:Name="DecreaseButton"
+                                              Command="{x:Static ScrollBar.LineUpCommand}"
                                               CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                               Focusable="False"
                                               Opacity="0"
@@ -36,7 +42,8 @@
                                 </Thumb>
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="{x:Static ScrollBar.LineDownCommand}"
+                                <RepeatButton x:Name="IncreaseButton"
+                                              Command="{x:Static ScrollBar.LineDownCommand}"
                                               CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                               Focusable="False"
                                               Opacity="0"
@@ -49,6 +56,8 @@
                             <Setter Property="Height" Value="12"/>
                             <Setter Property="Width" Value="Auto"/>
                             <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
+                            <Setter TargetName="DecreaseButton" Property="Command" Value="{x:Static ScrollBar.LineLeftCommand}"/>
+                            <Setter TargetName="IncreaseButton" Property="Command" Value="{x:Static ScrollBar.LineRightCommand}"/>
                         </Trigger>
                         <Trigger Property="Orientation" Value="Vertical">
                             <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="True"/>
