@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.Netw
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.ClipboardPlus", "src\WindowsToolbox.Modules.ClipboardPlus\WindowsToolbox.Modules.ClipboardPlus.csproj", "{0B73E7C7-6B74-4783-8DF5-81AA222823AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.TextTools", "src\WindowsToolbox.Modules.TextTools\WindowsToolbox.Modules.TextTools.csproj", "{06DC477F-4A23-4004-B5D4-F0E5CF22AC2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,10 +54,15 @@ Global
 		{0B73E7C7-6B74-4783-8DF5-81AA222823AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B73E7C7-6B74-4783-8DF5-81AA222823AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B73E7C7-6B74-4783-8DF5-81AA222823AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06DC477F-4A23-4004-B5D4-F0E5CF22AC2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06DC477F-4A23-4004-B5D4-F0E5CF22AC2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06DC477F-4A23-4004-B5D4-F0E5CF22AC2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06DC477F-4A23-4004-B5D4-F0E5CF22AC2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 		{A9D917AC-2272-48C7-BB09-8303AD771AD4} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 		{0B73E7C7-6B74-4783-8DF5-81AA222823AF} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
+		{06DC477F-4A23-4004-B5D4-F0E5CF22AC2F} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 	EndGlobalSection
 EndGlobal

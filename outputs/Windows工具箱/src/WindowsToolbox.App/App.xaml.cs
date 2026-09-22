@@ -10,6 +10,7 @@ using WindowsToolbox.Modules.NetworkTraffic.ViewModels;
 using WindowsToolbox.Modules.Shutdown;
 using WindowsToolbox.Modules.Shutdown.Services;
 using WindowsToolbox.Modules.ClipboardPlus;
+using WindowsToolbox.Modules.TextTools;
 using Forms = System.Windows.Forms;
 
 namespace WindowsToolbox.App;
@@ -46,6 +47,7 @@ public partial class App : System.Windows.Application
         moduleRegistry.Register(new ShutdownModule(shutdownService, settingsService));
         moduleRegistry.Register(new InstalledAppsModule());
         moduleRegistry.Register(clipboardPlusModule);
+        moduleRegistry.Register(new TextToolsModule());
         NetworkTrafficModule networkTrafficModule = new(settingsService);
         moduleRegistry.Register(networkTrafficModule);
         foreach (IToolModule module in moduleRegistry.Modules)

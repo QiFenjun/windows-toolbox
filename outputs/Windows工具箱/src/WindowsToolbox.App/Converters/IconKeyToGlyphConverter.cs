@@ -19,6 +19,7 @@ public sealed class IconKeyToGlyphConverter : IValueConverter
             ["Toolbox"] = "\uE90F",
             ["Recent"] = "\uE823",
             ["Apps"] = "\uE74C",
+            ["Edit"] = "\uE70F",
             ["Network"] = "\uE774"
         };
 

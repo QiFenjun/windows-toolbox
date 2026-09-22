@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.3.0`
+当前版本：`v1.4.0`
 
 ## 当前模块
 
@@ -50,6 +50,13 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 只保存纯文本，单条上限 256 KiB；源进程路径优先使用剪贴板 owner window 解析，无法可靠获取时显示“未知来源”
 - 支持按进程名或可执行文件路径排除应用；官方剪贴板隐私元数据在系统不可可靠提供时不作猜测
 
+### Text Tools
+
+- 独立的离线文本处理模块，不保存输入、输出或剪贴板内容
+- 支持大小写、空白、行处理、查找替换、JSON、URL、Base64、Unicode 转义和统计
+- 输入与输出分离，支持复制输出、替换输入、清空和一次性粘贴
+- 小文本 180ms 防抖实时处理；超过 1 MiB 自动切换为手动处理，避免界面卡顿
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -72,7 +79,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.3.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.4.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -133,6 +140,11 @@ windows-toolbox/
 │     ├─ ViewModels/
 │     └─ Views/
 │  └─ WindowsToolbox.Modules.NetworkTraffic/ # 独立网络流量模块
+│     ├─ Models/
+│     ├─ Services/
+│     ├─ ViewModels/
+│     └─ Views/
+│  └─ WindowsToolbox.Modules.TextTools/      # Text Tools 文本效率模块
 │     ├─ Models/
 │     ├─ Services/
 │     ├─ ViewModels/
@@ -276,7 +288,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
   -p:DebugSymbols=false `
-  --output artifacts/release/v1.2.4/WindowsToolbox-win-x64
+    --output artifacts/release/v1.4.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。

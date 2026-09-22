@@ -14,6 +14,7 @@
     <ProjectReference Include="..\WindowsToolbox.Modules.NetworkTraffic\WindowsToolbox.Modules.NetworkTraffic.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.ClipboardPlus\WindowsToolbox.Modules.ClipboardPlus.csproj" />
+    <ProjectReference Include="..\WindowsToolbox.Modules.TextTools\WindowsToolbox.Modules.TextTools.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Remove="System.Drawing" />
