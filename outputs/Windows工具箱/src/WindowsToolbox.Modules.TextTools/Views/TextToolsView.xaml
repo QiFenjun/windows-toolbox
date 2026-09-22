@@ -95,7 +95,8 @@
                                     <TextBlock Text="输出" Style="{DynamicResource SectionTitleStyle}"/>
                                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                                         <Button Content="复制" Command="{Binding CopyOutputCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,6,0"/>
-                                        <Button Content="替换输入" Command="{Binding ReplaceInputCommand}" Style="{DynamicResource SecondaryButtonStyle}"/>
+                                        <Button Content="替换输入" Command="{Binding ReplaceInputCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,6,0"/>
+                                        <Button Content="交换" Command="{Binding SwapCommand}" Style="{DynamicResource SecondaryButtonStyle}"/>
                                     </StackPanel>
                                 </DockPanel>
                                 <TextBox Text="{Binding OutputText, Mode=OneWay}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
