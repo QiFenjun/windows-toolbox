@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.4.0`
+当前版本：`v1.5.0`
 
 ## 当前模块
 
@@ -57,6 +57,17 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 输入与输出分离，支持复制输出、替换输入、清空和一次性粘贴
 - 小文本 180ms 防抖实时处理；超过 1 MiB 自动切换为手动处理，避免界面卡顿
 
+### File Tools
+
+- 独立的本地文件处理模块，不上传文件、Hash 或路径
+- 批量重命名：前缀、后缀、查找替换、编号、大小写和扩展名变更
+- 重命名始终先生成 Preview，检查非法名称、设备名、冲突、缺失文件和循环后才允许应用
+- 使用同目录临时名称处理 A↔B 和 A→B→C→A，失败时尽力回滚；支持本次运行内撤销
+- 支持 SHA-256、SHA-512、MD5 兼容性校验、流式进度、取消、Expected Hash 和 SHA256SUMS 生成
+- 支持完整路径、文件名、Stem、扩展名、父目录、正斜杠、PowerShell LiteralPath 和 File URI 转换
+- 支持文件/文件夹基础信息和可取消的文件夹大小扫描，默认跳过 Junction、Symbolic Link 等 Reparse Point
+- 支持资源管理器文件拖放，使用虚拟化 DataGrid 展示大量条目
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -79,7 +90,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.4.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.5.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -145,6 +156,11 @@ windows-toolbox/
 │     ├─ ViewModels/
 │     └─ Views/
 │  └─ WindowsToolbox.Modules.TextTools/      # Text Tools 文本效率模块
+│     ├─ Models/
+│     ├─ Services/
+│     ├─ ViewModels/
+│     └─ Views/
+│  └─ WindowsToolbox.Modules.FileTools/      # File Tools 文件效率模块
 │     ├─ Models/
 │     ├─ Services/
 │     ├─ ViewModels/
@@ -288,7 +304,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
   -p:DebugSymbols=false `
-    --output artifacts/release/v1.4.0/WindowsToolbox-win-x64
+    --output artifacts/release/v1.5.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。

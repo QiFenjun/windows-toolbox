@@ -15,6 +15,7 @@
     <ProjectReference Include="..\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.ClipboardPlus\WindowsToolbox.Modules.ClipboardPlus.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.TextTools\WindowsToolbox.Modules.TextTools.csproj" />
+    <ProjectReference Include="..\WindowsToolbox.Modules.FileTools\WindowsToolbox.Modules.FileTools.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Remove="System.Drawing" />

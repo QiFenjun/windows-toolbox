@@ -11,6 +11,7 @@ using WindowsToolbox.Modules.Shutdown;
 using WindowsToolbox.Modules.Shutdown.Services;
 using WindowsToolbox.Modules.ClipboardPlus;
 using WindowsToolbox.Modules.TextTools;
+using WindowsToolbox.Modules.FileTools;
 using Forms = System.Windows.Forms;
 
 namespace WindowsToolbox.App;
@@ -48,6 +49,7 @@ public partial class App : System.Windows.Application
         moduleRegistry.Register(new InstalledAppsModule());
         moduleRegistry.Register(clipboardPlusModule);
         moduleRegistry.Register(new TextToolsModule());
+        moduleRegistry.Register(new FileToolsModule());
         NetworkTrafficModule networkTrafficModule = new(settingsService);
         moduleRegistry.Register(networkTrafficModule);
         foreach (IToolModule module in moduleRegistry.Modules)

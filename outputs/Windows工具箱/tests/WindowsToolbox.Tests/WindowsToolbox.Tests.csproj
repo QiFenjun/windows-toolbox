@@ -17,5 +17,6 @@
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.ClipboardPlus\WindowsToolbox.Modules.ClipboardPlus.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.TextTools\WindowsToolbox.Modules.TextTools.csproj" />
+    <ProjectReference Include="..\..\src\WindowsToolbox.Modules.FileTools\WindowsToolbox.Modules.FileTools.csproj" />
   </ItemGroup>
 </Project>

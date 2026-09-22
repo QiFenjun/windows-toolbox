@@ -7,7 +7,9 @@
              xmlns:clipboardViews="clr-namespace:WindowsToolbox.Modules.ClipboardPlus.Views;assembly=WindowsToolbox.Modules.ClipboardPlus"
              xmlns:clipboardViewModels="clr-namespace:WindowsToolbox.Modules.ClipboardPlus.ViewModels;assembly=WindowsToolbox.Modules.ClipboardPlus"
              xmlns:textToolsViews="clr-namespace:WindowsToolbox.Modules.TextTools.Views;assembly=WindowsToolbox.Modules.TextTools"
-             xmlns:textToolsViewModels="clr-namespace:WindowsToolbox.Modules.TextTools.ViewModels;assembly=WindowsToolbox.Modules.TextTools">
+             xmlns:textToolsViewModels="clr-namespace:WindowsToolbox.Modules.TextTools.ViewModels;assembly=WindowsToolbox.Modules.TextTools"
+             xmlns:fileToolsViews="clr-namespace:WindowsToolbox.Modules.FileTools.Views;assembly=WindowsToolbox.Modules.FileTools"
+             xmlns:fileToolsViewModels="clr-namespace:WindowsToolbox.Modules.FileTools.ViewModels;assembly=WindowsToolbox.Modules.FileTools">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -68,6 +70,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type textToolsViewModels:TextToolsViewModel}">
                 <textToolsViews:TextToolsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type fileToolsViewModels:FileToolsViewModel}">
+                <fileToolsViews:FileToolsView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
