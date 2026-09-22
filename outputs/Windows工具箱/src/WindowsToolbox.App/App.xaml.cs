@@ -14,6 +14,8 @@ using WindowsToolbox.Modules.TextTools;
 using WindowsToolbox.Modules.FileTools;
 using WindowsToolbox.Modules.QuickLaunch;
 using WindowsToolbox.Modules.WindowTools;
+using WindowsToolbox.Modules.LockInspector;
+using WindowsToolbox.Modules.KeepAwake;
 using Forms = System.Windows.Forms;
 
 namespace WindowsToolbox.App;
@@ -22,6 +24,8 @@ public partial class App : System.Windows.Application
 {
     private Forms.NotifyIcon? _trayIcon;
     private QuickLaunchModule? _quickLaunchModule;
+    private LockInspectorModule? _lockInspectorModule;
+    private KeepAwakeModule? _keepAwakeModule;
     private bool _isExplicitExit;
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -57,6 +61,10 @@ public partial class App : System.Windows.Application
         _quickLaunchModule = quickLaunchModule;
         moduleRegistry.Register(quickLaunchModule);
         moduleRegistry.Register(new WindowToolsModule());
+        _lockInspectorModule = new LockInspectorModule();
+        moduleRegistry.Register(_lockInspectorModule);
+        _keepAwakeModule = new KeepAwakeModule(settingsService);
+        moduleRegistry.Register(_keepAwakeModule);
         NetworkTrafficModule networkTrafficModule = new(settingsService);
         moduleRegistry.Register(networkTrafficModule);
         foreach (IToolModule module in moduleRegistry.Modules)
@@ -89,7 +97,8 @@ public partial class App : System.Windows.Application
             bool keepNetwork = settingsService.Settings.NetworkTrafficContinueInBackground &&
                 networkTrafficModule.CurrentViewModel?.IsMonitoring == true;
             bool keepClipboard = clipboardPlusModule.CurrentViewModel?.IsActiveInBackground == true;
-            if (_isExplicitExit || (!keepNetwork && !keepClipboard))
+            bool keepAwake = _keepAwakeModule.KeepInTray;
+            if (_isExplicitExit || (!keepNetwork && !keepClipboard && !keepAwake))
                 return;
 
             closingEventArgs.Cancel = true;
@@ -120,6 +129,8 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _keepAwakeModule?.Dispose();
+        _lockInspectorModule?.Dispose();
         _quickLaunchModule?.Dispose();
         _trayIcon?.Dispose();
         _trayIcon = null;
@@ -140,6 +151,8 @@ public partial class App : System.Windows.Application
         menu.Items.Add("退出 Windows工具箱", null, async (_, _) =>
         {
             _isExplicitExit = true;
+            if (_keepAwakeModule is not null)
+                await _keepAwakeModule.Service.StopAsync();
             if (networkTrafficModule.CurrentViewModel is not null)
                 await networkTrafficModule.CurrentViewModel.StopAsyncForExitAsync();
             clipboardPlusModule.CurrentViewModel?.StopForExit();
@@ -150,7 +163,7 @@ public partial class App : System.Windows.Application
         _trayIcon = new Forms.NotifyIcon
         {
             Icon = System.Drawing.SystemIcons.Application,
-            Text = "Windows 工具箱正在后台监控网络流量",
+            Text = "Windows 工具箱正在后台运行",
             ContextMenuStrip = menu,
             Visible = true
         };

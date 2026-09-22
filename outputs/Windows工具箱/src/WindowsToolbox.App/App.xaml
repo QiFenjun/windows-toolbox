@@ -13,7 +13,11 @@
              xmlns:quickLaunchViews="clr-namespace:WindowsToolbox.Modules.QuickLaunch.Views;assembly=WindowsToolbox.Modules.QuickLaunch"
              xmlns:quickLaunchViewModels="clr-namespace:WindowsToolbox.Modules.QuickLaunch.ViewModels;assembly=WindowsToolbox.Modules.QuickLaunch"
              xmlns:windowToolsViews="clr-namespace:WindowsToolbox.Modules.WindowTools.Views;assembly=WindowsToolbox.Modules.WindowTools"
-             xmlns:windowToolsViewModels="clr-namespace:WindowsToolbox.Modules.WindowTools.ViewModels;assembly=WindowsToolbox.Modules.WindowTools">
+             xmlns:windowToolsViewModels="clr-namespace:WindowsToolbox.Modules.WindowTools.ViewModels;assembly=WindowsToolbox.Modules.WindowTools"
+             xmlns:lockViews="clr-namespace:WindowsToolbox.Modules.LockInspector.Views;assembly=WindowsToolbox.Modules.LockInspector"
+             xmlns:lockViewModels="clr-namespace:WindowsToolbox.Modules.LockInspector.ViewModels;assembly=WindowsToolbox.Modules.LockInspector"
+             xmlns:awakeViews="clr-namespace:WindowsToolbox.Modules.KeepAwake.Views;assembly=WindowsToolbox.Modules.KeepAwake"
+             xmlns:awakeViewModels="clr-namespace:WindowsToolbox.Modules.KeepAwake.ViewModels;assembly=WindowsToolbox.Modules.KeepAwake">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -83,6 +87,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type windowToolsViewModels:WindowToolsViewModel}">
                 <windowToolsViews:WindowToolsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lockViewModels:LockInspectorViewModel}">
+                <lockViews:LockInspectorView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type awakeViewModels:KeepAwakeViewModel}">
+                <awakeViews:KeepAwakeView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

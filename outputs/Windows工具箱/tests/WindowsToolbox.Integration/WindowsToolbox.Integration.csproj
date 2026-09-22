@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\WindowsToolbox.App\WindowsToolbox.App.csproj" />
+    <ProjectReference Include="..\..\src\WindowsToolbox.Modules.KeepAwake\WindowsToolbox.Modules.KeepAwake.csproj" />
+    <ProjectReference Include="..\..\src\WindowsToolbox.Modules.LockInspector\WindowsToolbox.Modules.LockInspector.csproj" />
+  </ItemGroup>
+</Project>

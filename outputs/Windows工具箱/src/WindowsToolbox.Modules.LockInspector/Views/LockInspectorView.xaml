@@ -1,0 +1,62 @@
+<UserControl x:Class="WindowsToolbox.Modules.LockInspector.Views.LockInspectorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:WindowsToolbox.Modules.LockInspector.ViewModels"
+             AllowDrop="True" PreviewDragOver="OnDragOver" Drop="OnDrop">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24">
+            <Border Style="{DynamicResource CardStyle}" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="占用检测 / Lock Inspector" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="{x:Static vm:LockInspectorViewModel.Boundaries}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,8,0,12"/>
+                    <WrapPanel IsEnabled="{Binding CanSelect}">
+                        <Button Content="选择文件 / Files" Click="ChooseFiles" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                        <Button Content="选择文件夹 / Folder" Click="ChooseFolder" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                        <ComboBox ItemsSource="{Binding Drives}" SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="Label" Width="180" Style="{DynamicResource ModernComboBoxStyle}" ToolTip="就绪的本地驱动器 / Ready local drives" AutomationProperties.Name="Drive" Margin="0,0,8,8"/>
+                        <Button Content="扫描驱动器 / Drive" Click="ChooseDrive" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                    </WrapPanel>
+                    <CheckBox Content="完整递归扫描 / Full recursive scan（上限 20,000；默认当前目录 5,000）" IsChecked="{Binding Recursive}" IsEnabled="{Binding CanSelect}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+                    <TextBlock Text="{Binding ModeText}" Style="{DynamicResource SecondaryTextStyle}"/>
+                    <TextBlock Text="{Binding TargetText}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" MaxHeight="90" Margin="0,4,0,8"/>
+                    <WrapPanel>
+                        <Button Content="重新扫描 / Rescan" Click="Rescan" IsEnabled="{Binding CanRescan}" Style="{DynamicResource PrimaryButtonStyle}" Margin="0,0,8,0"/>
+                        <Button Content="取消扫描 / Cancel" Click="Cancel" IsEnabled="{Binding IsScanning}" Style="{DynamicResource SecondaryButtonStyle}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+            <Border Style="{DynamicResource CardStyle}" Padding="16" Margin="0,12,0,12">
+                <StackPanel>
+                    <TextBlock Text="{Binding Status}" Style="{DynamicResource SecondaryTextStyle}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
+                    <TextBlock Text="{Binding ProgressText}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                    <ProgressBar IsIndeterminate="{Binding IsScanning}" Height="3" Margin="0,8,0,0" AutomationProperties.Name="Scan progress"/>
+                </StackPanel>
+            </Border>
+            <DataGrid ItemsSource="{Binding Blockers}" SelectedItem="{Binding Selected}" SelectionChanged="SelectionChanged"
+                      IsReadOnly="True" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single"
+                      Height="230" EnableRowVirtualization="True" AutomationProperties.Name="Blocking processes">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="应用 / Application" Binding="{Binding ApplicationName}" Width="2*" MinWidth="220"/>
+                    <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" Width="80"/>
+                    <DataGridTextColumn Header="类型 / Type" Binding="{Binding ApplicationType}" Width="*" MinWidth="120"/>
+                    <DataGridTextColumn Header="服务 / Service" Binding="{Binding ServiceShortName}" Width="*" MinWidth="180"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Border Style="{DynamicResource CardStyle}" Padding="16" Margin="0,12,0,0">
+                <StackPanel>
+                    <DockPanel>
+                        <Grid Width="32" Height="32" Margin="0,0,12,0" DockPanel.Dock="Left">
+                            <TextBlock Text="&#xE7C3;" Style="{DynamicResource FluentIconStyle}" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
+                            <Image x:Name="SelectedIcon" Stretch="Uniform"/>
+                        </Grid>
+                        <TextBlock Text="{Binding Selected.InfoText}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <WrapPanel Margin="0,12,0,0">
+                        <Button Content="复制信息 / Copy info" Click="Copy" IsEnabled="{Binding CanCopy}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                        <Button Content="打开所在位置 / Open location" Click="OpenLocation" IsEnabled="{Binding CanOpenLocation}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                        <Button Content="任务管理器 / Task Manager" Click="TaskManager" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

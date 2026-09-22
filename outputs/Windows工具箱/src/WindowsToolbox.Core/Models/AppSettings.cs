@@ -25,6 +25,8 @@ public sealed class AppSettings
     public int ClipboardPlusRetentionDays { get; set; } = 30;
     public bool ClipboardPlusHotkeyEnabled { get; set; } = true;
     public bool QuickLaunchHotkeyEnabled { get; set; } = true;
+    public int KeepAwakeLastMode { get; set; }
+    public int KeepAwakeLastDurationMinutes { get; set; } = 30;
     public List<string> ClipboardPlusExcludedPaths { get; set; } = [];
     public List<string> ClipboardPlusExcludedProcessNames { get; set; } = [];
 }

@@ -9,6 +9,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WindowsToolbox.Modules.KeepAwake\WindowsToolbox.Modules.KeepAwake.csproj" />
+    <ProjectReference Include="..\WindowsToolbox.Modules.LockInspector\WindowsToolbox.Modules.LockInspector.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Core\WindowsToolbox.Core.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.NetworkTraffic\WindowsToolbox.Modules.NetworkTraffic.csproj" />

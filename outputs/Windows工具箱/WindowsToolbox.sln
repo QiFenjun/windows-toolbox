@@ -26,6 +26,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.Quic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.WindowTools", "src\WindowsToolbox.Modules.WindowTools\WindowsToolbox.Modules.WindowTools.csproj", "{E1C4B9D2-0A6E-4A89-9C14-7B3F2D1E5A90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.LockInspector", "src\WindowsToolbox.Modules.LockInspector\WindowsToolbox.Modules.LockInspector.csproj", "{EEB92812-0AA1-4FD5-923C-EDCE50713306}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BDFDC193-ED5E-4F7E-9E63-BD186028E3A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Integration", "tests\WindowsToolbox.Integration\WindowsToolbox.Integration.csproj", "{D95CC3EE-E919-47F6-B8CB-6506EA8D8AF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsToolbox.Modules.KeepAwake", "src\WindowsToolbox.Modules.KeepAwake\WindowsToolbox.Modules.KeepAwake.csproj", "{C90E51BA-A559-4BCB-AC93-D7C943F48A4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +84,18 @@ Global
 		{E1C4B9D2-0A6E-4A89-9C14-7B3F2D1E5A90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1C4B9D2-0A6E-4A89-9C14-7B3F2D1E5A90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1C4B9D2-0A6E-4A89-9C14-7B3F2D1E5A90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEB92812-0AA1-4FD5-923C-EDCE50713306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEB92812-0AA1-4FD5-923C-EDCE50713306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEB92812-0AA1-4FD5-923C-EDCE50713306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEB92812-0AA1-4FD5-923C-EDCE50713306}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D95CC3EE-E919-47F6-B8CB-6506EA8D8AF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D95CC3EE-E919-47F6-B8CB-6506EA8D8AF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D95CC3EE-E919-47F6-B8CB-6506EA8D8AF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D95CC3EE-E919-47F6-B8CB-6506EA8D8AF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C90E51BA-A559-4BCB-AC93-D7C943F48A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C90E51BA-A559-4BCB-AC93-D7C943F48A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C90E51BA-A559-4BCB-AC93-D7C943F48A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C90E51BA-A559-4BCB-AC93-D7C943F48A4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F8FD17AF-1470-4CD3-AB9B-8054109A4B20} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
@@ -85,5 +105,8 @@ Global
 		{F7F6E5E4-D3C2-4B1A-9A88-0F4C3B2D1E70} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 		{D8E7F6A5-B4C3-4D2E-9F80-1A2B3C4D5E60} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 		{E1C4B9D2-0A6E-4A89-9C14-7B3F2D1E5A90} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
+		{EEB92812-0AA1-4FD5-923C-EDCE50713306} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
+		{D95CC3EE-E919-47F6-B8CB-6506EA8D8AF4} = {BDFDC193-ED5E-4F7E-9E63-BD186028E3A1}
+		{C90E51BA-A559-4BCB-AC93-D7C943F48A4C} = {C23875AE-CE3B-4FB5-9074-DC6EDCAF9556}
 	EndGlobalSection
 EndGlobal

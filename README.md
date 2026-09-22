@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.7.0`
+当前版本：`v1.8.0`
 
 ## 当前模块
 
@@ -18,6 +18,8 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 | 效率工具 / Productivity Tools | 文件工具 | File Tools | `file-tools` |
 | 效率工具 / Productivity Tools | 快捷启动 | Quick Launch | `quick-launch` |
 | 效率工具 / Productivity Tools | 窗口工具 | Window Tools | `window-tools` |
+| 效率工具 / Productivity Tools | 占用检测 | Lock Inspector | `lock-inspector` |
+| 效率工具 / Productivity Tools | 保持唤醒 | Keep Awake | `keep-awake` |
 
 ### 定时关机
 
@@ -98,6 +100,27 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 对最小化或最大化窗口先还原再调整；跨显示器移动后保持尺寸并在目标工作区居中，过大时安全限制
 - 过滤 Desktop、WorkerW、任务栏等关键 Shell 窗口；不读取窗口内容、不注入、不提权、不修改 Snap 设置
 
+### 占用检测 / Lock Inspector
+
+- 使用 Windows Restart Manager 检查单个/多个文件被哪些应用或服务使用，支持选择文件、文件夹、就绪本地驱动器及 Explorer 文件拖放
+- 文件夹和驱动器采用 best-effort 流式文件枚举：默认只扫当前目录，最多 5,000 个文件；用户选择完整递归扫描后最多 20,000 个文件，另有 64 层/20,000 目录安全边界
+- 每 256 个文件独立建立/清理 RM 会话，支持取消、已处理计数、跳过/上限提示；取消在当前原生 API 返回后生效
+- 跳过重解析点、不可访问或已消失的条目；长路径单独查询，避免影响普通文件。实测本机 396 字符路径被 RM 拒绝（错误 29），界面明确报告无法检查，不当作“没有占用”
+- 以 PID + 启动 FILETIME 聚合，保留应用/服务名称、类型、状态、会话和可重启元数据；可复制信息、打开程序所在位置、打开任务管理器。路径不可读或身份已变化时不打开位置
+- 多文件结果表示进程与已扫描资源集合相关，不声称知道精确文件映射或锁定文件数
+- 仅诊断，不结束进程、不关闭远程句柄、不提权、不执行设备弹出；没有后台自动刷新、最近目标或扫描历史持久化，不读取文件内容，不记录路径或进程列表日志
+- **能力边界：** Restart Manager 以注册文件资源为基础。文件夹/驱动器扫描无法保证识别仅占用目录、卷、设备或驱动程序句柄的情况；零结果不能证明设备可安全拔出。UNC 单文件可尝试，网络目录递归扫描暂不支持。Fixed 驱动器也可能是外置 USB 设备，界面仅按 Windows 报告类型标注
+
+### 保持唤醒 / Keep Awake
+
+- 明确选择“保持电脑唤醒”或“保持电脑和屏幕唤醒”；默认仅请求系统唤醒，不默认让屏幕常亮
+- 支持 15/30 分钟、1/2/4 小时及直到手动停止，显示剩余时间，停止无需确认
+- 仅使用 `SetThreadExecutionState`：稳定 MTA 工作线程设置 `ES_CONTINUOUS | ES_SYSTEM_REQUIRED`，显示器模式再加 `ES_DISPLAY_REQUIRED`；同一线程在停止、到期和真正退出时以 `ES_CONTINUOUS` 释放并退出
+- 时长由单调时钟计算，系统时间变化不会改变持续时间。视图每秒更新显示，不重复调用 Windows 电源 API；页面卸载不影响请求
+- 启用时关闭窗口会进入托盘继续运行；真正退出应用释放请求。仅保存上次模式/时长，每次启动默认 Inactive，Windows 启动项也不会自动开启保持唤醒
+- 不修改电源计划、注册表、超时或策略，不模拟鼠标键盘、不创建服务/计划任务/独立常驻程序
+- **能力边界：** 这是临时请求 Windows 保持唤醒，不能阻止用户主动 Sleep/Hibernate/Shutdown、关键电源/电池或管理员策略；不阻止 Win+L 锁屏或绕过屏保认证。电池供电时会增加耗电
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -120,7 +143,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.7.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.8.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -208,6 +231,9 @@ windows-toolbox/
 │     ├─ ViewModels/
 │     └─ Views/
 │  ├─ tests/WindowsToolbox.Tests/
+│  ├─ src/WindowsToolbox.Modules.LockInspector/ # Restart Manager 诊断模块
+│  ├─ src/WindowsToolbox.Modules.KeepAwake/     # 临时电源请求模块
+│  ├─ tests/WindowsToolbox.Integration/    # 显式运行的本机验证，不由 dotnet test 执行
 │  ├─ legacy/WinForms-v1/                  # 原版源码备份；编译产物不入库
 │  ├─ scripts/
 │  └─ WindowsToolbox.sln
@@ -347,6 +373,18 @@ dotnet test WindowsToolbox.sln --configuration Release --no-build
 
 ## 打包
 
+v1.8.0 普通 `dotnet test` 使用 Fake Restart Manager/Fake execution-state，不扫描用户文件、不阻止电脑休眠。
+以下独立验证必须在本机按需显式运行（在 `outputs/Windows工具箱` 目录）：
+
+```powershell
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --restart-manager
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --keep-awake
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --stress
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --ui-smoke
+```
+
+RM 与压力测试只用自建临时夹具并清理；`--keep-awake` 仅短暂启用并立即在 finally 释放；`--stress` 使用 20k 空文件和 Fake RM，且测试夹具中的临时 ACL 必须恢复。离屏 UI 渲染输出到忽略提交的 `artifacts/ui-smoke`，不代替人工点击或硬件验收。详细结果见 [v1.8.0 验证记录](docs/v1.8.0-validation.md)。
+
 生成完全自包含的 Windows x64 单文件版本：
 
 ```powershell
@@ -358,7 +396,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
 -p:DebugSymbols=false `
-    --output artifacts/release/v1.7.0/WindowsToolbox-win-x64
+    --output artifacts/release/v1.8.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。
