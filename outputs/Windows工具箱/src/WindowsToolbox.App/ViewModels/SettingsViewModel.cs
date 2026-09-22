@@ -17,6 +17,7 @@ public sealed class SettingsViewModel : ObservableObject
     private readonly IThemeService _themeService;
     private readonly WindowsStartupRegistrationService _startupRegistrationService;
     private readonly IMotionService _motionService;
+    private readonly Action<bool>? _quickLaunchHotkeyChanged;
     private ThemeOption _selectedTheme;
     private StartupOption _selectedStartupPage;
     private MotionOption _selectedMotion;
@@ -26,12 +27,14 @@ public sealed class SettingsViewModel : ObservableObject
         IThemeService themeService,
         IModuleRegistry moduleRegistry,
         WindowsStartupRegistrationService startupRegistrationService,
-        IMotionService motionService)
+        IMotionService motionService,
+        Action<bool>? quickLaunchHotkeyChanged = null)
     {
         _settingsService = settingsService;
         _themeService = themeService;
         _startupRegistrationService = startupRegistrationService;
         _motionService = motionService;
+        _quickLaunchHotkeyChanged = quickLaunchHotkeyChanged;
 
         ThemeOptions =
         [
@@ -179,6 +182,18 @@ public sealed class SettingsViewModel : ObservableObject
         {
             if (_settingsService.Settings.ClipboardPlusHotkeyEnabled == value) return;
             _settingsService.Settings.ClipboardPlusHotkeyEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool QuickLaunchHotkeyEnabled
+    {
+        get => _settingsService.Settings.QuickLaunchHotkeyEnabled;
+        set
+        {
+            if (_settingsService.Settings.QuickLaunchHotkeyEnabled == value) return;
+            _settingsService.Settings.QuickLaunchHotkeyEnabled = value;
+            _quickLaunchHotkeyChanged?.Invoke(value);
             OnPropertyChanged();
         }
     }

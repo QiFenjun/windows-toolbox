@@ -9,9 +9,11 @@ public sealed class ClipboardPlusModule(ISettingsService settingsService) : IToo
     private ClipboardPlusViewModel? _viewModel;
 
     public string Id => "clipboard-plus";
-    public string DisplayName => "Clipboard+";
+    public string DisplayName => "剪贴板+";
+    public string EnglishName => "Clipboard+";
     public string Description => "剪贴板历史与快速复制";
     public string Category => "效率工具";
+    public string EnglishCategory => "Productivity Tools";
     public string IconKey => "Clipboard";
     public int SortOrder => 400;
     public bool IsAvailable => OperatingSystem.IsWindows();

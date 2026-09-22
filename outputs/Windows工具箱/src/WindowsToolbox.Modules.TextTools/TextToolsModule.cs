@@ -9,9 +9,11 @@ public sealed class TextToolsModule : IToolModule
     private TextToolsViewModel? _viewModel;
 
     public string Id => "text-tools";
-    public string DisplayName => "Text Tools";
+    public string DisplayName => "文本工具";
+    public string EnglishName => "Text Tools";
     public string Description => "文本转换与快速处理";
     public string Category => "效率工具";
+    public string EnglishCategory => "Productivity Tools";
     public string IconKey => "Edit";
     public int SortOrder => 450;
     public bool IsAvailable => OperatingSystem.IsWindows();

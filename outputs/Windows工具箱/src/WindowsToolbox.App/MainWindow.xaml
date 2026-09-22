@@ -89,9 +89,10 @@
                             <TextBlock Text="&#xE80F;"
                                        Style="{DynamicResource FluentIconStyle}"
                                        Foreground="{DynamicResource SecondaryTextBrush}"/>
-                            <TextBlock Grid.Column="1"
-                                       Text="首页"
-                                       Style="{DynamicResource NavTextStyle}"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="首页" Style="{DynamicResource NavTextStyle}"/>
+                                <TextBlock Text="Home" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                            </StackPanel>
                         </Grid>
                         <Button.Tag>
                             <Binding Path="CurrentPageId"
@@ -101,18 +102,24 @@
                     </Button>
 
                     <StackPanel Grid.Row="4">
-                        <TextBlock x:Name="SidebarCategoryLabel" Text="系统工具"
-                                   Style="{DynamicResource NavCategoryStyle}"
-                                   Margin="12,0,0,8"/>
+                        <StackPanel Orientation="Horizontal" Margin="12,0,0,8">
+                            <TextBlock x:Name="SidebarCategoryLabel" Text="系统工具" Style="{DynamicResource NavCategoryStyle}"/>
+                            <TextBlock Text="  System Tools" Style="{DynamicResource NavCategoryStyle}" Opacity="0.68"/>
+                        </StackPanel>
                         <ItemsControl ItemsSource="{Binding Modules}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             CommandParameter="{Binding Id}"
                                             Style="{DynamicResource SidebarNavButtonStyle}"
-                                            ToolTip="{Binding DisplayName}"
                                             Tag="{Binding IsSelected}"
                                             Margin="0,0,0,4">
+                                        <Button.ToolTip>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                                <TextBlock Text="{Binding EnglishName}" Opacity="0.7"/>
+                                            </StackPanel>
+                                        </Button.ToolTip>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="36"/>
@@ -121,26 +128,33 @@
                                             <TextBlock Text="{Binding IconKey, Converter={StaticResource IconKeyToGlyphConverter}}"
                                                        Style="{DynamicResource FluentIconStyle}"
                                                        Foreground="{Binding IsSelected, Converter={StaticResource SelectionToBrushConverter}}"/>
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding DisplayName}"
-                                                       Style="{DynamicResource NavTextStyle}"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource NavTextStyle}"/>
+                                                <TextBlock Text="{Binding EnglishName}" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                                            </StackPanel>
                                         </Grid>
                                     </Button>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Text="效率工具"
-                                   Style="{DynamicResource NavCategoryStyle}"
-                                   Margin="12,14,0,8"/>
+                        <StackPanel Orientation="Horizontal" Margin="12,14,0,8">
+                            <TextBlock Text="效率工具" Style="{DynamicResource NavCategoryStyle}"/>
+                            <TextBlock Text="  Productivity Tools" Style="{DynamicResource NavCategoryStyle}" Opacity="0.68"/>
+                        </StackPanel>
                         <ItemsControl ItemsSource="{Binding EfficiencyModules}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             CommandParameter="{Binding Id}"
                                             Style="{DynamicResource SidebarNavButtonStyle}"
-                                            ToolTip="{Binding DisplayName}"
                                             Tag="{Binding IsSelected}"
                                             Margin="0,0,0,4">
+                                        <Button.ToolTip>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                                <TextBlock Text="{Binding EnglishName}" Opacity="0.7"/>
+                                            </StackPanel>
+                                        </Button.ToolTip>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="36"/>
@@ -149,7 +163,10 @@
                                             <TextBlock Text="{Binding IconKey, Converter={StaticResource IconKeyToGlyphConverter}}"
                                                        Style="{DynamicResource FluentIconStyle}"
                                                        Foreground="{Binding IsSelected, Converter={StaticResource SelectionToBrushConverter}}"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding DisplayName}" Style="{DynamicResource NavTextStyle}"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource NavTextStyle}"/>
+                                                <TextBlock Text="{Binding EnglishName}" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                                            </StackPanel>
                                         </Grid>
                                     </Button>
                                 </DataTemplate>
@@ -169,7 +186,10 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="&#xE713;" Style="{DynamicResource FluentIconStyle}"/>
-                                <TextBlock Grid.Column="1" Text="设置" Style="{DynamicResource NavTextStyle}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="设置" Style="{DynamicResource NavTextStyle}"/>
+                                    <TextBlock Text="Settings" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                                </StackPanel>
                             </Grid>
                             <Button.Tag>
                                 <Binding Path="CurrentPageId"
@@ -188,7 +208,10 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="&#xE946;" Style="{DynamicResource FluentIconStyle}"/>
-                                <TextBlock Grid.Column="1" Text="关于" Style="{DynamicResource NavTextStyle}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="关于" Style="{DynamicResource NavTextStyle}"/>
+                                    <TextBlock Text="About" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                                </StackPanel>
                             </Grid>
                             <Button.Tag>
                                 <Binding Path="CurrentPageId"
@@ -205,7 +228,10 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="&#xE700;" Style="{DynamicResource FluentIconStyle}"/>
-                                <TextBlock Grid.Column="1" Text="收起侧边栏" Style="{DynamicResource NavTextStyle}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="收起侧边栏" Style="{DynamicResource NavTextStyle}"/>
+                                    <TextBlock Text="Collapse Sidebar" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                                </StackPanel>
                             </Grid>
                         </Button>
                     </StackPanel>
@@ -236,6 +262,9 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding CurrentTitle}"
                                        Style="{DynamicResource PageTitleStyle}"/>
+                            <TextBlock Text="{Binding CurrentEnglishTitle}"
+                                       Style="{DynamicResource CaptionTextStyle}"
+                                       Margin="0,1,0,0"/>
                             <TextBlock Text="{Binding CurrentDescription}"
                                        Style="{DynamicResource SecondaryTextStyle}"
                                        Margin="0,4,0,0"/>
@@ -289,9 +318,10 @@
                                                             <TextBlock Text="{Binding IconKey, Converter={StaticResource IconKeyToGlyphConverter}}"
                                                                        Style="{DynamicResource FluentIconStyle}"
                                                                        Foreground="{DynamicResource AccentBrush}"/>
-                                                            <StackPanel Grid.Column="1">
-                                                                <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource CardTitleStyle}"/>
-                                                                <TextBlock Text="{Binding Description}"
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource CardTitleStyle}"/>
+                                                <TextBlock Text="{Binding EnglishName}" Style="{DynamicResource CaptionTextStyle}"/>
+                                                <TextBlock Text="{Binding Description}"
                                                                            Style="{DynamicResource CaptionTextStyle}"
                                                                            TextTrimming="CharacterEllipsis"/>
                                                             </StackPanel>

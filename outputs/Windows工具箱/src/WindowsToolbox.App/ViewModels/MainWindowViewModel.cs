@@ -19,6 +19,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private object? _currentContent;
     private string _currentPageId = "home";
     private string _currentTitle = "首页";
+    private string _currentEnglishTitle = "Home";
     private string _currentDescription = "集中管理常用的 Windows 小工具";
     private string _searchText = string.Empty;
     private bool _isSidebarExpanded;
@@ -29,7 +30,8 @@ public sealed class MainWindowViewModel : ObservableObject
         INavigationService navigationService,
         ISettingsService settingsService,
         IThemeService themeService,
-        IMotionService motionService)
+        IMotionService motionService,
+        Action<bool>? quickLaunchHotkeyChanged = null)
     {
         _moduleRegistry = moduleRegistry;
         _navigationService = navigationService;
@@ -57,7 +59,8 @@ public sealed class MainWindowViewModel : ObservableObject
             themeService,
             moduleRegistry,
             new WindowsStartupRegistrationService(),
-            motionService));
+            motionService,
+            quickLaunchHotkeyChanged));
         navigationService.Register("about", () => new AboutViewModel());
         navigationService.Navigated += OnNavigated;
 
@@ -87,6 +90,12 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _currentTitle;
         private set => SetProperty(ref _currentTitle, value);
+    }
+
+    public string CurrentEnglishTitle
+    {
+        get => _currentEnglishTitle;
+        private set => SetProperty(ref _currentEnglishTitle, value);
     }
 
     public string CurrentDescription
@@ -152,6 +161,8 @@ public sealed class MainWindowViewModel : ObservableObject
         SearchText = string.Empty;
     }
 
+    public void NavigateTo(string pageId) => Navigate(pageId);
+
     private void OnNavigated(object? sender, NavigationChangedEventArgs e)
     {
         CurrentContent = e.ViewModel;
@@ -164,16 +175,17 @@ public sealed class MainWindowViewModel : ObservableObject
         if (toolModule is not null)
         {
             CurrentTitle = toolModule.DisplayName;
+            CurrentEnglishTitle = toolModule.EnglishName;
             CurrentDescription = toolModule.Description;
             RememberRecent(toolModule.Id);
         }
         else
         {
-            (CurrentTitle, CurrentDescription) = e.PageId switch
+            (CurrentTitle, CurrentEnglishTitle, CurrentDescription) = e.PageId switch
             {
-                "settings" => ("设置", "调整主题、启动页面与操作偏好"),
-                "about" => ("关于", "查看版本、安全与隐私信息"),
-                _ => ("首页", "集中管理常用的 Windows 小工具")
+                "settings" => ("设置", "Settings", "调整主题、启动页面与操作偏好"),
+                "about" => ("关于", "About", "查看版本、安全与隐私信息"),
+                _ => ("首页", "Home", "集中管理常用的 Windows 小工具")
             };
         }
     }

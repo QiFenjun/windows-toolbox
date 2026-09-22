@@ -12,6 +12,7 @@ using WindowsToolbox.Modules.Shutdown.Services;
 using WindowsToolbox.Modules.ClipboardPlus;
 using WindowsToolbox.Modules.TextTools;
 using WindowsToolbox.Modules.FileTools;
+using WindowsToolbox.Modules.QuickLaunch;
 using Forms = System.Windows.Forms;
 
 namespace WindowsToolbox.App;
@@ -19,6 +20,7 @@ namespace WindowsToolbox.App;
 public partial class App : System.Windows.Application
 {
     private Forms.NotifyIcon? _trayIcon;
+    private QuickLaunchModule? _quickLaunchModule;
     private bool _isExplicitExit;
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -50,6 +52,9 @@ public partial class App : System.Windows.Application
         moduleRegistry.Register(clipboardPlusModule);
         moduleRegistry.Register(new TextToolsModule());
         moduleRegistry.Register(new FileToolsModule());
+        QuickLaunchModule quickLaunchModule = new(settingsService);
+        _quickLaunchModule = quickLaunchModule;
+        moduleRegistry.Register(quickLaunchModule);
         NetworkTrafficModule networkTrafficModule = new(settingsService);
         moduleRegistry.Register(networkTrafficModule);
         foreach (IToolModule module in moduleRegistry.Modules)
@@ -68,7 +73,8 @@ public partial class App : System.Windows.Application
             navigationService,
             settingsService,
             themeService,
-            motionService);
+            motionService,
+            quickLaunchModule.SetHotkeyEnabled);
 
         MainWindow window = new(themeService, motionService)
         {
@@ -90,6 +96,16 @@ public partial class App : System.Windows.Application
         };
         window.Show();
         mainViewModel.Start();
+        quickLaunchModule.HotkeyService.Pressed += (_, _) =>
+        {
+            window.Show();
+            if (window.WindowState == WindowState.Minimized)
+                window.WindowState = WindowState.Normal;
+            window.Activate();
+            mainViewModel.NavigateTo("quick-launch");
+            quickLaunchModule.CurrentViewModel?.RequestFocusSearch();
+        };
+        quickLaunchModule.SetHotkeyEnabled(settingsService.Settings.QuickLaunchHotkeyEnabled);
 
         if (backgroundStartup)
         {
@@ -98,6 +114,14 @@ public partial class App : System.Windows.Application
             NetworkTrafficViewModel viewModel = (NetworkTrafficViewModel)networkTrafficModule.CreateViewModel();
             _ = viewModel.StartAsyncForBackgroundAsync();
         }
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _quickLaunchModule?.Dispose();
+        _trayIcon?.Dispose();
+        _trayIcon = null;
+        base.OnExit(e);
     }
 
     private void ShowTrayIcon(MainWindow window, NetworkTrafficModule networkTrafficModule, ClipboardPlusModule clipboardPlusModule)

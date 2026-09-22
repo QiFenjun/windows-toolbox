@@ -66,6 +66,10 @@
                     <CheckBox Content="启用 Win+Alt+V 全局快捷键"
                               IsChecked="{Binding ClipboardPlusHotkeyEnabled}"
                               Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,12,0,0"/>
+                    <TextBlock Text="快捷启动 / Quick Launch" Style="{DynamicResource SectionTitleStyle}" Margin="0,22,0,0"/>
+                    <CheckBox Content="启用 Win+Alt+Q 全局快捷键"
+                              IsChecked="{Binding QuickLaunchHotkeyEnabled}"
+                              Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,12,0,0"/>
                 </StackPanel>
             </Border>
 

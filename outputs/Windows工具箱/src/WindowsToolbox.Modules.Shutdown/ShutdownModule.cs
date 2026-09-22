@@ -12,8 +12,10 @@ public sealed class ShutdownModule(
 
     public string Id => "shutdown";
     public string DisplayName => "定时关机";
+    public string EnglishName => "Shutdown Scheduler";
     public string Description => "创建、查看和取消 Windows 定时关机计划";
     public string Category => "系统工具";
+    public string EnglishCategory => "System Tools";
     public string IconKey => "Power";
     public int SortOrder => 100;
     public bool IsAvailable => OperatingSystem.IsWindows();

@@ -31,8 +31,10 @@ public sealed class ModuleRegistry : IModuleRegistry
             .Where(module =>
                 module.IsAvailable &&
                 (module.DisplayName.Contains(value, StringComparison.CurrentCultureIgnoreCase) ||
+                 module.EnglishName.Contains(value, StringComparison.CurrentCultureIgnoreCase) ||
                  module.Description.Contains(value, StringComparison.CurrentCultureIgnoreCase) ||
                  module.Category.Contains(value, StringComparison.CurrentCultureIgnoreCase) ||
+                 module.EnglishCategory.Contains(value, StringComparison.CurrentCultureIgnoreCase) ||
                  module.Keywords.Any(keyword => keyword.Contains(value, StringComparison.CurrentCultureIgnoreCase))))
             .OrderBy(module => module.SortOrder)
             .ToArray();

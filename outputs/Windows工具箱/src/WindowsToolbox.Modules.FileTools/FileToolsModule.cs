@@ -9,9 +9,11 @@ public sealed class FileToolsModule : IToolModule
     private FileToolsViewModel? _viewModel;
 
     public string Id => "file-tools";
-    public string DisplayName => "File Tools";
+    public string DisplayName => "文件工具";
+    public string EnglishName => "File Tools";
     public string Description => "文件重命名、校验与路径处理";
     public string Category => "效率工具";
+    public string EnglishCategory => "Productivity Tools";
     public string IconKey => "Folder";
     public int SortOrder => 460;
     public bool IsAvailable => OperatingSystem.IsWindows();

@@ -39,7 +39,7 @@ public sealed class ClipboardPlusTests
     [TestMethod] public void Service_HotkeyForwardsEvent() { FakeListener listener = new(); int count = 0; using ClipboardPlusService service = Create(listener: listener); service.HotkeyPressed += (_, _) => count++; listener.EmitHotkey(); Assert.AreEqual(1, count); }
     [TestMethod] public void Service_RegistersHotkeyStatus() { FakeListener listener = new(); listener.HotkeyResult = true; using ClipboardPlusService service = Create(listener: listener); service.Start(); Assert.IsTrue(service.IsHotkeyRegistered); }
     [TestMethod] public void SourceResolverUnknownIsSafe() => Assert.IsNull(new FakeResolver(new ClipboardSource(null, null)).Resolve(0).ProcessName);
-    [TestMethod] public void ModuleMetadataUsesStableId() { FakeSettings settings = new(); ClipboardPlusModule module = new(settings); Assert.AreEqual("clipboard-plus", module.Id); Assert.AreEqual("Clipboard+", module.DisplayName); }
+    [TestMethod] public void ModuleMetadataUsesStableId() { FakeSettings settings = new(); ClipboardPlusModule module = new(settings); Assert.AreEqual("clipboard-plus", module.Id); Assert.AreEqual("剪贴板+", module.DisplayName); Assert.AreEqual("Clipboard+", module.EnglishName); }
     [TestMethod] public void ModuleBelongsToEfficiencyCategory() { FakeSettings settings = new(); Assert.AreEqual("效率工具", new ClipboardPlusModule(settings).Category); }
     [TestMethod] public void SettingsClipboardDisabledByDefault() => Assert.IsFalse(new AppSettings().ClipboardPlusEnabled);
     [TestMethod] public void SettingsClipboardCapacityDefaultsTo300() => Assert.AreEqual(300, new AppSettings().ClipboardPlusCapacity);

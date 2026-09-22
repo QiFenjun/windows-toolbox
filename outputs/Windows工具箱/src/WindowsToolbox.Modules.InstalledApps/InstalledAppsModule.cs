@@ -10,8 +10,10 @@ public sealed class InstalledAppsModule : IToolModule
 
     public string Id => "installed-apps";
     public string DisplayName => "应用管理";
+    public string EnglishName => "App Manager";
     public string Description => "查看、筛选和安全调用已安装软件的卸载程序";
     public string Category => "系统工具";
+    public string EnglishCategory => "System Tools";
     public string IconKey => "Apps";
     public int SortOrder => 200;
     public bool IsAvailable => OperatingSystem.IsWindows();

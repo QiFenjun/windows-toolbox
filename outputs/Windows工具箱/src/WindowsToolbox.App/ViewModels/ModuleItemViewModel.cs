@@ -9,8 +9,10 @@ public sealed class ModuleItemViewModel(IToolModule module) : ObservableObject
 
     public string Id => module.Id;
     public string DisplayName => module.DisplayName;
+    public string EnglishName => module.EnglishName;
     public string Description => module.Description;
     public string Category => module.Category;
+    public string EnglishCategory => module.EnglishCategory;
     public string IconKey => module.IconKey;
     public bool IsAvailable => module.IsAvailable;
     public IReadOnlyList<string> Keywords => module.Keywords;

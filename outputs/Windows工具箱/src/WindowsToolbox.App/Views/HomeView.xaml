@@ -80,6 +80,7 @@
                                 </Border>
                                 <StackPanel Grid.Row="1" Margin="0,16,0,16">
                                     <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource CardTitleStyle}"/>
+                                    <TextBlock Text="{Binding EnglishName}" Style="{DynamicResource CaptionTextStyle}" Margin="0,2,0,0"/>
                                     <TextBlock Text="{Binding Description}"
                                                Style="{DynamicResource SecondaryTextStyle}"
                                                TextWrapping="Wrap"
@@ -140,6 +141,7 @@
                                            VerticalAlignment="Center"/>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource CardTitleStyle}"/>
+                                    <TextBlock Text="{Binding EnglishName}" Style="{DynamicResource CaptionTextStyle}"/>
                                     <TextBlock Text="{Binding Description}"
                                                Style="{DynamicResource CaptionTextStyle}"
                                                TextTrimming="CharacterEllipsis"/>

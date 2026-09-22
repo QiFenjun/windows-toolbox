@@ -47,8 +47,10 @@ public sealed class ModuleRegistryTests
     {
         public string Id => id;
         public string DisplayName => name ?? id;
+        public string EnglishName => name ?? id;
         public string Description => description ?? id;
         public string Category => "测试";
+        public string EnglishCategory => "Tests";
         public string IconKey => "Toolbox";
         public int SortOrder => sortOrder;
         public bool IsAvailable => true;

@@ -30,7 +30,8 @@ public sealed class FileToolsTests
     {
         IToolModule module = new FileToolsModule();
         Assert.AreEqual("file-tools", module.Id);
-        Assert.AreEqual("File Tools", module.DisplayName);
+        Assert.AreEqual("文件工具", module.DisplayName);
+        Assert.AreEqual("File Tools", module.EnglishName);
         Assert.AreEqual("效率工具", module.Category);
         StringAssert.Contains(module.Description, "文件");
     }

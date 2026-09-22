@@ -2,9 +2,21 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.5.0`
+当前版本：`v1.6.0`
 
 ## 当前模块
+
+模块显示名与分类同时提供中文和英文，稳定模块 ID 保持不变：
+
+| 分类 | 中文名称 | English | Module ID |
+| --- | --- | --- | --- |
+| 系统工具 / System Tools | 定时关机 | Shutdown Scheduler | `shutdown` |
+| 系统工具 / System Tools | 应用管理 | App Manager | `installed-apps` |
+| 系统工具 / System Tools | 网络流量 | Network Traffic | `network-traffic` |
+| 效率工具 / Productivity Tools | 剪贴板+ | Clipboard+ | `clipboard-plus` |
+| 效率工具 / Productivity Tools | 文本工具 | Text Tools | `text-tools` |
+| 效率工具 / Productivity Tools | 文件工具 | File Tools | `file-tools` |
+| 效率工具 / Productivity Tools | 快捷启动 | Quick Launch | `quick-launch` |
 
 ### 定时关机
 
@@ -50,14 +62,14 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 只保存纯文本，单条上限 256 KiB；源进程路径优先使用剪贴板 owner window 解析，无法可靠获取时显示“未知来源”
 - 支持按进程名或可执行文件路径排除应用；官方剪贴板隐私元数据在系统不可可靠提供时不作猜测
 
-### Text Tools
+### 文本工具 / Text Tools
 
 - 独立的离线文本处理模块，不保存输入、输出或剪贴板内容
 - 支持大小写、空白、行处理、查找替换、JSON、URL、Base64、Unicode 转义和统计
 - 输入与输出分离，支持复制输出、替换输入、清空和一次性粘贴
 - 小文本 180ms 防抖实时处理；超过 1 MiB 自动切换为手动处理，避免界面卡顿
 
-### File Tools
+### 文件工具 / File Tools
 
 - 独立的本地文件处理模块，不上传文件、Hash 或路径
 - 批量重命名：前缀、后缀、查找替换、编号、大小写和扩展名变更
@@ -67,6 +79,15 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 支持完整路径、文件名、Stem、扩展名、父目录、正斜杠、PowerShell LiteralPath 和 File URI 转换
 - 支持文件/文件夹基础信息和可取消的文件夹大小扫描，默认跳过 Junction、Symbolic Link 等 Reparse Point
 - 支持资源管理器文件拖放，使用虚拟化 DataGrid 展示大量条目
+
+### 快捷启动 / Quick Launch
+
+- 固定并快速打开常用应用、文件夹、文件和 `http` / `https` 网页
+- 支持搜索名称、目标和分组，支持分组、固定、最近使用、上移和下移
+- 支持从资源管理器拖入 `.exe`、文件夹和普通文件；脚本不会被自动当作可执行程序
+- 使用 Windows Shell 图标与内存缓存；网页使用本地图标，不下载 favicon
+- 支持 `Win + Alt + Q` 呼出工具箱、导航到 Quick Launch 并聚焦搜索框
+- 只保存快捷引用到 `%LocalAppData%\\WindowsToolbox\\QuickLaunch\\items.json`，不扫描全盘、不联网、不删除真实文件
 
 ## 界面结构
 
@@ -90,7 +111,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.5.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.6.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -165,6 +186,12 @@ windows-toolbox/
 │     ├─ Services/
 │     ├─ ViewModels/
 │     └─ Views/
+│  └─ WindowsToolbox.Modules.QuickLaunch/   # Quick Launch 快捷启动模块
+│     ├─ Models/
+│     ├─ Services/
+│     ├─ ViewModels/
+│     ├─ Converters/
+│     └─ Views/
 │  ├─ tests/WindowsToolbox.Tests/
 │  ├─ legacy/WinForms-v1/                  # 原版源码备份；编译产物不入库
 │  ├─ scripts/
@@ -175,7 +202,7 @@ windows-toolbox/
 
 ## 模块系统如何工作
 
-1. 每个模块实现 `IToolModule`，提供 ID、名称、分类、说明、图标键、关键词、排序和可用性。
+1. 每个模块实现 `IToolModule`，提供稳定 ID、中文名称、英文名称、双语分类、说明、图标键、关键词、排序和可用性。
 2. `ModuleRegistry` 负责注册、排序、查找与搜索。
 3. `NavigationService` 使用页面 ID 导航，并缓存 ViewModel，避免重复创建页面。
 4. 模块通过自己的 `ModuleResources.xaml` 提供 ViewModel 到 View 的 DataTemplate。
@@ -192,8 +219,10 @@ public sealed class ClipboardModule : IToolModule
 {
     public string Id => "clipboard";
     public string DisplayName => "剪贴板工具";
+    public string EnglishName => "Clipboard";
     public string Description => "查看和处理剪贴板文本";
     public string Category => "效率工具";
+    public string EnglishCategory => "Productivity Tools";
     public string IconKey => "Toolbox";
     public int SortOrder => 200;
     public bool IsAvailable => OperatingSystem.IsWindows();
@@ -250,6 +279,8 @@ moduleRegistry.Register(new ClipboardModule());
 
 设置页的“界面动画”可选择完整、减少或关闭。完整使用全部过渡，减少将时长减半，关闭会跳过主题、侧边栏和窗口内容动画；三档设置均保存到 `%AppData%\\WindowsToolbox\\settings.json`。
 
+快捷启动的全局快捷键设置位于设置页，默认使用 `Win + Alt + Q`；Clipboard+ 的 `Win + Alt + V` 保持独立。冲突时只提示快捷键不可用，不影响主程序启动。
+
 ## 用户设置
 
 设置保存在：
@@ -275,6 +306,14 @@ moduleRegistry.Register(new ClipboardModule());
 文件仅保存应用标识、应用名、必要路径哈希、日期及上传/下载总字节数；不保存地址、域名、URL、数据包或通信正文。
 
 用户在设置页主动启用“随 Windows 启动后台监控”后，程序才会在当前用户的 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` 增加 `WindowsToolbox.NetworkTraffic` 启动项；关闭该选项并保存会删除该项。默认不创建启动项。
+
+快捷启动数据保存于：
+
+```text
+%LocalAppData%\WindowsToolbox\QuickLaunch\items.json
+```
+
+数据使用 `DataVersion = 1`，写入采用临时文件替换；损坏的 JSON 会保留为 `items.corrupt.<timestamp>.json`，然后以空列表继续启动。
 
 ## 编译与测试
 
@@ -303,8 +342,8 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:PublishSingleFile=true `
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
-  -p:DebugSymbols=false `
-    --output artifacts/release/v1.5.0/WindowsToolbox-win-x64
+-p:DebugSymbols=false `
+    --output artifacts/release/v1.6.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。

@@ -24,6 +24,7 @@ public sealed class AppSettings
     public int ClipboardPlusCapacity { get; set; } = 300;
     public int ClipboardPlusRetentionDays { get; set; } = 30;
     public bool ClipboardPlusHotkeyEnabled { get; set; } = true;
+    public bool QuickLaunchHotkeyEnabled { get; set; } = true;
     public List<string> ClipboardPlusExcludedPaths { get; set; } = [];
     public List<string> ClipboardPlusExcludedProcessNames { get; set; } = [];
 }

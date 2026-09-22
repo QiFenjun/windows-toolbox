@@ -5,8 +5,10 @@ public interface IToolModule
 {
     string Id { get; }
     string DisplayName { get; }
+    string EnglishName { get; }
     string Description { get; }
     string Category { get; }
+    string EnglishCategory { get; }
     string IconKey { get; }
     int SortOrder { get; }
     bool IsAvailable { get; }

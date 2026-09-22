@@ -63,7 +63,7 @@ public sealed class TextToolsTests
     [TestMethod] public void ModuleMetadataIsStable()
     {
         IToolModule module = new TextToolsModule();
-        Assert.AreEqual("text-tools", module.Id); Assert.AreEqual("Text Tools", module.DisplayName); Assert.AreEqual("效率工具", module.Category);
+        Assert.AreEqual("text-tools", module.Id); Assert.AreEqual("文本工具", module.DisplayName); Assert.AreEqual("Text Tools", module.EnglishName); Assert.AreEqual("效率工具", module.Category);
     }
     [TestMethod] public void ModuleKeywordsSupportSearch() => CollectionAssert.Contains(new TextToolsModule().Keywords.ToList(), "JSON");
     [TestMethod] public void CrLfIsNormalized() => Equal("a\nb", "lines.reverse", "b\r\na");
