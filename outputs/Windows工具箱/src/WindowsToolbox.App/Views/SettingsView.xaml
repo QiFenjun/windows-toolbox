@@ -57,6 +57,20 @@
 
             <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
                 <StackPanel>
+                    <TextBlock Text="Clipboard+" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="剪贴板历史默认关闭；启用后只记录纯文本，并保存在当前用户的加密存储中。"
+                               Style="{DynamicResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,18"/>
+                    <CheckBox Content="启用 Clipboard+ 剪贴板监听"
+                              IsChecked="{Binding ClipboardPlusEnabled}"
+                              Style="{DynamicResource ModernCheckBoxStyle}"/>
+                    <CheckBox Content="启用 Win+Alt+V 全局快捷键"
+                              IsChecked="{Binding ClipboardPlusHotkeyEnabled}"
+                              Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,12,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
+                <StackPanel>
                     <TextBlock Text="网络流量监控" Style="{DynamicResource SectionTitleStyle}"/>
                     <TextBlock Text="高级实时流量采集仅在网络流量页面启动时按需请求管理员权限。统计全部在本机完成，不读取通信正文。"
                                Style="{DynamicResource SecondaryTextStyle}"

@@ -13,6 +13,7 @@
     <ProjectReference Include="..\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.NetworkTraffic\WindowsToolbox.Modules.NetworkTraffic.csproj" />
     <ProjectReference Include="..\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
+    <ProjectReference Include="..\WindowsToolbox.Modules.ClipboardPlus\WindowsToolbox.Modules.ClipboardPlus.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Remove="System.Drawing" />

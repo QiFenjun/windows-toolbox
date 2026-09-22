@@ -42,7 +42,11 @@ public sealed class MainWindowViewModel : ObservableObject
 
         foreach (IToolModule module in moduleRegistry.Modules)
         {
-            Modules.Add(new ModuleItemViewModel(module));
+            ModuleItemViewModel item = new(module);
+            if (string.Equals(module.Category, "效率工具", StringComparison.OrdinalIgnoreCase))
+                EfficiencyModules.Add(item);
+            else
+                Modules.Add(item);
             navigationService.Register(module.Id, module.CreateViewModel);
         }
 
@@ -64,6 +68,7 @@ public sealed class MainWindowViewModel : ObservableObject
     }
 
     public ObservableCollection<ModuleItemViewModel> Modules { get; } = [];
+    public ObservableCollection<ModuleItemViewModel> EfficiencyModules { get; } = [];
     public ObservableCollection<ModuleItemViewModel> SearchResults { get; } = [];
 
     public object? CurrentContent
@@ -152,7 +157,7 @@ public sealed class MainWindowViewModel : ObservableObject
         CurrentContent = e.ViewModel;
         CurrentPageId = e.PageId;
 
-        foreach (ModuleItemViewModel module in Modules)
+        foreach (ModuleItemViewModel module in Modules.Concat(EfficiencyModules))
             module.IsSelected = string.Equals(module.Id, e.PageId, StringComparison.OrdinalIgnoreCase);
 
         IToolModule? toolModule = _moduleRegistry.Find(e.PageId);

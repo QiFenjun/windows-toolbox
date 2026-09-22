@@ -161,6 +161,28 @@ public sealed class SettingsViewModel : ObservableObject
         }
     }
 
+    public bool ClipboardPlusEnabled
+    {
+        get => _settingsService.Settings.ClipboardPlusEnabled;
+        set
+        {
+            if (_settingsService.Settings.ClipboardPlusEnabled == value) return;
+            _settingsService.Settings.ClipboardPlusEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ClipboardPlusHotkeyEnabled
+    {
+        get => _settingsService.Settings.ClipboardPlusHotkeyEnabled;
+        set
+        {
+            if (_settingsService.Settings.ClipboardPlusHotkeyEnabled == value) return;
+            _settingsService.Settings.ClipboardPlusHotkeyEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
     public string SaveStatus { get; private set; } = string.Empty;
     public AsyncRelayCommand SaveCommand { get; }
 

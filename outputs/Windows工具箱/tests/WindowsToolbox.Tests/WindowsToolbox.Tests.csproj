@@ -15,5 +15,6 @@
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.InstalledApps\WindowsToolbox.Modules.InstalledApps.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.NetworkTraffic\WindowsToolbox.Modules.NetworkTraffic.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.Shutdown\WindowsToolbox.Modules.Shutdown.csproj" />
+    <ProjectReference Include="..\..\src\WindowsToolbox.Modules.ClipboardPlus\WindowsToolbox.Modules.ClipboardPlus.csproj" />
   </ItemGroup>
 </Project>

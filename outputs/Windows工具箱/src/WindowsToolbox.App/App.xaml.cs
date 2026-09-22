@@ -9,6 +9,7 @@ using WindowsToolbox.Modules.NetworkTraffic.Services;
 using WindowsToolbox.Modules.NetworkTraffic.ViewModels;
 using WindowsToolbox.Modules.Shutdown;
 using WindowsToolbox.Modules.Shutdown.Services;
+using WindowsToolbox.Modules.ClipboardPlus;
 using Forms = System.Windows.Forms;
 
 namespace WindowsToolbox.App;
@@ -40,9 +41,11 @@ public partial class App : System.Windows.Application
         IModuleRegistry moduleRegistry = new ModuleRegistry();
         INavigationService navigationService = new NavigationService();
         IShutdownService shutdownService = new ShutdownService();
+        ClipboardPlusModule clipboardPlusModule = new(settingsService);
 
         moduleRegistry.Register(new ShutdownModule(shutdownService, settingsService));
         moduleRegistry.Register(new InstalledAppsModule());
+        moduleRegistry.Register(clipboardPlusModule);
         NetworkTrafficModule networkTrafficModule = new(settingsService);
         moduleRegistry.Register(networkTrafficModule);
         foreach (IToolModule module in moduleRegistry.Modules)
@@ -71,13 +74,15 @@ public partial class App : System.Windows.Application
         MainWindow = window;
         window.Closing += (_, closingEventArgs) =>
         {
-            if (_isExplicitExit || !settingsService.Settings.NetworkTrafficContinueInBackground ||
-                networkTrafficModule.CurrentViewModel?.IsMonitoring != true)
+            bool keepNetwork = settingsService.Settings.NetworkTrafficContinueInBackground &&
+                networkTrafficModule.CurrentViewModel?.IsMonitoring == true;
+            bool keepClipboard = clipboardPlusModule.CurrentViewModel?.IsActiveInBackground == true;
+            if (_isExplicitExit || (!keepNetwork && !keepClipboard))
                 return;
 
             closingEventArgs.Cancel = true;
             window.Hide();
-            ShowTrayIcon(window, networkTrafficModule);
+            ShowTrayIcon(window, networkTrafficModule, clipboardPlusModule);
         };
         window.Show();
         mainViewModel.Start();
@@ -85,13 +90,13 @@ public partial class App : System.Windows.Application
         if (backgroundStartup)
         {
             window.Hide();
-            ShowTrayIcon(window, networkTrafficModule);
+            ShowTrayIcon(window, networkTrafficModule, clipboardPlusModule);
             NetworkTrafficViewModel viewModel = (NetworkTrafficViewModel)networkTrafficModule.CreateViewModel();
             _ = viewModel.StartAsyncForBackgroundAsync();
         }
     }
 
-    private void ShowTrayIcon(MainWindow window, NetworkTrafficModule networkTrafficModule)
+    private void ShowTrayIcon(MainWindow window, NetworkTrafficModule networkTrafficModule, ClipboardPlusModule clipboardPlusModule)
     {
         if (_trayIcon is not null)
             return;
@@ -107,6 +112,7 @@ public partial class App : System.Windows.Application
             _isExplicitExit = true;
             if (networkTrafficModule.CurrentViewModel is not null)
                 await networkTrafficModule.CurrentViewModel.StopAsyncForExitAsync();
+            clipboardPlusModule.CurrentViewModel?.StopForExit();
             _trayIcon?.Dispose();
             _trayIcon = null;
             window.Close();

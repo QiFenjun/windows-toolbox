@@ -129,6 +129,32 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                        <TextBlock Text="效率工具"
+                                   Style="{DynamicResource NavCategoryStyle}"
+                                   Margin="12,14,0,8"/>
+                        <ItemsControl ItemsSource="{Binding EfficiencyModules}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding Id}"
+                                            Style="{DynamicResource SidebarNavButtonStyle}"
+                                            ToolTip="{Binding DisplayName}"
+                                            Tag="{Binding IsSelected}"
+                                            Margin="0,0,0,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="36"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding IconKey, Converter={StaticResource IconKeyToGlyphConverter}}"
+                                                       Style="{DynamicResource FluentIconStyle}"
+                                                       Foreground="{Binding IsSelected, Converter={StaticResource SelectionToBrushConverter}}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding DisplayName}" Style="{DynamicResource NavTextStyle}"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
 
                     <StackPanel Grid.Row="6">

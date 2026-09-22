@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:views="clr-namespace:WindowsToolbox.App.Views"
              xmlns:viewModels="clr-namespace:WindowsToolbox.App.ViewModels"
-             xmlns:converters="clr-namespace:WindowsToolbox.App.Converters">
+             xmlns:converters="clr-namespace:WindowsToolbox.App.Converters"
+             xmlns:clipboardViews="clr-namespace:WindowsToolbox.Modules.ClipboardPlus.Views;assembly=WindowsToolbox.Modules.ClipboardPlus"
+             xmlns:clipboardViewModels="clr-namespace:WindowsToolbox.Modules.ClipboardPlus.ViewModels;assembly=WindowsToolbox.Modules.ClipboardPlus">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -25,6 +27,8 @@
             <converters:SelectionToBrushConverter x:Key="SelectionToBrushConverter"/>
             <converters:StringEqualsConverter x:Key="StringEqualsConverter"/>
             <converters:PositiveNumberToVisibilityConverter x:Key="PositiveNumberToVisibilityConverter"/>
+            <converters:BooleanToEnableTextConverter x:Key="BooleanToEnableTextConverter"/>
+            <converters:BooleanToPauseTextConverter x:Key="BooleanToPauseTextConverter"/>
 
             <Style TargetType="ToolTip">
                 <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
@@ -56,6 +60,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:AboutViewModel}">
                 <views:AboutView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type clipboardViewModels:ClipboardPlusViewModel}">
+                <clipboardViews:ClipboardPlusView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

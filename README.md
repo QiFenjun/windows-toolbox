@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.2.4`
+当前版本：`v1.3.0`
 
 ## 当前模块
 
@@ -41,6 +41,15 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 可选关闭主窗口后最小化到系统托盘继续监控；可选登记当前用户的 Windows Run 启动项，默认均关闭
 - 不读取数据包正文、URL、Cookie、密码或 HTTPS 内容，也不会上传网络活动记录
 
+### Clipboard+
+
+- 可选启用的纯 Unicode 文本剪贴板历史；默认关闭，暂停状态会保存
+- 使用系统剪贴板监听消息，不轮询；支持 Win+Alt+V 快捷键（注册失败会显示提示）
+- 支持搜索、复制、删除、置顶、清空、容量（100/300/500/1000）和保留期（1/7/30/90 天或永久）
+- 历史文件位于 `%LocalAppData%\\WindowsToolbox\\ClipboardPlus\\history.dat`，使用当前用户 DPAPI 加密，无明文回退
+- 只保存纯文本，单条上限 256 KiB；源进程路径优先使用剪贴板 owner window 解析，无法可靠获取时显示“未知来源”
+- 支持按进程名或可执行文件路径排除应用；官方剪贴板隐私元数据在系统不可可靠提供时不作猜测
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -63,7 +72,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.2.4-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.3.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -116,6 +125,11 @@ windows-toolbox/
 │     ├─ Models/
 │     ├─ Services/
 │     ├─ Utilities/
+│     ├─ ViewModels/
+│     └─ Views/
+│  └─ WindowsToolbox.Modules.ClipboardPlus/ # Clipboard+ 效率模块
+│     ├─ Models/
+│     ├─ Services/
 │     ├─ ViewModels/
 │     └─ Views/
 │  └─ WindowsToolbox.Modules.NetworkTraffic/ # 独立网络流量模块

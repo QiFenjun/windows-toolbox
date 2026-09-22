@@ -19,4 +19,11 @@ public sealed class AppSettings
     public bool IsSidebarExpanded { get; set; } = true;
     public ReducedMotionMode ReducedMotion { get; set; } = ReducedMotionMode.Full;
     public List<string> RecentModuleIds { get; set; } = [];
+    public bool ClipboardPlusEnabled { get; set; }
+    public bool ClipboardPlusPaused { get; set; }
+    public int ClipboardPlusCapacity { get; set; } = 300;
+    public int ClipboardPlusRetentionDays { get; set; } = 30;
+    public bool ClipboardPlusHotkeyEnabled { get; set; } = true;
+    public List<string> ClipboardPlusExcludedPaths { get; set; } = [];
+    public List<string> ClipboardPlusExcludedProcessNames { get; set; } = [];
 }
