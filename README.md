@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.6.0`
+当前版本：`v1.7.0`
 
 ## 当前模块
 
@@ -17,6 +17,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 | 效率工具 / Productivity Tools | 文本工具 | Text Tools | `text-tools` |
 | 效率工具 / Productivity Tools | 文件工具 | File Tools | `file-tools` |
 | 效率工具 / Productivity Tools | 快捷启动 | Quick Launch | `quick-launch` |
+| 效率工具 / Productivity Tools | 窗口工具 | Window Tools | `window-tools` |
 
 ### 定时关机
 
@@ -89,6 +90,14 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 支持 `Win + Alt + Q` 呼出工具箱、导航到 Quick Launch 并聚焦搜索框
 - 只保存快捷引用到 `%LocalAppData%\\WindowsToolbox\\QuickLaunch\\items.json`，不扫描全盘、不联网、不删除真实文件
 
+### 窗口工具 / Window Tools
+
+- 枚举可见、有标题的普通顶层窗口，支持按标题、进程名和 PID 搜索
+- 查看 HWND、进程、窗口外框/客户区物理像素、窗口状态、显示器、工作区和 DPI 元数据
+- 支持置顶、取消置顶、居中、六种常见位置布局、尺寸预设/自定义尺寸及移动到其他显示器
+- 对最小化或最大化窗口先还原再调整；跨显示器移动后保持尺寸并在目标工作区居中，过大时安全限制
+- 过滤 Desktop、WorkerW、任务栏等关键 Shell 窗口；不读取窗口内容、不注入、不提权、不修改 Snap 设置
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -111,7 +120,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.6.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.7.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -191,6 +200,12 @@ windows-toolbox/
 │     ├─ Services/
 │     ├─ ViewModels/
 │     ├─ Converters/
+│     └─ Views/
+│  └─ WindowsToolbox.Modules.WindowTools/   # Window Tools 窗口工具模块
+│     ├─ Interop/
+│     ├─ Models/
+│     ├─ Services/
+│     ├─ ViewModels/
 │     └─ Views/
 │  ├─ tests/WindowsToolbox.Tests/
 │  ├─ legacy/WinForms-v1/                  # 原版源码备份；编译产物不入库
@@ -343,7 +358,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
 -p:DebugSymbols=false `
-    --output artifacts/release/v1.6.0/WindowsToolbox-win-x64
+    --output artifacts/release/v1.7.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。
@@ -372,6 +387,7 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 - 应用管理目前以传统桌面软件注册表数据为基础；没有可靠 `DisplayIcon` 或顶层主程序候选的软件会继续使用统一占位图标。MSIX/AppX 专用图标和开始菜单快捷方式匹配尚未启用。
 - 网络流量的 ETW 应用归因依赖 Windows 提供的 Kernel Network 事件；透明 WFP/NDIS 重定向若无法可靠归因，会显示“未知”而不会猜测。当前不包含驱动、WFP Callout、VPN/代理配置或网络拦截功能。
 - 网络接口实时统计使用 Windows IP Helper/网络接口信息；应用流量与接口流量是独立概念，不能相加。真实 VPN 或本地代理环境仅在系统已存在时可验证，项目不会安装第三方 VPN/代理。
+- Window Tools 只管理可安全操作的普通顶层窗口。UIPI 会阻止普通权限程序调整高完整性窗口；模块不会自动提升或绕过该限制。真实多显示器和不同 DPI 的人工验证需在相应硬件环境完成。
 - 未购买商业代码签名证书，发布的 EXE 为未签名程序。
 
 ## 后续规划

@@ -11,7 +11,9 @@
              xmlns:fileToolsViews="clr-namespace:WindowsToolbox.Modules.FileTools.Views;assembly=WindowsToolbox.Modules.FileTools"
              xmlns:fileToolsViewModels="clr-namespace:WindowsToolbox.Modules.FileTools.ViewModels;assembly=WindowsToolbox.Modules.FileTools"
              xmlns:quickLaunchViews="clr-namespace:WindowsToolbox.Modules.QuickLaunch.Views;assembly=WindowsToolbox.Modules.QuickLaunch"
-             xmlns:quickLaunchViewModels="clr-namespace:WindowsToolbox.Modules.QuickLaunch.ViewModels;assembly=WindowsToolbox.Modules.QuickLaunch">
+             xmlns:quickLaunchViewModels="clr-namespace:WindowsToolbox.Modules.QuickLaunch.ViewModels;assembly=WindowsToolbox.Modules.QuickLaunch"
+             xmlns:windowToolsViews="clr-namespace:WindowsToolbox.Modules.WindowTools.Views;assembly=WindowsToolbox.Modules.WindowTools"
+             xmlns:windowToolsViewModels="clr-namespace:WindowsToolbox.Modules.WindowTools.ViewModels;assembly=WindowsToolbox.Modules.WindowTools">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -78,6 +80,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type quickLaunchViewModels:QuickLaunchViewModel}">
                 <quickLaunchViews:QuickLaunchView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type windowToolsViewModels:WindowToolsViewModel}">
+                <windowToolsViews:WindowToolsView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

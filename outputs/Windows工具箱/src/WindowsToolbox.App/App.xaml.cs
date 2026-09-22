@@ -13,6 +13,7 @@ using WindowsToolbox.Modules.ClipboardPlus;
 using WindowsToolbox.Modules.TextTools;
 using WindowsToolbox.Modules.FileTools;
 using WindowsToolbox.Modules.QuickLaunch;
+using WindowsToolbox.Modules.WindowTools;
 using Forms = System.Windows.Forms;
 
 namespace WindowsToolbox.App;
@@ -55,6 +56,7 @@ public partial class App : System.Windows.Application
         QuickLaunchModule quickLaunchModule = new(settingsService);
         _quickLaunchModule = quickLaunchModule;
         moduleRegistry.Register(quickLaunchModule);
+        moduleRegistry.Register(new WindowToolsModule());
         NetworkTrafficModule networkTrafficModule = new(settingsService);
         moduleRegistry.Register(networkTrafficModule);
         foreach (IToolModule module in moduleRegistry.Modules)

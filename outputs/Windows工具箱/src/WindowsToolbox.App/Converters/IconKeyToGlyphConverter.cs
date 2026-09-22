@@ -22,7 +22,8 @@ public sealed class IconKeyToGlyphConverter : IValueConverter
             ["Edit"] = "\uE70F",
             ["Network"] = "\uE774",
             ["Rocket"] = "\uE7E3",
-            ["Folder"] = "\uE8B7"
+            ["Folder"] = "\uE8B7",
+            ["Window"] = "\uE8A7"
         };
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
