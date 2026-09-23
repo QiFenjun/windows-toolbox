@@ -2,6 +2,28 @@
 
 本项目使用语义化版本号记录正式发布。
 
+## [1.10.0] - 2026-09-23
+
+### Added
+
+- Utilities 新增时间工具 / Time Tools 与随机工具 / Random Tools 两个固定内部入口，没有新增 Sidebar 模块或动态插件系统
+- Time Tools 支持 Unix 秒/毫秒与 DateTimeOffset 转换、当前本地/UTC/Unix/ISO 时间、ISO 8601 解析与格式化、Windows 时区转换和精确时间差
+- Time Tools 使用本机 TimeZoneInfo 规则处理 DST；夏令时不存在时间会被拒绝，重复本地时间要求用户明确选择 UTC Offset
+- Random Tools 支持 UUID v4 单个/批量、固定字符集安全随机字符串以及带上下界的安全随机整数范围
+- Random Tools 支持大小写、数字和安全符号集组合，最多 1,000 项、字符串最长 4,096 字符，批量字符串总输出最多 1 MiB
+
+### Privacy and safety
+
+- Time Tools 完全离线，只读取和转换时间；不修改系统时间/时区，不保存转换历史
+- Random Tools 使用系统密码学安全随机数源；生成结果仅存在当前会话，不写文件、日志或 telemetry
+- 两个新工具均不引入网络调用或系统设置修改
+
+### Validation
+
+- Release build 0 warnings / 0 errors；普通测试 497/497 通过，时间、随机字符串/整数测试使用 Fake
+- 独立生产 CSPRNG smoke 对 UUID v4、随机字符串和整数各生成并验证 100 项；这不是统计随机性或密码强度证明
+- Light/Dark 离屏 WPF smoke 覆盖 11 个主模块、4 个 Utilities 内页及内部导航；真实人工点击与硬件场景仍按验证记录标为 Pending
+
 ## [1.9.0] - 2026-09-23
 
 ### Added

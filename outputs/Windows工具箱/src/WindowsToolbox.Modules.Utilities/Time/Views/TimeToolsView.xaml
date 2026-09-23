@@ -1,0 +1,171 @@
+<UserControl x:Class="WindowsToolbox.Modules.Utilities.Time.Views.TimeToolsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded"
+             Unloaded="OnUnloaded">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,0,12">
+            <TextBlock Text="时间工具 / Time Tools" Style="{DynamicResource SectionTitleStyle}"/>
+            <TextBlock Text="离线时间戳、时区与日期时间转换；输入和结果仅保留在当前会话。"
+                       Style="{DynamicResource SecondaryTextStyle}" Margin="0,4,0,12" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding CopyStatus}" Style="{DynamicResource CaptionTextStyle}" Margin="0,0,0,8"/>
+            <TabControl>
+                <TabItem Header="当前时间">
+                    <Border Style="{DynamicResource CardStyle}" Padding="16" Margin="0,8,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="本地时间" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center"/>
+                            <DockPanel Grid.Column="1" LastChildFill="False" Margin="12,0,0,0">
+                                <TextBlock Text="{Binding CurrentLocalTime}" Style="{DynamicResource CardTitleStyle}" VerticalAlignment="Center"/>
+                                <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制本地时间" Command="{Binding CopyTextCommand}" CommandParameter="{Binding CurrentLocalTime}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                            <TextBlock Grid.Row="1" Text="UTC" Style="{DynamicResource FieldLabelStyle}" Margin="0,10,0,0"/>
+                            <DockPanel Grid.Row="1" Grid.Column="1" LastChildFill="False" Margin="12,10,0,0">
+                                <TextBlock Text="{Binding CurrentUtcTime}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制 UTC 时间" Command="{Binding CopyTextCommand}" CommandParameter="{Binding CurrentUtcTime}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                            <TextBlock Grid.Row="2" Text="Unix 秒" Style="{DynamicResource FieldLabelStyle}" Margin="0,10,0,0"/>
+                            <DockPanel Grid.Row="2" Grid.Column="1" LastChildFill="False" Margin="12,10,0,0">
+                                <TextBlock Text="{Binding CurrentUnixSeconds}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制 Unix 秒" Command="{Binding CopyTextCommand}" CommandParameter="{Binding CurrentUnixSeconds}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                            <TextBlock Grid.Row="3" Text="Unix 毫秒" Style="{DynamicResource FieldLabelStyle}" Margin="0,10,0,0"/>
+                            <DockPanel Grid.Row="3" Grid.Column="1" LastChildFill="False" Margin="12,10,0,0">
+                                <TextBlock Text="{Binding CurrentUnixMilliseconds}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制 Unix 毫秒" Command="{Binding CopyTextCommand}" CommandParameter="{Binding CurrentUnixMilliseconds}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                            <TextBlock Grid.Row="4" Text="ISO 8601" Style="{DynamicResource FieldLabelStyle}" Margin="0,10,0,0"/>
+                            <DockPanel Grid.Row="4" Grid.Column="1" LastChildFill="False" Margin="12,10,0,0">
+                                <TextBlock Text="{Binding CurrentIso}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制 ISO 8601" Command="{Binding CopyTextCommand}" CommandParameter="{Binding CurrentIso}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                        </Grid>
+                    </Border>
+                </TabItem>
+                <TabItem Header="时间戳 / ISO">
+                    <StackPanel Margin="0,8,0,0">
+                        <Border Style="{DynamicResource CardStyle}" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="时间戳 → 日期时间" Style="{DynamicResource CardTitleStyle}"/>
+                                <Grid Margin="0,10,0,0">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="150"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding TimestampText, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" ToolTip="可使用负时间戳"/>
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding TimestampUnits}" SelectedIndex="{Binding TimestampUnitIndex}" Style="{DynamicResource ModernComboBoxStyle}" Margin="8,0"/>
+                                    <Button Grid.Column="2" Content="转换" Command="{Binding ConvertTimestampCommand}" Style="{DynamicResource PrimaryButtonStyle}"/>
+                                </Grid>
+                                <TextBlock Text="{Binding TimestampStatus}" Foreground="{DynamicResource DangerBrush}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                <UniformGrid Columns="2" Margin="0,8,0,0">
+                                    <TextBlock Text="UTC" Style="{DynamicResource FieldLabelStyle}"/>
+                                    <DockPanel LastChildFill="False">
+                                        <TextBlock Text="{Binding ConvertedUtc}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制 UTC 时间" Command="{Binding CopyTextCommand}" CommandParameter="{Binding ConvertedUtc}" Style="{DynamicResource SecondaryButtonStyle}" Margin="6,0,0,0"/>
+                                    </DockPanel>
+                                    <TextBlock Text="本地时间" Style="{DynamicResource FieldLabelStyle}" Margin="0,8,0,0"/>
+                                    <DockPanel Margin="0,8,0,0" LastChildFill="False">
+                                        <TextBlock Text="{Binding ConvertedLocal}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制本地时间" Command="{Binding CopyTextCommand}" CommandParameter="{Binding ConvertedLocal}" Style="{DynamicResource SecondaryButtonStyle}" Margin="6,0,0,0"/>
+                                    </DockPanel>
+                                    <TextBlock Text="ISO 8601" Style="{DynamicResource FieldLabelStyle}" Margin="0,8,0,0"/>
+                                    <DockPanel LastChildFill="False" Margin="0,8,0,0">
+                                        <TextBlock Text="{Binding ConvertedIso}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制 ISO 8601" Command="{Binding CopyTextCommand}" CommandParameter="{Binding ConvertedIso}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                                    </DockPanel>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{DynamicResource CardStyle}" Padding="16" Margin="0,10,0,0">
+                            <StackPanel>
+                                <TextBlock Text="日期时间 → Unix 时间戳" Style="{DynamicResource CardTitleStyle}"/>
+                                <TextBlock Text="输入 ISO 8601；没有 Offset 时按来源时区解释。" Style="{DynamicResource CaptionTextStyle}" Margin="0,4,0,8" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding DateTimeInput, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" ToolTip="例如 2026-09-23T12:00:00 或带 UTC Offset 的 ISO 8601"/>
+                                <TextBlock Text="{Binding SourceTimeZoneLabel}" Style="{DynamicResource CaptionTextStyle}" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                                <ComboBox ItemsSource="{Binding DateTimeAmbiguousOffsets}" SelectedItem="{Binding SelectedDateTimeAmbiguousOffset}" Visibility="{Binding HasDateTimeAmbiguousOffsets, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="选择重复本地时间对应的 UTC Offset" Style="{DynamicResource ModernComboBoxStyle}" Margin="0,8,0,0"/>
+                                <TextBlock Text="{Binding DateTimeStatus}" Foreground="{DynamicResource DangerBrush}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                <DockPanel Margin="0,8,0,0" LastChildFill="False">
+                                    <Button Content="转换" Command="{Binding ConvertDateTimeCommand}" Style="{DynamicResource PrimaryButtonStyle}"/>
+                                    <TextBlock Text="Unix 秒" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center" Margin="16,0,5,0"/>
+                                    <TextBlock Text="{Binding UnixSeconds}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                    <Button Content="复制" ToolTip="复制 Unix 秒" Command="{Binding CopyTextCommand}" CommandParameter="{Binding UnixSeconds}" Style="{DynamicResource SecondaryButtonStyle}" Margin="5,0,12,0"/>
+                                    <TextBlock Text="毫秒" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding UnixMilliseconds}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                    <Button Content="复制" ToolTip="复制 Unix 毫秒" Command="{Binding CopyTextCommand}" CommandParameter="{Binding UnixMilliseconds}" Style="{DynamicResource SecondaryButtonStyle}" Margin="5,0,0,0"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="时区转换">
+                    <Border Style="{DynamicResource CardStyle}" Padding="16" Margin="0,8,0,0">
+                        <StackPanel>
+                            <TextBlock Text="一个时区 → 另一个时区" Style="{DynamicResource CardTitleStyle}"/>
+                            <TextBlock Text="输入本地 ISO 日期时间；DST 无效时间会被拒绝，重复时间需明确选择 Offset。" Style="{DynamicResource CaptionTextStyle}" Margin="0,4,0,8" TextWrapping="Wrap"/>
+                            <TextBox Text="{Binding TimeZoneInput, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" ToolTip="例如 2024-11-03T01:30:00"/>
+                            <Grid Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="来源时区搜索 · Display / Standard / ID" Style="{DynamicResource FieldLabelStyle}" TextWrapping="Wrap"/>
+                                    <TextBox Text="{Binding SourceZoneSearch, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" Margin="0,5,0,5"/>
+                                    <ComboBox ItemsSource="{Binding SourceTimeZones}" SelectedItem="{Binding SourceTimeZone}" DisplayMemberPath="DisplayName" Style="{DynamicResource ModernComboBoxStyle}" ToolTip="{Binding SourceTimeZoneLabel}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="目标时区搜索 · Display / Standard / ID" Style="{DynamicResource FieldLabelStyle}" TextWrapping="Wrap"/>
+                                    <TextBox Text="{Binding TargetZoneSearch, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" Margin="0,5,0,5"/>
+                                    <ComboBox ItemsSource="{Binding TargetTimeZones}" SelectedItem="{Binding TargetTimeZone}" DisplayMemberPath="DisplayName" Style="{DynamicResource ModernComboBoxStyle}" ToolTip="{Binding TargetTimeZoneLabel}"/>
+                                </StackPanel>
+                            </Grid>
+                            <ComboBox ItemsSource="{Binding TimeZoneAmbiguousOffsets}" SelectedItem="{Binding SelectedTimeZoneAmbiguousOffset}" Visibility="{Binding HasTimeZoneAmbiguousOffsets, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="选择重复本地时间对应的 UTC Offset" Style="{DynamicResource ModernComboBoxStyle}" Margin="0,8,0,0"/>
+                            <TextBlock Text="{Binding TimeZoneStatus}" Foreground="{DynamicResource DangerBrush}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                            <DockPanel Margin="0,10,0,0" LastChildFill="False">
+                                <Button Content="转换" Command="{Binding ConvertTimeZoneCommand}" Style="{DynamicResource PrimaryButtonStyle}"/>
+                                <TextBlock Text="目标时间" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center" Margin="14,0,5,0"/>
+                                <TextBlock Text="{Binding TimeZoneTarget}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                <Button Content="复制" ToolTip="复制目标时区时间" Command="{Binding CopyTextCommand}" CommandParameter="{Binding TimeZoneTarget}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                            <DockPanel Margin="0,6,0,0" LastChildFill="False">
+                                <TextBlock Text="UTC" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding TimeZoneUtc}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                <Button Content="复制" ToolTip="复制 UTC 时间" Command="{Binding CopyTextCommand}" CommandParameter="{Binding TimeZoneUtc}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                            <DockPanel Margin="0,6,0,0" LastChildFill="False">
+                                <TextBlock Text="ISO 8601" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding TimeZoneIso}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="12,0,0,0" TextWrapping="Wrap"/>
+                                <Button Content="复制" ToolTip="复制 ISO 8601" Command="{Binding CopyTextCommand}" CommandParameter="{Binding TimeZoneIso}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                </TabItem>
+                <TabItem Header="时间差">
+                    <Border Style="{DynamicResource CardStyle}" Padding="16" Margin="0,8,0,0">
+                        <StackPanel>
+                            <TextBlock Text="精确时间差（TimeSpan）" Style="{DynamicResource CardTitleStyle}"/>
+                            <TextBlock Text="支持负值；没有 Offset 时按来源时区解释。不计算日历月差。" Style="{DynamicResource CaptionTextStyle}" Margin="0,4,0,8" TextWrapping="Wrap"/>
+                            <TextBlock Text="开始（ISO 8601）" Style="{DynamicResource FieldLabelStyle}"/>
+                            <TextBox Text="{Binding StartInput, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" Margin="0,4,0,8"/>
+                            <TextBlock Text="结束（ISO 8601）" Style="{DynamicResource FieldLabelStyle}"/>
+                            <TextBox Text="{Binding EndInput, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" Margin="0,4,0,8"/>
+                            <TextBlock Text="{Binding DurationStatus}" Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap"/>
+                            <DockPanel Margin="0,8,0,0" LastChildFill="False">
+                                <Button Content="计算" Command="{Binding CalculateDifferenceCommand}" Style="{DynamicResource PrimaryButtonStyle}"/>
+                                <TextBlock Text="Duration" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center" Margin="14,0,5,0"/>
+                                <TextBlock Text="{Binding DurationDisplay}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"/>
+                                <Button Content="复制" ToolTip="复制 Duration" Command="{Binding CopyTextCommand}" CommandParameter="{Binding DurationDisplay}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            </DockPanel>
+                            <UniformGrid Columns="2" Margin="0,10,0,0">
+                                <TextBlock Text="天" Style="{DynamicResource FieldLabelStyle}"/><TextBlock Text="{Binding DurationDays}" Style="{DynamicResource SecondaryTextStyle}"/>
+                                <TextBlock Text="小时（余数）" Style="{DynamicResource FieldLabelStyle}" Margin="0,6,0,0"/><TextBlock Text="{Binding DurationHours}" Style="{DynamicResource SecondaryTextStyle}" Margin="0,6,0,0"/>
+                                <TextBlock Text="分钟（余数）" Style="{DynamicResource FieldLabelStyle}" Margin="0,6,0,0"/><TextBlock Text="{Binding DurationMinutes}" Style="{DynamicResource SecondaryTextStyle}" Margin="0,6,0,0"/>
+                                <TextBlock Text="秒（余数）" Style="{DynamicResource FieldLabelStyle}" Margin="0,6,0,0"/><TextBlock Text="{Binding DurationSeconds}" Style="{DynamicResource SecondaryTextStyle}" Margin="0,6,0,0"/>
+                                <TextBlock Text="总秒数" Style="{DynamicResource FieldLabelStyle}" Margin="0,6,0,0"/><TextBlock Text="{Binding DurationTotalSeconds}" Style="{DynamicResource SecondaryTextStyle}" Margin="0,6,0,0"/>
+                                <TextBlock Text="总毫秒" Style="{DynamicResource FieldLabelStyle}" Margin="0,6,0,0"/><TextBlock Text="{Binding DurationTotalMilliseconds}" Style="{DynamicResource SecondaryTextStyle}" Margin="0,6,0,0"/>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

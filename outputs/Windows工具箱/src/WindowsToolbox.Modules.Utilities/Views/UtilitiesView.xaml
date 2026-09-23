@@ -29,6 +29,26 @@
                     <TextBlock Text="Color Tools" Style="{DynamicResource NavSecondaryTextStyle}"/>
                 </StackPanel>
             </Button>
+            <Button Command="{Binding SelectToolCommand}"
+                    CommandParameter="time-tools"
+                    Tag="{Binding SelectedToolId, Converter={StaticResource StringEqualsConverter}, ConverterParameter=time-tools}"
+                    Style="{DynamicResource SidebarNavButtonStyle}"
+                    Margin="0,0,0,6">
+                <StackPanel>
+                    <TextBlock Text="时间工具" Style="{DynamicResource NavTextStyle}"/>
+                    <TextBlock Text="Time Tools" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding SelectToolCommand}"
+                    CommandParameter="random-tools"
+                    Tag="{Binding SelectedToolId, Converter={StaticResource StringEqualsConverter}, ConverterParameter=random-tools}"
+                    Style="{DynamicResource SidebarNavButtonStyle}"
+                    Margin="0,0,0,6">
+                <StackPanel>
+                    <TextBlock Text="随机工具" Style="{DynamicResource NavTextStyle}"/>
+                    <TextBlock Text="Random Tools" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
         <Border Grid.Column="2"
                 >

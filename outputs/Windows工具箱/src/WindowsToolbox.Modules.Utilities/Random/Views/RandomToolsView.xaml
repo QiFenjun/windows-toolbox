@@ -1,0 +1,81 @@
+<UserControl x:Class="WindowsToolbox.Modules.Utilities.Random.Views.RandomToolsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,0,12">
+            <TextBlock Text="随机工具 / Random Tools" Style="{DynamicResource SectionTitleStyle}"/>
+            <TextBlock Text="使用系统密码学安全随机数源；生成内容只保留在当前会话，不写入日志或文件。"
+                       Style="{DynamicResource SecondaryTextStyle}" Margin="0,4,0,12" TextWrapping="Wrap"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="1.1*"/>
+                </Grid.ColumnDefinitions>
+                <Border Style="{DynamicResource CardStyle}" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="生成类型与参数" Style="{DynamicResource CardTitleStyle}"/>
+                        <TextBlock Text="生成类型" Style="{DynamicResource FieldLabelStyle}" Margin="0,12,0,5"/>
+                        <ComboBox ItemsSource="{Binding AvailableGenerationTypes}" SelectedIndex="{Binding SelectedTypeIndex}" Style="{DynamicResource ModernComboBoxStyle}"/>
+
+                        <StackPanel Visibility="{Binding IsUuidMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="UUID 格式" Style="{DynamicResource FieldLabelStyle}" Margin="0,12,0,5"/>
+                            <ComboBox ItemsSource="{Binding AvailableUuidFormats}" SelectedIndex="{Binding SelectedUuidFormatIndex}" Style="{DynamicResource ModernComboBoxStyle}"/>
+                            <CheckBox Content="大写输出" IsChecked="{Binding UppercaseUuid}" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,9,0,0"/>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding IsStringMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="长度 · 1–4096" Style="{DynamicResource FieldLabelStyle}" Margin="0,12,0,5"/>
+                            <TextBox Text="{Binding StringLengthText, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" ToolTip="每个字符串的字符数，最大 4096"/>
+                            <TextBlock Text="字符集" Style="{DynamicResource FieldLabelStyle}" Margin="0,12,0,5"/>
+                            <CheckBox Content="大写字母 A–Z" IsChecked="{Binding Uppercase}" Style="{DynamicResource ModernCheckBoxStyle}"/>
+                            <CheckBox Content="小写字母 a–z" IsChecked="{Binding Lowercase}" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,4,0,0"/>
+                            <CheckBox Content="数字 0–9" IsChecked="{Binding Digits}" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,4,0,0"/>
+                            <CheckBox Content="符号 !@#$%^&amp;*()-_=+[]{};:,.?" IsChecked="{Binding Symbols}" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,4,0,0"/>
+                            <TextBlock Text="符号集不含引号、反斜杠或空格。" Style="{DynamicResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding IsIntegerMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="最小值 · 包含" Style="{DynamicResource FieldLabelStyle}" Margin="0,12,0,5"/>
+                            <TextBox Text="{Binding MinimumText, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}"/>
+                            <TextBlock Text="最大值 · 包含" Style="{DynamicResource FieldLabelStyle}" Margin="0,9,0,5"/>
+                            <TextBox Text="{Binding MaximumText, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}"/>
+                        </StackPanel>
+
+                        <TextBlock Text="数量 · 1–1000" Style="{DynamicResource FieldLabelStyle}" Margin="0,14,0,5"/>
+                        <TextBox Text="{Binding CountText, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource ModernTextBoxStyle}" ToolTip="批量数量，最大 1000"/>
+                        <Button Content="生成" Command="{Binding GenerateCommand}" Style="{DynamicResource PrimaryButtonStyle}" Margin="0,14,0,0"/>
+                        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                        <TextBlock Text="{Binding Status}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{DynamicResource CardStyle}" Padding="16">
+                    <DockPanel LastChildFill="True">
+                        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,10">
+                            <TextBlock Text="输出" Style="{DynamicResource CardTitleStyle}" VerticalAlignment="Center"/>
+                            <Button DockPanel.Dock="Right" Content="清除" ToolTip="清除当前会话中的结果" Command="{Binding ClearCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                            <Button DockPanel.Dock="Right" Content="复制全部" ToolTip="按每行一项复制所有结果" Command="{Binding CopyAllCommand}" Style="{DynamicResource SecondaryButtonStyle}"/>
+                        </DockPanel>
+                        <ListBox ItemsSource="{Binding Results}" MinHeight="260" MaxHeight="520"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 VirtualizingPanel.IsVirtualizing="True"
+                                 VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ListBox.ItemsPanel><ItemsPanelTemplate><VirtualizingStackPanel/></ItemsPanelTemplate></ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel LastChildFill="True" Margin="0,2">
+                                        <Button DockPanel.Dock="Right" Content="复制" ToolTip="复制此项" Command="{Binding DataContext.CopyResultCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" Style="{DynamicResource SecondaryButtonStyle}" Padding="8,3" MinHeight="28" Margin="8,0,0,0"/>
+                                        <TextBlock Text="{Binding}" Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center"
+                                                   TextWrapping="Wrap" TextOptions.TextFormattingMode="Display"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

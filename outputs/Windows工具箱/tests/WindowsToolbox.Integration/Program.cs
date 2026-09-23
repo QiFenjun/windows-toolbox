@@ -7,6 +7,8 @@ using WindowsToolbox.Modules.KeepAwake.Services;
 using WindowsToolbox.Modules.LockInspector.Interop;
 using WindowsToolbox.Modules.Utilities.QR.Models;
 using WindowsToolbox.Modules.Utilities.QR.Services;
+using WindowsToolbox.Modules.Utilities.Random.Models;
+using WindowsToolbox.Modules.Utilities.Random.Services;
 
 // Explicit opt-in executable; never run by dotnet test, never scans user files.
 if (args.Length == 1 && args[0] == "--ui-smoke") { UiSmoke.Run(); return; }
@@ -20,6 +22,23 @@ if (args.Length == 1 && args[0] == "--qr-roundtrip")
         Check(string.Equals(decoded, text, StringComparison.Ordinal), $"QR round trip failed for a {text.Length}-character input");
     }
     Console.WriteLine("PASS: ZXing.Net QR encode -> WPF BitmapSource -> decode for ASCII, Chinese, and Emoji.");
+    return;
+}
+if (args.Length == 1 && args[0] == "--secure-rng")
+{
+    RandomToolsService random = new(new SystemSecureRandomSource());
+    var uuids = random.GenerateUuids(100);
+    var strings = random.GenerateStrings(100, 64, new RandomStringOptions(Symbols: true));
+    var integers = random.GenerateIntegers(-100, 100, 100);
+    Check(uuids.All(value => value.Length == 36 && value[14] == '4' && "89ab".Contains(value[19])), "Production UUID output format is invalid");
+    Check(strings.All(value => value.Length == 64), "Production random-string length is invalid");
+    Check(integers.All(value => value is >= -100 and <= 100), "Production random-integer range is invalid");
+    Stopwatch performance = Stopwatch.StartNew();
+    var performanceStrings = random.GenerateStrings(1000, 128, new RandomStringOptions());
+    performance.Stop();
+    Check(performanceStrings.Count == 1000 && performanceStrings.All(value => value.Length == 128), "Maximum routine string batch failed");
+    Check(performance.Elapsed < TimeSpan.FromSeconds(30), "1000 × 128 character production string generation exceeded 30 seconds");
+    Console.WriteLine($"PASS: production RandomNumberGenerator API generated 100 UUIDs, strings, and bounded integers plus 1000 × 128 strings in {performance.ElapsedMilliseconds} ms; values were not logged. This smoke check is not a statistical security test.");
     return;
 }
 if (args.Length == 1 && args[0] == "--screen-picker") { ScreenPickerIntegration.Run(); return; }
@@ -37,7 +56,7 @@ if (args.Length == 1 && args[0] == "--keep-awake")
 }
 if (args.Length == 1 && args[0] == "--stress") { await StressCheck.RunAsync(); return; }
 if (args.Length != 1 || args[0] != "--restart-manager")
-    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering), --qr-roundtrip (real local QR codec), --screen-picker (samples a test window only).");
+    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering), --qr-roundtrip (real local QR codec), --secure-rng (real local CSPRNG smoke), --screen-picker (samples a test window only).");
 string root = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "WindowsToolbox.LockInspector.Tests", Guid.NewGuid().ToString("N"))).FullName;
 try
 {

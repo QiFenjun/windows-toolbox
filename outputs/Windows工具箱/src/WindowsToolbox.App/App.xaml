@@ -23,7 +23,11 @@
              xmlns:utilityViews="clr-namespace:WindowsToolbox.Modules.Utilities.Views;assembly=WindowsToolbox.Modules.Utilities"
              xmlns:utilityViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
              xmlns:qrViews="clr-namespace:WindowsToolbox.Modules.Utilities.QR.Views;assembly=WindowsToolbox.Modules.Utilities"
-             xmlns:qrViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.QR.ViewModels;assembly=WindowsToolbox.Modules.Utilities">
+             xmlns:qrViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.QR.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:timeViews="clr-namespace:WindowsToolbox.Modules.Utilities.Time.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:timeViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Time.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:randomViews="clr-namespace:WindowsToolbox.Modules.Utilities.Random.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:randomViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Random.ViewModels;assembly=WindowsToolbox.Modules.Utilities">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -108,6 +112,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type colorViewModels:ColorToolsViewModel}">
                 <colorViews:ColorToolsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type timeViewModels:TimeToolsViewModel}">
+                <timeViews:TimeToolsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type randomViewModels:RandomToolsViewModel}">
+                <randomViews:RandomToolsView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

@@ -31,18 +31,32 @@ public sealed class UtilitiesQrCodeTests
         Assert.AreEqual(1, registry.Modules.Count);
         Assert.IsTrue(module.Keywords.Contains("QR"));
         Assert.IsTrue(module.Keywords.Contains("颜色"));
+        Assert.IsTrue(module.Keywords.Contains("Time"));
+        Assert.IsTrue(module.Keywords.Contains("Random"));
     }
 
     [TestMethod]
-    public void UtilitiesNavigation_ContainsOnlyQrAndColorTools()
+    public void UtilitiesNavigation_ContainsQrColorAndTimeToolsInOneModule()
     {
-        CollectionAssert.AreEqual(new[] { "qr", "color" },
+        CollectionAssert.AreEqual(new[] { "qr", "color", "time-tools", "random-tools" },
             UtilitiesViewModel.Tools.Select(tool => tool.Id).ToArray());
 
         UtilitiesViewModel viewModel = new();
         viewModel.SelectToolCommand.Execute("color");
         Assert.AreEqual("color", viewModel.SelectedToolId);
         Assert.AreEqual("Color Tools", viewModel.SelectedTool.EnglishName);
+        viewModel.SelectToolCommand.Execute("time-tools");
+        Assert.AreEqual("time-tools", viewModel.SelectedTool.Id);
+        Assert.AreEqual("Time Tools", viewModel.SelectedTool.EnglishName);
+        Assert.AreEqual("时间戳、时区与日期时间快速转换", viewModel.SelectedTool.Description);
+        viewModel.SelectToolCommand.Execute("random-tools");
+        Assert.AreEqual("random-tools", viewModel.SelectedTool.Id);
+        Assert.AreEqual("随机工具", viewModel.SelectedTool.ChineseName);
+        Assert.AreEqual("Random Tools", viewModel.SelectedTool.EnglishName);
+        Assert.IsInstanceOfType(viewModel.SelectedToolContent, typeof(WindowsToolbox.Modules.Utilities.Random.ViewModels.RandomToolsViewModel));
+        WindowsToolbox.Core.Services.ModuleRegistry registry = new();
+        registry.Register(new UtilitiesModule());
+        Assert.AreEqual(1, registry.Modules.Count);
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => viewModel.SelectedToolId = "qr-tools");
     }
 

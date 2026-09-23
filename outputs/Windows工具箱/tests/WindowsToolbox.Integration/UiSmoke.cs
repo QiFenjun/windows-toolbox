@@ -18,6 +18,8 @@ using WindowsToolbox.Modules.Utilities.QR.Views;
 using WindowsToolbox.Modules.Utilities.Color.Services;
 using WindowsToolbox.Modules.Utilities.Color.ViewModels;
 using WindowsToolbox.Modules.Utilities.Color.Views;
+using WindowsToolbox.Modules.Utilities.Time.Views;
+using WindowsToolbox.Modules.Utilities.Random.Views;
 using WindowsToolbox.Modules.Utilities.Services;
 using WindowsToolbox.Modules.Utilities.ViewModels;
 using WindowsToolbox.Modules.Utilities.Views;
@@ -46,6 +48,9 @@ internal static class UiSmoke
                     ResourceDictionary colors=app.Resources.MergedDictionaries.First(d=>d.Source?.OriginalString.Contains("Colors.Light.xaml")==true || d.Source?.OriginalString.Contains("Colors.Dark.xaml")==true);
                     int index=app.Resources.MergedDictionaries.IndexOf(colors);
                     app.Resources.MergedDictionaries[index]=new ResourceDictionary{Source=new Uri($"/Windows工具箱;component/Themes/Colors.{theme}.xaml",UriKind.Relative)};
+                    UtilitiesView utilitiesView=new(){DataContext=utilitiesVm};
+                    TimeToolsView timeToolsView=new(){DataContext=utilitiesVm.TimeTools};
+                    RandomToolsView randomToolsView=new(){DataContext=utilitiesVm.RandomTools};
                     UserControl[] views=[
                         new LockInspectorView(){DataContext=inspector},new KeepAwakeView(){DataContext=awakeVm},
                         new WindowsToolbox.Modules.WindowTools.Views.WindowToolsView(),
@@ -56,7 +61,8 @@ internal static class UiSmoke
                         new WindowsToolbox.Modules.NetworkTraffic.Views.NetworkTrafficView(),
                         new WindowsToolbox.Modules.InstalledApps.Views.InstalledAppsView(),
                         new WindowsToolbox.Modules.Shutdown.Views.ShutdownView(),
-                        new UtilitiesView(){DataContext=utilitiesVm},new QrToolsView(){DataContext=qrVm},new ColorToolsView(){DataContext=colorVm}];
+                        utilitiesView,new QrToolsView(){DataContext=qrVm},
+                        new ColorToolsView(){DataContext=colorVm},timeToolsView,randomToolsView];
                     foreach(UserControl view in views)
                     {
                         view.Measure(new Size(1040,950)); view.Arrange(new Rect(0,0,1040,950)); view.UpdateLayout();
@@ -67,7 +73,24 @@ internal static class UiSmoke
                             using FileStream stream=File.Create(Path.Combine(output,$"{view.GetType().Name}-{theme}.png")); encoder.Save(stream);
                         }
                     }
-                    Console.WriteLine($"PASS: {theme} BAML/resource/layout load for all 11 module views plus QR Tools and Color Tools pages; new module renders saved. No user interaction or native activity.");
+                    foreach ((string id,Type expectedView) in new[]
+                    {
+                        ("qr",typeof(QrToolsView)),("color",typeof(ColorToolsView)),
+                        ("time-tools",typeof(TimeToolsView)),("random-tools",typeof(RandomToolsView))
+                    })
+                    {
+                        utilitiesVm.SelectedToolId=id;
+                        utilitiesView.UpdateLayout();
+                        if(FindVisualChild(utilitiesView,expectedView) is null)
+                            throw new InvalidOperationException($"Utilities navigation did not load the expected {id} page template.");
+                    }
+                    foreach(UserControl page in new UserControl[]{timeToolsView,randomToolsView})
+                    {
+                        page.Measure(new Size(560,820)); page.Arrange(new Rect(0,0,560,820)); page.UpdateLayout();
+                        if(FindVisualChild(page,typeof(ScrollViewer)) is ScrollViewer scroll && scroll.ExtentWidth>scroll.ViewportWidth+1)
+                            throw new InvalidOperationException($"{page.GetType().Name} requires horizontal scrolling at the narrow smoke width.");
+                    }
+                    Console.WriteLine($"PASS: {theme} BAML/resource/layout load for all 11 module views plus QR, Color, Time, and Random Tools pages; no user interaction or native activity.");
                 }
                 app.Shutdown();
             }
@@ -104,5 +127,16 @@ internal static class UiSmoke
         public int RegisterResources(uint session,string[] files)=>throw new NotSupportedException();
         public int GetList(uint session,out uint needed,ref uint count,RmProcessInfo[]? processes,out uint rebootReasons)=>throw new NotSupportedException();
         public int EndSession(uint session)=>throw new NotSupportedException();
+    }
+    private static DependencyObject? FindVisualChild(DependencyObject parent,Type targetType)
+    {
+        for(int i=0;i<VisualTreeHelper.GetChildrenCount(parent);i++)
+        {
+            DependencyObject child=VisualTreeHelper.GetChild(parent,i);
+            if(targetType.IsInstanceOfType(child)) return child;
+            DependencyObject? found=FindVisualChild(child,targetType);
+            if(found is not null) return found;
+        }
+        return null;
     }
 }
