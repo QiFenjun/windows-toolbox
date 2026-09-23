@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.8.0`
+当前版本：`v1.9.0`
 
 ## 当前模块
 
@@ -20,6 +20,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 | 效率工具 / Productivity Tools | 窗口工具 | Window Tools | `window-tools` |
 | 效率工具 / Productivity Tools | 占用检测 | Lock Inspector | `lock-inspector` |
 | 效率工具 / Productivity Tools | 保持唤醒 | Keep Awake | `keep-awake` |
+| 效率工具 / Productivity Tools | 小工具 | Utilities | `utilities` |
 
 ### 定时关机
 
@@ -121,6 +122,15 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 - 不修改电源计划、注册表、超时或策略，不模拟鼠标键盘、不创建服务/计划任务/独立常驻程序
 - **能力边界：** 这是临时请求 Windows 保持唤醒，不能阻止用户主动 Sleep/Hibernate/Shutdown、关键电源/电池或管理员策略；不阻止 Win+L 锁屏或绕过屏保认证。电池供电时会增加耗电
 
+### 小工具 / Utilities
+
+Utilities 是一个静态注册的容器模块，当前包含两个本地工具：
+
+- **二维码工具 / QR Tools：** 离线生成文本、URL、中文和 Emoji QR Code；选择尺寸与纠错级别，复制或导出 PNG；从单张本地图片、拖放图片或用户主动读取的剪贴板图片识别 QR。识别内容只显示或复制，不会自动打开。
+- **颜色工具 / Color Tools：** 编辑 HEX、RGB、HSL 和 Alpha，显示透明棋盘预览并复制常用格式；屏幕取色通过短生命周期 Overlay 和物理屏幕像素读取，支持虚拟桌面负坐标。
+- 最近颜色只保留在当前应用会话，最多 10 项；应用不保存 QR 输入、识别图片、颜色记录或屏幕像素。只有用户主动选择路径导出 QR PNG 时才会写入该文件；不会上传内容。
+- 两个工具均不联网、不注入进程；屏幕取色不保存截图、不读取窗口标题或内容，结束时关闭 Overlay 并释放设备上下文。
+
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
@@ -143,7 +153,7 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.8.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.9.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -166,7 +176,7 @@ dotnet run --project src/WindowsToolbox.App/WindowsToolbox.App.csproj
 - WPF
 - C# 12
 
-网络流量模块使用 Microsoft 的 `Microsoft.Diagnostics.Tracing.TraceEvent` 读取 Windows ETW；测试项目使用 MSTest。
+网络流量模块使用 Microsoft 的 `Microsoft.Diagnostics.Tracing.TraceEvent` 读取 Windows ETW；二维码使用 `ZXing.Net` 0.16.11（Apache-2.0，许可证随发布包提供）；测试项目使用 MSTest。
 
 ## 项目目录
 
@@ -233,6 +243,9 @@ windows-toolbox/
 │  ├─ tests/WindowsToolbox.Tests/
 │  ├─ src/WindowsToolbox.Modules.LockInspector/ # Restart Manager 诊断模块
 │  ├─ src/WindowsToolbox.Modules.KeepAwake/     # 临时电源请求模块
+│  ├─ src/WindowsToolbox.Modules.Utilities/     # Utilities 容器：静态 QR Tools / Color Tools
+│  │  ├─ QR/
+│  │  └─ Color/
 │  ├─ tests/WindowsToolbox.Integration/    # 显式运行的本机验证，不由 dotnet test 执行
 │  ├─ legacy/WinForms-v1/                  # 原版源码备份；编译产物不入库
 │  ├─ scripts/
@@ -246,8 +259,8 @@ windows-toolbox/
 1. 每个模块实现 `IToolModule`，提供稳定 ID、中文名称、英文名称、双语分类、说明、图标键、关键词、排序和可用性。
 2. `ModuleRegistry` 负责注册、排序、查找与搜索。
 3. `NavigationService` 使用页面 ID 导航，并缓存 ViewModel，避免重复创建页面。
-4. 模块通过自己的 `ModuleResources.xaml` 提供 ViewModel 到 View 的 DataTemplate。
-5. 应用启动时加载已注册模块的资源字典，主窗口根据注册表自动生成侧边栏、首页卡片和搜索结果。
+4. 多数模块通过自己的 `ModuleResources.xaml` 提供 ViewModel 到 View 的 DataTemplate；Utilities 的 QR/Color 内页由 `App.xaml` 静态声明。
+5. 应用启动时加载已注册模块的资源字典，主窗口根据注册表自动生成顶层模块导航；Utilities 容器内部使用固定工具 ID 导航，不动态发现或加载插件。
 
 因此新增模块不需要修改 `MainWindow.xaml` 或 `MainWindow.xaml.cs`。
 
@@ -295,7 +308,7 @@ public sealed class ClipboardModule : IToolModule
 moduleRegistry.Register(new ClipboardModule());
 ```
 
-侧边栏、首页卡片、模块数量、搜索和导航会自动更新。
+侧边栏、首页卡片、模块数量、搜索和导航会自动更新。Utilities 的内部小工具不单独注册成顶层模块。
 
 ## 图标和资源
 
@@ -373,7 +386,7 @@ dotnet test WindowsToolbox.sln --configuration Release --no-build
 
 ## 打包
 
-v1.8.0 普通 `dotnet test` 使用 Fake Restart Manager/Fake execution-state，不扫描用户文件、不阻止电脑休眠。
+v1.9.0 普通 `dotnet test` 使用 Fake Restart Manager、Fake execution-state、Fake clipboard 和 Fake screen picker；不扫描用户文件、不阻止电脑休眠、不读取用户屏幕。
 以下独立验证必须在本机按需显式运行（在 `outputs/Windows工具箱` 目录）：
 
 ```powershell
@@ -381,9 +394,11 @@ dotnet run --project tests/WindowsToolbox.Integration -c Release -- --restart-ma
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --keep-awake
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --stress
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --ui-smoke
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --qr-roundtrip
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --screen-picker
 ```
 
-RM 与压力测试只用自建临时夹具并清理；`--keep-awake` 仅短暂启用并立即在 finally 释放；`--stress` 使用 20k 空文件和 Fake RM，且测试夹具中的临时 ACL 必须恢复。离屏 UI 渲染输出到忽略提交的 `artifacts/ui-smoke`，不代替人工点击或硬件验收。详细结果见 [v1.8.0 验证记录](docs/v1.8.0-validation.md)。
+RM 与压力测试只用自建临时夹具并清理；`--keep-awake` 仅短暂启用并立即释放；`--screen-picker` 只在自建纯色测试窗口上采样，不读取用户窗口或保存截图。离屏 UI 渲染输出到忽略提交的 `artifacts/ui-smoke`，不代替人工点击或多显示器/高 DPI 硬件验收。详细结果见 [v1.9.0 验证记录](docs/v1.9.0-validation.md)。
 
 生成完全自包含的 Windows x64 单文件版本：
 
@@ -396,7 +411,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
 -p:DebugSymbols=false `
-    --output artifacts/release/v1.8.0/WindowsToolbox-win-x64
+    --output artifacts/release/v1.9.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。
@@ -404,6 +419,9 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 ## 安全与隐私
 
 - 完全离线运行，不收集或上传数据
+- QR 生成、识别与颜色转换均在本机完成；识别到 URL 后不会自动打开，QR PNG 只会在用户主动导出时写入所选路径
+- 屏幕取色只读取光标当前像素，不保存截图、颜色历史或屏幕内容
+- Utilities 最近颜色只保存在本次会话的内存中，应用退出后清空
 - 已安装软件列表和目录大小缓存只保存在本机，不会上传
 - 主程序不请求管理员权限；网络流量高级 ETW 采集仅在用户明确启动时以命名管道辅助模式按需提升
 - 网络流量模块只处理时间、PID、协议、字节数和端点等统计元数据，不抓取数据包正文、不解密 HTTPS、不读取 Cookie、密码或网页内容
@@ -426,6 +444,7 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 - 网络流量的 ETW 应用归因依赖 Windows 提供的 Kernel Network 事件；透明 WFP/NDIS 重定向若无法可靠归因，会显示“未知”而不会猜测。当前不包含驱动、WFP Callout、VPN/代理配置或网络拦截功能。
 - 网络接口实时统计使用 Windows IP Helper/网络接口信息；应用流量与接口流量是独立概念，不能相加。真实 VPN 或本地代理环境仅在系统已存在时可验证，项目不会安装第三方 VPN/代理。
 - Window Tools 只管理可安全操作的普通顶层窗口。UIPI 会阻止普通权限程序调整高完整性窗口；模块不会自动提升或绕过该限制。真实多显示器和不同 DPI 的人工验证需在相应硬件环境完成。
+- Color Tools 使用 Win32 物理屏幕坐标和虚拟桌面范围；本机单窗口采样集成通过。人工取色交互、负坐标第二显示器及 100%/125%/150% 混合 DPI 验收仍为 Pending。
 - 未购买商业代码签名证书，发布的 EXE 为未签名程序。
 
 ## 后续规划

@@ -16,6 +16,7 @@ using WindowsToolbox.Modules.QuickLaunch;
 using WindowsToolbox.Modules.WindowTools;
 using WindowsToolbox.Modules.LockInspector;
 using WindowsToolbox.Modules.KeepAwake;
+using WindowsToolbox.Modules.Utilities;
 using Forms = System.Windows.Forms;
 
 namespace WindowsToolbox.App;
@@ -26,6 +27,7 @@ public partial class App : System.Windows.Application
     private QuickLaunchModule? _quickLaunchModule;
     private LockInspectorModule? _lockInspectorModule;
     private KeepAwakeModule? _keepAwakeModule;
+    private UtilitiesModule? _utilitiesModule;
     private bool _isExplicitExit;
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -65,6 +67,8 @@ public partial class App : System.Windows.Application
         moduleRegistry.Register(_lockInspectorModule);
         _keepAwakeModule = new KeepAwakeModule(settingsService);
         moduleRegistry.Register(_keepAwakeModule);
+        _utilitiesModule = new UtilitiesModule();
+        moduleRegistry.Register(_utilitiesModule);
         NetworkTrafficModule networkTrafficModule = new(settingsService);
         moduleRegistry.Register(networkTrafficModule);
         foreach (IToolModule module in moduleRegistry.Modules)
@@ -130,6 +134,7 @@ public partial class App : System.Windows.Application
     protected override void OnExit(ExitEventArgs e)
     {
         _keepAwakeModule?.Dispose();
+        _utilitiesModule?.Dispose();
         _lockInspectorModule?.Dispose();
         _quickLaunchModule?.Dispose();
         _trayIcon?.Dispose();

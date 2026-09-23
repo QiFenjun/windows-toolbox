@@ -1,0 +1,10 @@
+Windows Toolbox v1.9.0 includes the following third-party component:
+
+ZXing.Net 0.16.11
+Copyright (c) Michael Jahn
+Project: https://github.com/micjahn/ZXing.Net/
+License: Apache License 2.0
+The full license text is provided in LICENSES/ZXing.Net-0.16.11-Apache-2.0.txt.
+
+Windows Toolbox uses the unmodified NuGet package's QR encoding and decoding
+library. ZXing.Net source code is not included in this repository.

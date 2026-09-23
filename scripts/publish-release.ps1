@@ -80,6 +80,13 @@ try {
         throw "GitHub Release 已经存在：$tag"
     }
 
+    $immutabilityJson = gh api "repos/QiFenjun/windows-toolbox/immutable-releases"
+    Assert-LastExitCode "检查 GitHub Release 不可变设置"
+    $immutability = $immutabilityJson | ConvertFrom-Json
+    if ($immutability.enabled -ne $true) {
+        throw "GitHub 仓库尚未启用 Release immutability，停止发布。"
+    }
+
     if (Test-Path -LiteralPath $publishDirectory) {
         throw "发布目录已经存在，拒绝覆盖：$publishDirectory"
     }
@@ -134,7 +141,17 @@ https://github.com/QiFenjun/windows-toolbox
 
 隐私：
 软件离线运行，不收集或上传用户数据及已安装软件列表。
+
+第三方许可证：
+发行包内 THIRD-PARTY-NOTICES.txt 和 LICENSES/ 目录列出所含开源组件及许可证文本。
 "@ | Set-Content -LiteralPath (Join-Path $publishDirectory "README.txt") -Encoding utf8
+
+Copy-Item -LiteralPath (Join-Path $repositoryRoot "THIRD-PARTY-NOTICES.txt") `
+    -Destination (Join-Path $publishDirectory "THIRD-PARTY-NOTICES.txt")
+$licenseDirectory = Join-Path $publishDirectory "LICENSES"
+New-Item -ItemType Directory -Path $licenseDirectory -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $repositoryRoot "LICENSES\ZXing.Net-0.16.11-Apache-2.0.txt") `
+    -Destination (Join-Path $licenseDirectory "ZXing.Net-0.16.11-Apache-2.0.txt")
 
     $forbiddenPublishFiles = @(
         Get-ChildItem -LiteralPath $publishDirectory -Recurse -Force |
@@ -176,12 +193,13 @@ https://github.com/QiFenjun/windows-toolbox
 
     $releaseJson = gh release view $tag `
         --repo "QiFenjun/windows-toolbox" `
-        --json name,tagName,isDraft,isPrerelease,url,assets
+        --json name,tagName,isDraft,isPrerelease,isImmutable,url,assets
     Assert-LastExitCode "验证 GitHub Release"
     $release = $releaseJson | ConvertFrom-Json
     $assetNames = @($release.assets.name)
     if ($release.isDraft -or $release.isPrerelease -or
         $release.tagName -ne $tag -or
+        -not $release.isImmutable -or
         $assetNames -notcontains [IO.Path]::GetFileName($zipPath) -or
         $assetNames -notcontains [IO.Path]::GetFileName($checksumPath)) {
         throw "GitHub Release 验证失败。"

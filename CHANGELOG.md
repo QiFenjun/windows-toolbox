@@ -2,6 +2,28 @@
 
 本项目使用语义化版本号记录正式发布。
 
+## [1.9.0] - 2026-09-23
+
+### Added
+
+- 新增静态 Utilities 顶层模块（ID `utilities`），内含固定导航项 QR Tools（`qr`）与 Color Tools（`color`）
+- QR Tools 支持离线文本/URL/中文/Emoji 生成，PNG 复制与导出，以及本地单张图片、拖放和用户主动读取剪贴板图片识别
+- Color Tools 支持 HEX、RGB、HSL、Alpha 相互转换，透明棋盘预览、格式复制、会话内最近颜色和屏幕取色
+- 屏幕取色使用 Per-Monitor V2 物理屏幕坐标、短生命周期虚拟桌面 Overlay、GetDC/GetPixel，并在取消、失焦、窗口隐藏和应用退出时清理
+- 发布包附带 ZXing.Net 0.16.11 的 Apache-2.0 许可证文本与第三方组件说明
+
+### Privacy and safety
+
+- 两个工具完全离线；应用不持久化二维码输入、识别图片或颜色历史（用户主动导出 PNG 除外），识别出的 URL 不自动打开
+- 屏幕取色只读当前像素，不保存截图、不读取窗口内容或标题；不注入、不提权、不写入剪贴板
+
+### Validation
+
+- Release build 0 warnings / 0 errors；全量自动化测试 468/468 通过，所有外部 API、剪贴板和 screen picker 单元测试使用 Fake
+- QR ASCII/中文/Emoji encode → bitmap → decode 往返通过；Light/Dark UI smoke 通过
+- 真实 screen sampler 对自建纯色窗口采样 500 次，颜色正确且 GDI 对象数保持 116 → 116
+- 本机真实 Restart Manager、Keep Awake 即时释放和 20,000 文件压力集成验证通过；具体显示器 DPI、人工 UI 和硬件场景仍为 Pending
+
 ## [1.8.0] - 2026-09-23
 
 ### Added

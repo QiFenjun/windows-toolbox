@@ -7,5 +7,6 @@
     <ProjectReference Include="..\..\src\WindowsToolbox.App\WindowsToolbox.App.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.KeepAwake\WindowsToolbox.Modules.KeepAwake.csproj" />
     <ProjectReference Include="..\..\src\WindowsToolbox.Modules.LockInspector\WindowsToolbox.Modules.LockInspector.csproj" />
+    <ProjectReference Include="..\..\src\WindowsToolbox.Modules.Utilities\WindowsToolbox.Modules.Utilities.csproj" />
   </ItemGroup>
 </Project>

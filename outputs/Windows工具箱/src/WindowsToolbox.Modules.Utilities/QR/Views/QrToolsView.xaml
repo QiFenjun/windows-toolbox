@@ -1,0 +1,164 @@
+<UserControl x:Class="WindowsToolbox.Modules.Utilities.QR.Views.QrToolsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:qr="clr-namespace:WindowsToolbox.Modules.Utilities.QR.Models"
+             MinWidth="580">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="0,0,0,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="二维码工具 / QR Tools" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="离线生成和识别 QR Code；识别内容只显示或复制，不会自动打开。"
+                               Style="{DynamicResource SecondaryTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="生成二维码" Command="{Binding ShowGenerateModeCommand}"
+                            Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,6,0"/>
+                    <Button Content="识别二维码" Command="{Binding ShowDecodeModeCommand}"
+                            Style="{DynamicResource SecondaryButtonStyle}"/>
+                </StackPanel>
+            </DockPanel>
+
+            <Grid Grid.Row="2" Visibility="{Binding IsGenerateMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="260"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="320"/>
+                </Grid.ColumnDefinitions>
+                <Border Style="{DynamicResource CardStyle}" Padding="14">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="12"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="输入内容" Style="{DynamicResource FieldLabelStyle}"/>
+                        <TextBox Grid.Row="2" Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                 Style="{DynamicResource ModernTextBoxStyle}"
+                                 SelectionBrush="{DynamicResource AccentBrush}" CaretBrush="{DynamicResource AccentBrush}"
+                                 ToolTip="输入文本、网址或其他普通文字；内容不会保存或上传。"/>
+                        <WrapPanel Grid.Row="4" VerticalAlignment="Bottom">
+                            <StackPanel Width="104" Margin="0,0,10,0">
+                                <TextBlock Text="尺寸" Style="{DynamicResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding AvailableSizes}" SelectedItem="{Binding SelectedSize}"
+                                          Style="{DynamicResource ModernComboBoxStyle}"/>
+                            </StackPanel>
+                            <StackPanel Width="126" Margin="0,0,10,0">
+                                <TextBlock Text="纠错级别" Style="{DynamicResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding AvailableErrorCorrections}"
+                                          SelectedItem="{Binding SelectedErrorCorrection}"
+                                          DisplayMemberPath="Label" Style="{DynamicResource ModernComboBoxStyle}"/>
+                            </StackPanel>
+                            <StackPanel Width="112">
+                                <TextBlock Text="静区" Style="{DynamicResource FieldLabelStyle}"/>
+                                <ComboBox SelectedValue="{Binding QuietZoneStyle}" SelectedValuePath="Tag"
+                                          Style="{DynamicResource ModernComboBoxStyle}">
+                                    <ComboBoxItem Content="标准" Tag="{x:Static qr:QrQuietZoneStyle.Standard}"/>
+                                    <ComboBoxItem Content="紧凑" Tag="{x:Static qr:QrQuietZoneStyle.Compact}"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </WrapPanel>
+                        <TextBlock Grid.Row="6" Text="内容按 UTF-8 编码，实际容量随纠错级别和字符内容变化。"
+                                   Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Style="{DynamicResource CardStyle}" Padding="14">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="实时预览" Style="{DynamicResource SectionTitleStyle}"/>
+                        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="8"
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10">
+                            <Image Source="{Binding PreviewImage}" Width="256" Height="256" Stretch="Uniform"/>
+                        </Border>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,8">
+                            <Button Content="复制图片" Command="{Binding CopyQrImageCommand}"
+                                    Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,0"/>
+                            <Button Content="保存 PNG" Click="SavePng_Click" Style="{DynamicResource PrimaryButtonStyle}"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="3" Text="{Binding Status}" Style="{DynamicResource CaptionTextStyle}"
+                                   TextAlignment="Center" TextWrapping="Wrap"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" Visibility="{Binding IsGenerateMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*" MinHeight="250"/>
+                </Grid.RowDefinitions>
+                <Border AllowDrop="True" DragOver="ImageDrop_DragOver" Drop="ImageDrop_Drop"
+                        Style="{DynamicResource CardStyle}" Padding="14">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left" Text="选择一张本地 PNG、JPG 或 BMP 图片，或将图片拖到这里。"
+                                   Style="{DynamicResource SecondaryTextStyle}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="选择图片" Click="ChooseImage_Click" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,0"/>
+                            <Button Content="读取剪贴板图片" Command="{Binding UseClipboardImageCommand}"
+                                    Style="{DynamicResource SecondaryButtonStyle}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{DynamicResource CardStyle}" Padding="10">
+                        <Image Source="{Binding DecodedImage}" Stretch="Uniform" MaxWidth="200" MaxHeight="220"/>
+                    </Border>
+                    <Border Grid.Column="2" Style="{DynamicResource CardStyle}" Padding="14">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <DockPanel>
+                                <TextBlock Text="识别结果" Style="{DynamicResource SectionTitleStyle}"/>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding DecodedResult.CharacterCount, StringFormat={}{0} 字符}"
+                                               Style="{DynamicResource CaptionTextStyle}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <Button Content="复制内容" Command="{Binding CopyDecodedTextCommand}"
+                                            Style="{DynamicResource SecondaryButtonStyle}"/>
+                                </StackPanel>
+                            </DockPanel>
+                            <TextBox Grid.Row="1" Text="{Binding DecodedResult.Text}" IsReadOnly="True"
+                                     AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                     Style="{DynamicResource ModernTextBoxStyle}"
+                                     SelectionBrush="{DynamicResource AccentBrush}" CaretBrush="{DynamicResource AccentBrush}"
+                                     Margin="0,10,0,10"/>
+                            <DockPanel Grid.Row="2">
+                                <TextBlock Text="{Binding Status}" Style="{DynamicResource CaptionTextStyle}" VerticalAlignment="Center"/>
+                                <Button DockPanel.Dock="Right" Content="取消识别" Command="{Binding CancelDecodeCommand}"
+                                        Style="{DynamicResource SecondaryButtonStyle}"/>
+                            </DockPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <TextBlock Grid.Row="4" Text="{Binding Error}" Foreground="{DynamicResource DangerBrush}"
+                       TextWrapping="Wrap"/>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

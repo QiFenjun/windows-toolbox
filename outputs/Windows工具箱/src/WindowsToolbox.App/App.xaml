@@ -1,6 +1,8 @@
 <Application x:Class="WindowsToolbox.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:colorViews="clr-namespace:WindowsToolbox.Modules.Utilities.Color.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:colorViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Color.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
              xmlns:views="clr-namespace:WindowsToolbox.App.Views"
              xmlns:viewModels="clr-namespace:WindowsToolbox.App.ViewModels"
              xmlns:converters="clr-namespace:WindowsToolbox.App.Converters"
@@ -17,7 +19,11 @@
              xmlns:lockViews="clr-namespace:WindowsToolbox.Modules.LockInspector.Views;assembly=WindowsToolbox.Modules.LockInspector"
              xmlns:lockViewModels="clr-namespace:WindowsToolbox.Modules.LockInspector.ViewModels;assembly=WindowsToolbox.Modules.LockInspector"
              xmlns:awakeViews="clr-namespace:WindowsToolbox.Modules.KeepAwake.Views;assembly=WindowsToolbox.Modules.KeepAwake"
-             xmlns:awakeViewModels="clr-namespace:WindowsToolbox.Modules.KeepAwake.ViewModels;assembly=WindowsToolbox.Modules.KeepAwake">
+             xmlns:awakeViewModels="clr-namespace:WindowsToolbox.Modules.KeepAwake.ViewModels;assembly=WindowsToolbox.Modules.KeepAwake"
+             xmlns:utilityViews="clr-namespace:WindowsToolbox.Modules.Utilities.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:utilityViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:qrViews="clr-namespace:WindowsToolbox.Modules.Utilities.QR.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:qrViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.QR.ViewModels;assembly=WindowsToolbox.Modules.Utilities">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -93,6 +99,15 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type awakeViewModels:KeepAwakeViewModel}">
                 <awakeViews:KeepAwakeView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type utilityViewModels:UtilitiesViewModel}">
+                <utilityViews:UtilitiesView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type qrViewModels:QrToolsViewModel}">
+                <qrViews:QrToolsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type colorViewModels:ColorToolsViewModel}">
+                <colorViews:ColorToolsView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

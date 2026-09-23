@@ -5,9 +5,24 @@ using WindowsToolbox.Modules.KeepAwake.Interop;
 using WindowsToolbox.Modules.KeepAwake.Models;
 using WindowsToolbox.Modules.KeepAwake.Services;
 using WindowsToolbox.Modules.LockInspector.Interop;
+using WindowsToolbox.Modules.Utilities.QR.Models;
+using WindowsToolbox.Modules.Utilities.QR.Services;
 
 // Explicit opt-in executable; never run by dotnet test, never scans user files.
 if (args.Length == 1 && args[0] == "--ui-smoke") { UiSmoke.Run(); return; }
+if (args.Length == 1 && args[0] == "--qr-roundtrip")
+{
+    QrCodeService qr = new();
+    foreach (string text in new[] { "ASCII round trip", "中文 QR 往返", "Emoji 😀 QR" })
+    {
+        var image = qr.Generate(text, 512, QrErrorCorrection.Medium, QrQuietZoneStyle.Standard);
+        string? decoded = qr.Decode(image)?.Text;
+        Check(string.Equals(decoded, text, StringComparison.Ordinal), $"QR round trip failed for a {text.Length}-character input");
+    }
+    Console.WriteLine("PASS: ZXing.Net QR encode -> WPF BitmapSource -> decode for ASCII, Chinese, and Emoji.");
+    return;
+}
+if (args.Length == 1 && args[0] == "--screen-picker") { ScreenPickerIntegration.Run(); return; }
 if (args.Length == 1 && args[0] == "--keep-awake")
 {
     foreach (KeepAwakeMode mode in Enum.GetValues<KeepAwakeMode>())
@@ -22,7 +37,7 @@ if (args.Length == 1 && args[0] == "--keep-awake")
 }
 if (args.Length == 1 && args[0] == "--stress") { await StressCheck.RunAsync(); return; }
 if (args.Length != 1 || args[0] != "--restart-manager")
-    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering).");
+    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering), --qr-roundtrip (real local QR codec), --screen-picker (samples a test window only).");
 string root = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "WindowsToolbox.LockInspector.Tests", Guid.NewGuid().ToString("N"))).FullName;
 try
 {
