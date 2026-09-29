@@ -38,7 +38,7 @@ public sealed class UtilitiesQrCodeTests
     [TestMethod]
     public void UtilitiesNavigation_ContainsQrColorAndTimeToolsInOneModule()
     {
-        CollectionAssert.AreEqual(new[] { "qr", "color", "time-tools", "random-tools" },
+        CollectionAssert.AreEqual(new[] { "qr", "color", "time-tools", "random-tools", "unit-converter", "developer-tools" },
             UtilitiesViewModel.Tools.Select(tool => tool.Id).ToArray());
 
         UtilitiesViewModel viewModel = new();

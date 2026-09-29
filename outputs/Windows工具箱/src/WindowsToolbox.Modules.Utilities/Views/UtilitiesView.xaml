@@ -49,6 +49,26 @@
                     <TextBlock Text="Random Tools" Style="{DynamicResource NavSecondaryTextStyle}"/>
                 </StackPanel>
             </Button>
+            <Button Command="{Binding SelectToolCommand}"
+                    CommandParameter="unit-converter"
+                    Tag="{Binding SelectedToolId, Converter={StaticResource StringEqualsConverter}, ConverterParameter=unit-converter}"
+                    Style="{DynamicResource SidebarNavButtonStyle}"
+                    Margin="0,0,0,6">
+                <StackPanel>
+                    <TextBlock Text="单位转换" Style="{DynamicResource NavTextStyle}"/>
+                    <TextBlock Text="Unit Converter" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding SelectToolCommand}"
+                    CommandParameter="developer-tools"
+                    Tag="{Binding SelectedToolId, Converter={StaticResource StringEqualsConverter}, ConverterParameter=developer-tools}"
+                    Style="{DynamicResource SidebarNavButtonStyle}"
+                    Margin="0,0,0,6">
+                <StackPanel>
+                    <TextBlock Text="开发者工具" Style="{DynamicResource NavTextStyle}"/>
+                    <TextBlock Text="Developer Tools" Style="{DynamicResource NavSecondaryTextStyle}"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
         <Border Grid.Column="2"
                 >

@@ -20,6 +20,8 @@ using WindowsToolbox.Modules.Utilities.Color.ViewModels;
 using WindowsToolbox.Modules.Utilities.Color.Views;
 using WindowsToolbox.Modules.Utilities.Time.Views;
 using WindowsToolbox.Modules.Utilities.Random.Views;
+using WindowsToolbox.Modules.Utilities.Unit.Views;
+using WindowsToolbox.Modules.Utilities.Developer.Views;
 using WindowsToolbox.Modules.Utilities.Services;
 using WindowsToolbox.Modules.Utilities.ViewModels;
 using WindowsToolbox.Modules.Utilities.Views;
@@ -51,6 +53,8 @@ internal static class UiSmoke
                     UtilitiesView utilitiesView=new(){DataContext=utilitiesVm};
                     TimeToolsView timeToolsView=new(){DataContext=utilitiesVm.TimeTools};
                     RandomToolsView randomToolsView=new(){DataContext=utilitiesVm.RandomTools};
+                    UnitConverterView unitConverterView=new(){DataContext=utilitiesVm.UnitConverter};
+                    DeveloperToolsView developerToolsView=new(){DataContext=utilitiesVm.DeveloperTools};
                     UserControl[] views=[
                         new LockInspectorView(){DataContext=inspector},new KeepAwakeView(){DataContext=awakeVm},
                         new WindowsToolbox.Modules.WindowTools.Views.WindowToolsView(),
@@ -62,7 +66,8 @@ internal static class UiSmoke
                         new WindowsToolbox.Modules.InstalledApps.Views.InstalledAppsView(),
                         new WindowsToolbox.Modules.Shutdown.Views.ShutdownView(),
                         utilitiesView,new QrToolsView(){DataContext=qrVm},
-                        new ColorToolsView(){DataContext=colorVm},timeToolsView,randomToolsView];
+                        new ColorToolsView(){DataContext=colorVm},timeToolsView,randomToolsView,
+                        unitConverterView,developerToolsView];
                     foreach(UserControl view in views)
                     {
                         view.Measure(new Size(1040,950)); view.Arrange(new Rect(0,0,1040,950)); view.UpdateLayout();
@@ -76,7 +81,8 @@ internal static class UiSmoke
                     foreach ((string id,Type expectedView) in new[]
                     {
                         ("qr",typeof(QrToolsView)),("color",typeof(ColorToolsView)),
-                        ("time-tools",typeof(TimeToolsView)),("random-tools",typeof(RandomToolsView))
+                        ("time-tools",typeof(TimeToolsView)),("random-tools",typeof(RandomToolsView)),
+                        ("unit-converter",typeof(UnitConverterView)),("developer-tools",typeof(DeveloperToolsView))
                     })
                     {
                         utilitiesVm.SelectedToolId=id;
@@ -84,13 +90,13 @@ internal static class UiSmoke
                         if(FindVisualChild(utilitiesView,expectedView) is null)
                             throw new InvalidOperationException($"Utilities navigation did not load the expected {id} page template.");
                     }
-                    foreach(UserControl page in new UserControl[]{timeToolsView,randomToolsView})
+                    foreach(UserControl page in new UserControl[]{timeToolsView,randomToolsView,unitConverterView,developerToolsView})
                     {
                         page.Measure(new Size(560,820)); page.Arrange(new Rect(0,0,560,820)); page.UpdateLayout();
                         if(FindVisualChild(page,typeof(ScrollViewer)) is ScrollViewer scroll && scroll.ExtentWidth>scroll.ViewportWidth+1)
                             throw new InvalidOperationException($"{page.GetType().Name} requires horizontal scrolling at the narrow smoke width.");
                     }
-                    Console.WriteLine($"PASS: {theme} BAML/resource/layout load for all 11 module views plus QR, Color, Time, and Random Tools pages; no user interaction or native activity.");
+                    Console.WriteLine($"PASS: {theme} BAML/resource/layout load for all 11 module views plus QR, Color, Time, Random, Unit Converter, and Developer Tools pages; no user interaction or native activity.");
                 }
                 app.Shutdown();
             }

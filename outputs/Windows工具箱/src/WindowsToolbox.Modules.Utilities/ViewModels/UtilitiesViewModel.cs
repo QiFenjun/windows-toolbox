@@ -7,6 +7,8 @@ using WindowsToolbox.Modules.Utilities.Color.ViewModels;
 using WindowsToolbox.Modules.Utilities.Services;
 using WindowsToolbox.Modules.Utilities.Time.ViewModels;
 using WindowsToolbox.Modules.Utilities.Random.ViewModels;
+using WindowsToolbox.Modules.Utilities.Unit.ViewModels;
+using WindowsToolbox.Modules.Utilities.Developer.ViewModels;
 
 namespace WindowsToolbox.Modules.Utilities.ViewModels;
 
@@ -17,7 +19,9 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
         new("qr", "二维码工具", "QR Tools", "QRCode", "离线生成与识别 QR Code"),
         new("color", "颜色工具", "Color Tools", "Color", "颜色转换与屏幕取色"),
         new("time-tools", "时间工具", "Time Tools", "Clock", "时间戳、时区与日期时间快速转换"),
-        new("random-tools", "随机工具", "Random Tools", "Shuffle", "生成 UUID、安全随机字符串和随机数字")
+        new("random-tools", "随机工具", "Random Tools", "Shuffle", "生成 UUID、安全随机字符串和随机数字"),
+        new("unit-converter", "单位转换", "Unit Converter", "Scale", "长度、质量、温度、压力等常用单位快速转换"),
+        new("developer-tools", "开发者工具", "Developer Tools", "Code", "进制转换、文本哈希与 UUID 检查")
     ]);
 
     private string _selectedToolId = "qr";
@@ -41,6 +45,8 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
         ColorTools = colorTools ?? throw new ArgumentNullException(nameof(colorTools));
         TimeTools = timeTools ?? throw new ArgumentNullException(nameof(timeTools));
         RandomTools = randomTools ?? throw new ArgumentNullException(nameof(randomTools));
+        UnitConverter = new UnitConverterViewModel();
+        DeveloperTools = new DeveloperToolsViewModel();
         SelectToolCommand = new RelayCommand<string>(id => SelectedToolId = id!, id =>
             id is not null && Tools.Any(tool => tool.Id == id));
     }
@@ -49,6 +55,8 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
     public ColorToolsViewModel ColorTools { get; }
     public TimeToolsViewModel TimeTools { get; }
     public RandomToolsViewModel RandomTools { get; }
+    public UnitConverterViewModel UnitConverter { get; }
+    public DeveloperToolsViewModel DeveloperTools { get; }
     public RelayCommand<string> SelectToolCommand { get; }
 
     public UtilityToolDescriptor SelectedTool => Tools.First(tool => tool.Id == SelectedToolId);
@@ -58,6 +66,8 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
         "color" => ColorTools,
         "time-tools" => TimeTools,
         "random-tools" => RandomTools,
+        "unit-converter" => UnitConverter,
+        "developer-tools" => DeveloperTools,
         _ => SelectedTool
     };
 

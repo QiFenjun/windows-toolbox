@@ -2,6 +2,28 @@
 
 本项目使用语义化版本号记录正式发布。
 
+## [1.11.0] - 2026-09-30
+
+### Added
+
+- Utilities 新增单位转换 / Unit Converter
+- 支持长度、质量、温度、面积、体积、速度、压力、能量、功率和角度转换
+- 支持 SI 与 IEC 数据大小单位转换
+- 数据大小明确区分 KB/MB/GB 与 KiB/MiB/GiB
+- 支持单位快速交换和结果复制
+
+- Utilities 新增开发者工具 / Developer Tools
+- 支持二进制、八进制、十进制和十六进制任意精度整数转换
+- 支持 UTF-8 文本 MD5、SHA-1、SHA-256 和 SHA-512
+- 支持 UUID/GUID 格式验证和标准化
+- 支持 UUID Version 和 Variant 检查
+
+### Privacy
+
+- Unit Converter 与 Developer Tools 均完全离线
+- Hash 输入、UUID 和转换记录默认不持久保存
+- 文本 Hash 内容不会写入日志
+
 ## [1.10.0] - 2026-09-23
 
 ### Added

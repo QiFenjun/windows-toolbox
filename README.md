@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.10.0`
+当前版本：`v1.11.0`
 
 ## 当前模块
 
@@ -124,15 +124,18 @@ Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目
 
 ### 小工具 / Utilities
 
-Utilities 是一个静态注册的容器模块，当前包含四个本地工具：
+Utilities 是一个静态注册的容器模块，当前包含六个本地工具：
 
 - **二维码工具 / QR Tools：** 离线生成文本、URL、中文和 Emoji QR Code；选择尺寸与纠错级别，复制或导出 PNG；从单张本地图片、拖放图片或用户主动读取的剪贴板图片识别 QR。识别内容只显示或复制，不会自动打开。
 - **颜色工具 / Color Tools：** 编辑 HEX、RGB、HSL 和 Alpha，显示透明棋盘预览并复制常用格式；屏幕取色通过短生命周期 Overlay 和物理屏幕像素读取，支持虚拟桌面负坐标。
 - **时间工具 / Time Tools：** 离线转换 Unix 秒/毫秒、ISO 8601、UTC/本地时间与 Windows 时区；按本机 DST 规则提示无效/歧义时间，并计算精确 TimeSpan 时间差。
 - **随机工具 / Random Tools：** 生成 UUID v4、安全随机字符串与含边界随机整数；支持批量、字符集组合和单项/全部复制。
-- 最近颜色最多 10 项；随机结果和时间输入只保留在当前应用会话。应用不保存 QR 输入、识别图片、颜色记录、时间转换历史或随机生成历史。只有用户主动选择路径导出 QR PNG 时才会写入该文件；不会上传内容。
+- **单位转换 / Unit Converter：** 支持长度、质量、温度、面积、体积、速度、压力、能量、功率、角度和数据大小转换；数据大小明确区分 KB/MB/GB 与 KiB/MiB/GiB，温度单独处理并拒绝低于绝对零度的输入；完全离线。
+- **开发者工具 / Developer Tools：** 支持二进制、八进制、十进制和十六进制任意精度整数转换，UTF-8 文本 MD5、SHA-1、SHA-256、SHA-512，以及 UUID/GUID 验证、标准化、Version 与 Variant 检查；文件 Hash 请使用文件工具 / File Tools，UUID 生成请使用随机工具 / Random Tools。
+- 最近颜色最多 10 项；随机结果、时间输入、单位转换输入、Hash 输入与 UUID 输入只保留在当前应用会话。应用不保存 QR 输入、识别图片、颜色记录、时间转换历史、随机生成历史或开发者工具输入/输出。只有用户主动选择路径导出 QR PNG 时才会写入该文件；不会上传内容。
 - Utilities 内页均不联网、不注入进程；屏幕取色不保存截图、不读取窗口标题或内容，结束时关闭 Overlay 并释放设备上下文。
 - Time Tools 不联网、不修改系统时间或时区；Random Tools 使用 .NET `RandomNumberGenerator`，不记录生成值、不提供密码强度或安全保证。
+- Unit Converter 与 Developer Tools 不调用任何在线单位/Hash/UUID API；文本 Hash 内容不写入日志。
 
 ## 界面结构
 
@@ -156,7 +159,7 @@ Utilities 是一个静态注册的容器模块，当前包含四个本地工具�
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.10.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.11.0-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -246,11 +249,13 @@ windows-toolbox/
 │  ├─ tests/WindowsToolbox.Tests/
 │  ├─ src/WindowsToolbox.Modules.LockInspector/ # Restart Manager 诊断模块
 │  ├─ src/WindowsToolbox.Modules.KeepAwake/     # 临时电源请求模块
-│  ├─ src/WindowsToolbox.Modules.Utilities/     # Utilities 容器：静态 QR / Color / Time / Random Tools
+│  ├─ src/WindowsToolbox.Modules.Utilities/     # Utilities 容器：静态 QR / Color / Time / Random / Unit / Developer Tools
 │  │  ├─ QR/
 │  │  └─ Color/
 │  │  ├─ Time/
 │  │  └─ Random/
+│  │  ├─ Unit/
+│  │  └─ Developer/
 │  ├─ tests/WindowsToolbox.Integration/    # 显式运行的本机验证，不由 dotnet test 执行
 │  ├─ legacy/WinForms-v1/                  # 原版源码备份；编译产物不入库
 │  ├─ scripts/
@@ -264,7 +269,7 @@ windows-toolbox/
 1. 每个模块实现 `IToolModule`，提供稳定 ID、中文名称、英文名称、双语分类、说明、图标键、关键词、排序和可用性。
 2. `ModuleRegistry` 负责注册、排序、查找与搜索。
 3. `NavigationService` 使用页面 ID 导航，并缓存 ViewModel，避免重复创建页面。
-4. 多数模块通过自己的 `ModuleResources.xaml` 提供 ViewModel 到 View 的 DataTemplate；Utilities 的 QR/Color/Time/Random 内页由 `App.xaml` 静态声明。
+4. 多数模块通过自己的 `ModuleResources.xaml` 提供 ViewModel 到 View 的 DataTemplate；Utilities 的 QR/Color/Time/Random/Unit/Developer 内页由 `App.xaml` 静态声明。
 5. 应用启动时加载已注册模块的资源字典，主窗口根据注册表自动生成顶层模块导航；Utilities 容器内部使用固定工具 ID 导航，不动态发现或加载插件。
 
 因此新增模块不需要修改 `MainWindow.xaml` 或 `MainWindow.xaml.cs`。
@@ -397,7 +402,7 @@ dotnet run --project tests/WindowsToolbox.Integration -c Release -- --secure-rng
 
 ## 打包
 
-v1.10.0 普通 `dotnet test` 使用 Fake Restart Manager、Fake execution-state、Fake clipboard、Fake screen picker、Time Tools clock/timer 和 Random Tools secure-random source；不扫描用户文件、不阻止电脑休眠、不读取用户屏幕。
+v1.11.0 普通 `dotnet test` 使用 Fake Restart Manager、Fake execution-state、Fake clipboard、Fake screen picker、Time Tools clock/timer 和 Random Tools secure-random source；Unit Converter 与 Developer Tools 为纯本地计算，通过标准向量单测覆盖；不扫描用户文件、不阻止电脑休眠、不读取用户屏幕。
 以下独立验证必须在本机按需显式运行（在 `outputs/Windows工具箱` 目录）：
 
 ```powershell
@@ -410,7 +415,7 @@ dotnet run --project tests/WindowsToolbox.Integration -c Release -- --secure-rng
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --screen-picker
 ```
 
-RM 与压力测试只用自建临时夹具并清理；`--keep-awake` 仅短暂启用并立即释放；`--screen-picker` 只在自建纯色测试窗口上采样，不读取用户窗口或保存截图。离屏 UI 渲染输出到忽略提交的 `artifacts/ui-smoke`，不代替人工点击或多显示器/高 DPI 硬件验收。v1.10.0 验证见 [验证记录](docs/v1.10.0-validation.md)。
+RM 与压力测试只用自建临时夹具并清理；`--keep-awake` 仅短暂启用并立即释放；`--screen-picker` 只在自建纯色测试窗口上采样，不读取用户窗口或保存截图。离屏 UI 渲染输出到忽略提交的 `artifacts/ui-smoke`，不代替人工点击或多显示器/高 DPI 硬件验收。v1.11.0 验证见 [验证记录](docs/v1.11.0-validation.md)。
 
 生成完全自包含的 Windows x64 单文件版本：
 
@@ -423,7 +428,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
 -p:DebugSymbols=false `
-  --output artifacts/release/v1.10.0/WindowsToolbox-win-x64
+  --output artifacts/release/v1.11.0/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。
@@ -431,7 +436,8 @@ GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。�
 ## 安全与隐私
 
 - 完全离线运行，不收集或上传数据
-- QR、Color、Time 和 Random 均在本机完成；时间与随机结果不持久化，识别到 URL 后不会自动打开，QR PNG 只会在用户主动导出时写入所选路径
+- QR、Color、Time、Random、Unit Converter 和 Developer Tools 均在本机完成；时间、随机结果与开发者工具输入输出不持久化，识别到 URL 后不会自动打开，QR PNG 只会在用户主动导出时写入所选路径
+- Unit Converter 与 Developer Tools 不调用在线单位/Hash/UUID API，文本 Hash 内容不写入日志
 - 屏幕取色只读取光标当前像素，不保存截图、颜色历史或屏幕内容
 - Utilities 最近颜色只保存在本次会话的内存中，应用退出后清空
 - 已安装软件列表和目录大小缓存只保存在本机，不会上传

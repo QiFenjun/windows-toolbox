@@ -27,7 +27,11 @@
              xmlns:timeViews="clr-namespace:WindowsToolbox.Modules.Utilities.Time.Views;assembly=WindowsToolbox.Modules.Utilities"
              xmlns:timeViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Time.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
              xmlns:randomViews="clr-namespace:WindowsToolbox.Modules.Utilities.Random.Views;assembly=WindowsToolbox.Modules.Utilities"
-             xmlns:randomViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Random.ViewModels;assembly=WindowsToolbox.Modules.Utilities">
+             xmlns:randomViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Random.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:unitViews="clr-namespace:WindowsToolbox.Modules.Utilities.Unit.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:unitViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Unit.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:developerViews="clr-namespace:WindowsToolbox.Modules.Utilities.Developer.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:developerViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Developer.ViewModels;assembly=WindowsToolbox.Modules.Utilities">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -118,6 +122,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type randomViewModels:RandomToolsViewModel}">
                 <randomViews:RandomToolsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type unitViewModels:UnitConverterViewModel}">
+                <unitViews:UnitConverterView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type developerViewModels:DeveloperToolsViewModel}">
+                <developerViews:DeveloperToolsView/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
