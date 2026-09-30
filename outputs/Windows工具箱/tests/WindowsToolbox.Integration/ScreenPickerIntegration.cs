@@ -60,15 +60,24 @@ internal static class ScreenPickerIntegration
 
             ScreenPoint point = new((rect.Left + rect.Right) / 2, (rect.Top + rect.Bottom) / 2);
             WindowsScreenColorSampler sampler = new();
+            Stopwatch readiness = Stopwatch.StartNew();
+            MediaColor sampled = default;
+            do
+            {
+                sampled = sampler.Sample(point);
+                if (MatchesExpected(sampled)) break;
+                window.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new Action(() => { }));
+                Thread.Sleep(25);
+            } while (readiness.Elapsed < TimeSpan.FromSeconds(2));
+            if (!MatchesExpected(sampled))
+                throw new InvalidOperationException($"The test window was not visible at its center within two seconds; sampled {sampled}.");
+
             int before = GetGdiCount();
             Stopwatch stopwatch = Stopwatch.StartNew();
-            MediaColor sampled = default;
             for (int index = 0; index < 500; index++)
             {
                 sampled = sampler.Sample(point);
-                if (Math.Abs(sampled.R - Expected.R) > 2 ||
-                    Math.Abs(sampled.G - Expected.G) > 2 ||
-                    Math.Abs(sampled.B - Expected.B) > 2)
+                if (!MatchesExpected(sampled))
                     throw new InvalidOperationException($"Sampled color {sampled} instead of the test window color {Expected}.");
             }
             stopwatch.Stop();
@@ -83,6 +92,11 @@ internal static class ScreenPickerIntegration
             application.Shutdown();
         }
     }
+
+    private static bool MatchesExpected(MediaColor sampled) =>
+        Math.Abs(sampled.R - Expected.R) <= 2 &&
+        Math.Abs(sampled.G - Expected.G) <= 2 &&
+        Math.Abs(sampled.B - Expected.B) <= 2;
 
     private static int GetGdiCount()
     {

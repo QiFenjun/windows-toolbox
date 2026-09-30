@@ -9,6 +9,7 @@ public enum ThemeMode
 
 public sealed class AppSettings
 {
+    public string Language { get; set; } = "zh-CN";
     public ThemeMode Theme { get; set; } = ThemeMode.System;
     public string StartupPageId { get; set; } = "home";
     public bool ConfirmOperations { get; set; } = true;
@@ -29,4 +30,13 @@ public sealed class AppSettings
     public int KeepAwakeLastDurationMinutes { get; set; } = 30;
     public List<string> ClipboardPlusExcludedPaths { get; set; } = [];
     public List<string> ClipboardPlusExcludedProcessNames { get; set; } = [];
+
+    internal AppSettings CreateSnapshot()
+    {
+        AppSettings snapshot = (AppSettings)MemberwiseClone();
+        snapshot.RecentModuleIds = [.. RecentModuleIds];
+        snapshot.ClipboardPlusExcludedPaths = [.. ClipboardPlusExcludedPaths];
+        snapshot.ClipboardPlusExcludedProcessNames = [.. ClipboardPlusExcludedProcessNames];
+        return snapshot;
+    }
 }

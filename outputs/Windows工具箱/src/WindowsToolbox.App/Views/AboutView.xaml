@@ -16,11 +16,11 @@
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
                     </Border>
-                    <TextBlock Text="Windows 工具箱"
+                    <TextBlock Text="{DynamicResource AppName}"
                                Style="{DynamicResource HeroTitleStyle}"
                                Margin="0,18,0,0"/>
                     <TextBlock Margin="0,8,0,0" Style="{DynamicResource SecondaryTextStyle}">
-                        <Run Text="版本 "/>
+                        <Run Text="{DynamicResource AboutVersionPrefix}"/>
                         <Run Text="{Binding Version, Mode=OneWay}"/>
                         <Run Text=" · "/>
                         <Run Text="{Binding Runtime, Mode=OneWay}"/>
@@ -30,12 +30,12 @@
 
             <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="安全与隐私" Style="{DynamicResource SectionTitleStyle}"/>
-                    <TextBlock Text="本软件完全离线运行，不收集或上传数据。主程序默认使用普通用户权限；只有软件自身的卸载程序或用户主动启动网络流量高级 ETW 监控时，Windows 才可能显示管理员权限确认。网络流量统计只处理本机网络元数据，不读取通信正文或解密 HTTPS。定时关机功能仅调用 Windows 自带的 shutdown.exe。"
+                    <TextBlock Text="{DynamicResource AboutSecurity}" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="{DynamicResource AboutSecurityDescription}"
                                Style="{DynamicResource BodyTextStyle}"
                                TextWrapping="Wrap"
                                Margin="0,10,0,0"/>
-                    <TextBlock Text="软件未使用商业代码签名证书，因此 Windows Defender SmartScreen 可能显示“未知发布者”提示。"
+                    <TextBlock Text="{DynamicResource AboutSignatureNote}"
                                Style="{DynamicResource SecondaryTextStyle}"
                                TextWrapping="Wrap"
                                Margin="0,10,0,0"/>
@@ -44,8 +44,8 @@
 
             <Border Style="{DynamicResource CardStyle}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="模块化架构" Style="{DynamicResource SectionTitleStyle}"/>
-                    <TextBlock Text="主程序通过模块注册表发现工具。新增模块只需实现 IToolModule、提供 ViewModel 和页面，并在应用启动处注册。"
+                    <TextBlock Text="{DynamicResource AboutArchitecture}" Style="{DynamicResource SectionTitleStyle}"/>
+                    <TextBlock Text="{DynamicResource AboutArchitectureDescription}"
                                Style="{DynamicResource BodyTextStyle}"
                                TextWrapping="Wrap"
                                Margin="0,10,0,0"/>

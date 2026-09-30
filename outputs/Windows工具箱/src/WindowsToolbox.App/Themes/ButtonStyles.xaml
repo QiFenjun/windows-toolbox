@@ -89,6 +89,10 @@
                 <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
             </DataTrigger>
+            <DataTrigger Binding="{Binding DataContext.IsSidebarCollapsed, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                <Setter Property="Padding" Value="6,8"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 

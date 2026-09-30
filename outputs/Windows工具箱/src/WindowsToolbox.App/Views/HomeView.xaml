@@ -11,9 +11,9 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="欢迎使用 Windows 工具箱"
+                        <TextBlock Text="{DynamicResource HomeHeroTitle}"
                                    Style="{DynamicResource HeroTitleStyle}"/>
-                        <TextBlock Text="把常用的系统操作集中到一个安静、可靠的桌面工具中。"
+                        <TextBlock Text="{DynamicResource HomeHeroBody}"
                                    Style="{DynamicResource HeroBodyStyle}"
                                    Margin="0,10,0,0"/>
                     </StackPanel>
@@ -36,13 +36,13 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="常用工具" Style="{DynamicResource SectionTitleStyle}"/>
+                <TextBlock Text="{DynamicResource HomeModulesHeading}" Style="{DynamicResource SectionTitleStyle}"/>
                 <Border Grid.Column="1"
                         Style="{DynamicResource CountBadgeStyle}">
                     <TextBlock>
-                        <Run Text="已安装 "/>
+                        <Run Text="{DynamicResource HomeInstalledPrefix}"/>
                         <Run Text="{Binding InstalledModuleCount, Mode=OneWay}"/>
-                        <Run Text=" 个模块"/>
+                        <Run Text="{DynamicResource HomeInstalledSuffix}"/>
                     </TextBlock>
                 </Border>
             </Grid>
@@ -80,14 +80,13 @@
                                 </Border>
                                 <StackPanel Grid.Row="1" Margin="0,16,0,16">
                                     <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource CardTitleStyle}"/>
-                                    <TextBlock Text="{Binding EnglishName}" Style="{DynamicResource CaptionTextStyle}" Margin="0,2,0,0"/>
                                     <TextBlock Text="{Binding Description}"
                                                Style="{DynamicResource SecondaryTextStyle}"
                                                TextWrapping="Wrap"
                                                Margin="0,7,0,0"/>
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" Orientation="Horizontal">
-                                    <TextBlock Text="打开工具" Style="{DynamicResource AccentLabelStyle}"/>
+                                    <TextBlock Text="{DynamicResource OpenTool}" Style="{DynamicResource AccentLabelStyle}"/>
                                     <TextBlock Text="&#xE72A;"
                                                Style="{DynamicResource SmallFluentIconStyle}"
                                                Foreground="{DynamicResource AccentBrush}"
@@ -100,7 +99,7 @@
             </ItemsControl>
 
             <StackPanel x:Name="RecentSectionHost" Margin="0,10,0,0">
-                <TextBlock Text="最近使用"
+                <TextBlock Text="{DynamicResource RecentUsed}"
                            Style="{DynamicResource SectionTitleStyle}"
                            Margin="0,0,0,14"/>
 
@@ -111,7 +110,7 @@
                                    Style="{DynamicResource FluentIconStyle}"
                                    Foreground="{DynamicResource SecondaryTextBrush}"
                                    Margin="0,0,12,0"/>
-                        <TextBlock Text="打开一个工具后，它会出现在这里。"
+                        <TextBlock Text="{DynamicResource RecentEmpty}"
                                    Style="{DynamicResource SecondaryTextStyle}"/>
                     </StackPanel>
                 </Border>
@@ -141,7 +140,6 @@
                                            VerticalAlignment="Center"/>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="{Binding DisplayName}" Style="{DynamicResource CardTitleStyle}"/>
-                                    <TextBlock Text="{Binding EnglishName}" Style="{DynamicResource CaptionTextStyle}"/>
                                     <TextBlock Text="{Binding Description}"
                                                Style="{DynamicResource CaptionTextStyle}"
                                                TextTrimming="CharacterEllipsis"/>

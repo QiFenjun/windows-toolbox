@@ -17,10 +17,13 @@ public sealed class SettingsViewModel : ObservableObject
     private readonly IThemeService _themeService;
     private readonly WindowsStartupRegistrationService _startupRegistrationService;
     private readonly IMotionService _motionService;
+    private readonly LocalizationService _localization;
+    private readonly IModuleRegistry _moduleRegistry;
     private readonly Action<bool>? _quickLaunchHotkeyChanged;
     private ThemeOption _selectedTheme;
     private StartupOption _selectedStartupPage;
     private MotionOption _selectedMotion;
+    private string? _saveStatusKey;
 
     public SettingsViewModel(
         ISettingsService settingsService,
@@ -28,33 +31,20 @@ public sealed class SettingsViewModel : ObservableObject
         IModuleRegistry moduleRegistry,
         WindowsStartupRegistrationService startupRegistrationService,
         IMotionService motionService,
+        LocalizationService localization,
         Action<bool>? quickLaunchHotkeyChanged = null)
     {
         _settingsService = settingsService;
         _themeService = themeService;
         _startupRegistrationService = startupRegistrationService;
         _motionService = motionService;
+        _localization = localization;
+        _moduleRegistry = moduleRegistry;
         _quickLaunchHotkeyChanged = quickLaunchHotkeyChanged;
 
-        ThemeOptions =
-        [
-            new(ThemeMode.System, "跟随系统"),
-            new(ThemeMode.Light, "浅色模式"),
-            new(ThemeMode.Dark, "深色模式")
-        ];
-        StartupOptions =
-        [
-            new("home", "首页"),
-            .. moduleRegistry.Modules
-                .Where(module => module.IsAvailable)
-                .Select(module => new StartupOption(module.Id, module.DisplayName))
-        ];
-        MotionOptions =
-        [
-            new(ReducedMotionMode.Full, "完整"),
-            new(ReducedMotionMode.Reduced, "减少"),
-            new(ReducedMotionMode.Off, "关闭")
-        ];
+        ThemeOptions = BuildThemeOptions();
+        StartupOptions = BuildStartupOptions();
+        MotionOptions = BuildMotionOptions();
 
         _selectedTheme = ThemeOptions.First(option => option.Value == settingsService.Settings.Theme);
         _selectedStartupPage = StartupOptions.FirstOrDefault(
@@ -62,11 +52,12 @@ public sealed class SettingsViewModel : ObservableObject
         _selectedMotion = MotionOptions.FirstOrDefault(
             option => option.Value == settingsService.Settings.ReducedMotion) ?? MotionOptions[0];
         SaveCommand = new AsyncRelayCommand(SaveAsync);
+        _localization.LanguageChanged += Localization_LanguageChanged;
     }
 
-    public IReadOnlyList<ThemeOption> ThemeOptions { get; }
-    public IReadOnlyList<StartupOption> StartupOptions { get; }
-    public IReadOnlyList<MotionOption> MotionOptions { get; }
+    public IReadOnlyList<ThemeOption> ThemeOptions { get; private set; }
+    public IReadOnlyList<StartupOption> StartupOptions { get; private set; }
+    public IReadOnlyList<MotionOption> MotionOptions { get; private set; }
 
     public ThemeOption SelectedTheme
     {
@@ -201,21 +192,69 @@ public sealed class SettingsViewModel : ObservableObject
     public string SaveStatus { get; private set; } = string.Empty;
     public AsyncRelayCommand SaveCommand { get; }
 
+    private IReadOnlyList<ThemeOption> BuildThemeOptions() =>
+    [
+        new(ThemeMode.System, _localization.GetString("ThemeSystem")),
+        new(ThemeMode.Light, _localization.GetString("ThemeLight")),
+        new(ThemeMode.Dark, _localization.GetString("ThemeDark"))
+    ];
+
+    private IReadOnlyList<StartupOption> BuildStartupOptions() =>
+    [
+        new("home", _localization.GetString("HomeTitle")),
+        .. _moduleRegistry.Modules.Where(module => module.IsAvailable)
+            .Select(module => new StartupOption(module.Id,
+                _localization.IsEnglish ? module.EnglishName : module.DisplayName))
+    ];
+
+    private IReadOnlyList<MotionOption> BuildMotionOptions() =>
+    [
+        new(ReducedMotionMode.Full, _localization.GetString("MotionFull")),
+        new(ReducedMotionMode.Reduced, _localization.GetString("MotionReduced")),
+        new(ReducedMotionMode.Off, _localization.GetString("MotionOff"))
+    ];
+
+    private void Localization_LanguageChanged(object? sender, EventArgs e)
+    {
+        ThemeMode theme = _selectedTheme.Value;
+        string startup = _selectedStartupPage.Id;
+        ReducedMotionMode motion = _selectedMotion.Value;
+        ThemeOptions = BuildThemeOptions();
+        StartupOptions = BuildStartupOptions();
+        MotionOptions = BuildMotionOptions();
+        _selectedTheme = ThemeOptions.First(option => option.Value == theme);
+        _selectedStartupPage = StartupOptions.FirstOrDefault(option => option.Id == startup) ?? StartupOptions[0];
+        _selectedMotion = MotionOptions.First(option => option.Value == motion);
+        OnPropertyChanged(nameof(ThemeOptions));
+        OnPropertyChanged(nameof(StartupOptions));
+        OnPropertyChanged(nameof(MotionOptions));
+        OnPropertyChanged(nameof(SelectedTheme));
+        OnPropertyChanged(nameof(SelectedStartupPage));
+        OnPropertyChanged(nameof(SelectedMotion));
+        if (_saveStatusKey is not null)
+        {
+            SaveStatus = _localization.GetString(_saveStatusKey);
+            OnPropertyChanged(nameof(SaveStatus));
+        }
+    }
+
     private async Task SaveAsync()
     {
         try
         {
             await _settingsService.SaveAsync();
             _startupRegistrationService.Apply(NetworkTrafficStartWithWindows);
-            SaveStatus = "设置已保存";
+            _saveStatusKey = "SettingsSaved";
         }
         catch (Exception exception) when (
             exception is IOException or
             UnauthorizedAccessException or
-            InvalidOperationException)
+            InvalidOperationException or
+            System.Security.SecurityException)
         {
-            SaveStatus = "无法保存设置，请检查用户目录权限。";
+            _saveStatusKey = "SettingsSaveFailed";
         }
+        SaveStatus = _localization.GetString(_saveStatusKey);
         OnPropertyChanged(nameof(SaveStatus));
     }
 }

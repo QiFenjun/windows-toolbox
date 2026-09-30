@@ -2,7 +2,7 @@
 
 Windows 工具箱是一款离线、模块化的 Windows 桌面工具集。项目使用 WPF、MVVM 和 .NET 8 构建，主程序只负责模块发现、导航、主题与通用外壳，具体工具以独立模块接入。
 
-当前版本：`v1.12.0`
+当前版本：`v1.12.1`
 
 ## 当前模块
 
@@ -144,7 +144,7 @@ Utilities 是一个静态注册的容器模块，当前包含八个本地工具�
 ## 界面结构
 
 - 左侧：应用标识、首页、动态模块导航、设置、关于、侧边栏折叠
-- 顶部：页面标题、模块搜索、主题快捷切换、窗口控制
+- 顶部：页面标题、模块搜索、语言菜单、主题快捷切换、窗口控制
 - 主区：首页工具卡片、最近使用、模块页面
 - 主题：浅色、深色、跟随系统
 
@@ -163,7 +163,7 @@ Utilities 是一个静态注册的容器模块，当前包含八个本地工具�
 ### 使用发布包
 
 1. 前往 [GitHub Releases](https://github.com/QiFenjun/windows-toolbox/releases)。
-2. 下载 `WindowsToolbox-v1.12.0-win-x64.zip`。
+2. 下载 `WindowsToolbox-v1.12.1-win-x64.zip`。
 3. 解压 ZIP 后双击 `Windows工具箱.exe`。
 
 普通用户无需下载 GitHub 自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`；它们是源码快照，不是可直接运行的软件。
@@ -345,6 +345,8 @@ moduleRegistry.Register(new ClipboardModule());
 
 主题由 `ThemeService` 切换。跟随系统模式只读取当前用户的 Windows 应用主题，不修改系统设置。
 
+顶部语言菜单可在简体中文与 English 之间即时切换，默认简体中文；选择保存在 `%AppData%\\WindowsToolbox\\settings.json`，旧设置文件缺少语言字段时会继续使用简体中文。Shell、首页、设置、关于、模块名称/说明和常用选项会随语言刷新；深层模块业务页面暂未全部翻译。
+
 设置页的“界面动画”可选择完整、减少或关闭。完整使用全部过渡，减少将时长减半，关闭会跳过主题、侧边栏和窗口内容动画；三档设置均保存到 `%AppData%\\WindowsToolbox\\settings.json`。
 
 快捷启动的全局快捷键设置位于设置页，默认使用 `Win + Alt + Q`；Clipboard+ 的 `Win + Alt + V` 保持独立。冲突时只提示快捷键不可用，不影响主程序启动。
@@ -406,14 +408,16 @@ dotnet run --project tests/WindowsToolbox.Integration -c Release -- --secure-rng
 
 ## 打包
 
-v1.12.0 普通 `dotnet test` 使用 Fake Restart Manager、Fake execution-state、Fake clipboard、Fake screen picker、Time Tools clock/timer、Random Tools secure-random source；Image Tools 只用隔离临时夹具，Regex Tools 使用内存输入和受限 timeout。普通测试不会扫描用户文件、阻止电脑休眠或读取用户屏幕。
+v1.12.1 普通 `dotnet test` 使用 Fake Restart Manager、Fake execution-state、Fake clipboard、Fake screen picker、Time Tools clock/timer、Random Tools secure-random source；Image Tools 只用隔离临时夹具，Regex Tools 使用内存输入和受限 timeout。设置并发写入测试使用独立临时文件；普通测试不会扫描用户文件、阻止电脑休眠或读取用户屏幕。
 以下独立验证必须在本机按需显式运行（在 `outputs/Windows工具箱` 目录）：
 
 ```powershell
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --restart-manager
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --keep-awake
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --stress
-dotnet run --project tests/WindowsToolbox.Integration -c Release -- --ui-smoke
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --ui-smoke zh-CN
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --ui-smoke en-US
+dotnet run --project tests/WindowsToolbox.Integration -c Release -- --navigation-stress
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --qr-roundtrip
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --secure-rng
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --screen-picker
@@ -421,7 +425,7 @@ dotnet run --project tests/WindowsToolbox.Integration -c Release -- --image-smok
 dotnet run --project tests/WindowsToolbox.Integration -c Release -- --regex-smoke
 ```
 
-RM、图片和压力测试只用自建临时夹具并清理；`--keep-awake` 仅短暂启用并立即释放；`--screen-picker` 只在自建纯色测试窗口上采样，不读取用户窗口或保存截图。Regex smoke 使用合成输入并验证灾难性回溯超时。离屏 UI 渲染输出到忽略提交的 `artifacts/ui-smoke`，不代替人工点击或多显示器/高 DPI 硬件验收。v1.12.0 验证见 [验证记录](docs/v1.12.0-validation.md)。
+RM、图片和压力测试只用自建临时夹具并清理；`--keep-awake` 仅短暂启用并立即释放；`--screen-picker` 只在自建纯色测试窗口上采样，不读取用户窗口或保存截图。Regex smoke 使用合成输入并验证灾难性回溯超时。导航压力检查在隔离设置文件和探针 ViewModel 上运行真实 WPF Shell/Dispatcher，不启动原生工具操作或阻止电脑休眠。离屏 UI 渲染输出到忽略提交的 `artifacts/ui-smoke`，不代替人工点击或多显示器/高 DPI 硬件验收。v1.12.1 验证见 [验证记录](docs/v1.12.1-validation.md)。
 
 生成完全自包含的 Windows x64 单文件版本：
 
@@ -434,7 +438,7 @@ dotnet publish outputs/Windows工具箱/src/WindowsToolbox.App/WindowsToolbox.Ap
   -p:IncludeNativeLibrariesForSelfExtract=true `
   -p:DebugType=None `
 -p:DebugSymbols=false `
-  --output artifacts/release/v1.12.0/WindowsToolbox-win-x64
+  --output artifacts/release/v1.12.1/WindowsToolbox-win-x64
 ```
 
 GitHub 源码仓库不提交 `artifacts`、EXE、ZIP、PDB、`bin` 或 `obj`。可下载的软件仅通过 GitHub Releases 发布。

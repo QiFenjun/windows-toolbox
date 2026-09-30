@@ -27,7 +27,7 @@ public sealed class ThemeService : IThemeService
 
         ResourceDictionary replacement = new()
         {
-            Source = new Uri($"Themes/{dictionaryName}", UriKind.Relative)
+            Source = new Uri($"/Windows工具箱;component/Themes/{dictionaryName}", UriKind.Relative)
         };
 
         if (existing is null)

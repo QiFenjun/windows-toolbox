@@ -17,7 +17,14 @@ using WindowsToolbox.Modules.Utilities.Regex.Models;
 using WindowsToolbox.Modules.Utilities.Regex.Services;
 
 // Explicit opt-in executable; never run by dotnet test, never scans user files.
-if (args.Length == 1 && args[0] == "--ui-smoke") { UiSmoke.Run(); return; }
+if (args.Length >= 1 && args[0] == "--ui-smoke")
+{
+    string language = args.Length == 1 ? "zh-CN" : args.Length == 2 ? args[1] : string.Empty;
+    if (language is not ("zh-CN" or "en-US"))
+        throw new ArgumentException("Usage: --ui-smoke [zh-CN|en-US]");
+    UiSmoke.Run(language);
+    return;
+}
 if (args.Length == 1 && args[0] == "--qr-roundtrip")
 {
     QrCodeService qr = new();
@@ -85,6 +92,7 @@ if (args.Length == 1 && args[0] == "--regex-smoke")
     return;
 }
 if (args.Length == 1 && args[0] == "--screen-picker") { ScreenPickerIntegration.Run(); return; }
+if (args.Length == 1 && args[0] == "--navigation-stress") { NavigationStress.Run(); return; }
 if (args.Length == 1 && args[0] == "--keep-awake")
 {
     foreach (KeepAwakeMode mode in Enum.GetValues<KeepAwakeMode>())
@@ -99,7 +107,7 @@ if (args.Length == 1 && args[0] == "--keep-awake")
 }
 if (args.Length == 1 && args[0] == "--stress") { await StressCheck.RunAsync(); return; }
 if (args.Length != 1 || args[0] != "--restart-manager")
-    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering), --image-smoke (synthetic local fixture), --regex-smoke (synthetic safe timeout case), --qr-roundtrip (real local QR codec), --secure-rng (real local CSPRNG smoke), --screen-picker (samples a test window only).");
+    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering), --navigation-stress (offscreen WPF navigation + Dispatcher heartbeat), --image-smoke (synthetic local fixture), --regex-smoke (synthetic safe timeout case), --qr-roundtrip (real local QR codec), --secure-rng (real local CSPRNG smoke), --screen-picker (samples a test window only).");
 string root = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "WindowsToolbox.LockInspector.Tests", Guid.NewGuid().ToString("N"))).FullName;
 try
 {

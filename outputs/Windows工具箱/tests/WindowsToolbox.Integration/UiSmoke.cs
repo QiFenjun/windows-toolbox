@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WindowsToolbox.Core.Interfaces;
 using WindowsToolbox.Core.Models;
+using WindowsToolbox.App.Services;
 using WindowsToolbox.Modules.KeepAwake.Models;
 using WindowsToolbox.Modules.KeepAwake.Services;
 using WindowsToolbox.Modules.KeepAwake.ViewModels;
@@ -30,7 +31,7 @@ using WindowsToolbox.Modules.Utilities.Views;
 
 internal static class UiSmoke
 {
-    internal static void Run()
+    internal static void Run(string language)
     {
         Exception? error=null;
         Thread thread=new(()=>
@@ -38,6 +39,13 @@ internal static class UiSmoke
             try
             {
                 WindowsToolbox.App.App app=new(); app.InitializeComponent();
+                LocalizationService localization=new(); localization.Apply(language);
+                string expectedAppName=language==LocalizationService.English?"Windows Toolbox":"Windows 工具箱";
+                if(localization.GetString("AppName")!=expectedAppName)
+                    throw new InvalidOperationException($"{language} resource dictionary was not applied.");
+                string expectedCategory=language==LocalizationService.English?"Productivity Tools":"效率工具";
+                if(localization.GetString("ProductivityToolsCategory")!=expectedCategory)
+                    throw new InvalidOperationException($"{language} category resource was not applied.");
                 using KeepAwakeService awake=new(new NoExecutionRequest());
                 using LockInspectorViewModel inspector=new(new LockScanService(new NoRestartManager()));
                 KeepAwakeViewModel awakeVm=new(awake,new MemorySettings());
@@ -101,14 +109,14 @@ internal static class UiSmoke
                         if(FindVisualChild(page,typeof(ScrollViewer)) is ScrollViewer scroll && scroll.ExtentWidth>scroll.ViewportWidth+1)
                             throw new InvalidOperationException($"{page.GetType().Name} requires horizontal scrolling at the narrow smoke width.");
                     }
-                    Console.WriteLine($"PASS: {theme} BAML/resource/layout load for all 11 module views and {UtilitiesViewModel.Tools.Count} Utilities pages; no user interaction or native activity.");
+                    Console.WriteLine($"PASS: {language}/{theme} resource/layout load for all 11 module views and {UtilitiesViewModel.Tools.Count} Utilities pages; shell resource '{localization.GetString("AppName")}' selected; no user interaction or native activity.");
                 }
                 app.Shutdown();
             }
             catch(Exception ex){error=ex;}
         });
         thread.SetApartmentState(ApartmentState.STA); thread.Start(); thread.Join();
-        if(error is not null) throw new InvalidOperationException("Offscreen UI smoke failed",error);
+        if(error is not null) throw new InvalidOperationException($"Offscreen UI smoke failed for {language}",error);
     }
     private sealed class NoExecutionRequest : IExecutionStatePlatform
     {

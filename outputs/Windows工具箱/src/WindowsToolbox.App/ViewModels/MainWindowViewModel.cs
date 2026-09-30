@@ -15,11 +15,11 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly ISettingsService _settingsService;
     private readonly IThemeService _themeService;
     private readonly IMotionService _motionService;
+    private readonly LocalizationService _localization;
     private readonly HomeViewModel _homeViewModel;
     private object? _currentContent;
     private string _currentPageId = "home";
     private string _currentTitle = "首页";
-    private string _currentEnglishTitle = "Home";
     private string _currentDescription = "集中管理常用的 Windows 小工具";
     private string _searchText = string.Empty;
     private bool _isSidebarExpanded;
@@ -31,6 +31,7 @@ public sealed class MainWindowViewModel : ObservableObject
         ISettingsService settingsService,
         IThemeService themeService,
         IMotionService motionService,
+        LocalizationService localization,
         Action<bool>? quickLaunchHotkeyChanged = null)
     {
         _moduleRegistry = moduleRegistry;
@@ -38,13 +39,14 @@ public sealed class MainWindowViewModel : ObservableObject
         _settingsService = settingsService;
         _themeService = themeService;
         _motionService = motionService;
+        _localization = localization;
         _isSidebarExpanded = settingsService.Settings.RememberSidebarExpanded
             ? settingsService.Settings.IsSidebarExpanded
             : true;
 
         foreach (IToolModule module in moduleRegistry.Modules)
         {
-            ModuleItemViewModel item = new(module);
+            ModuleItemViewModel item = new(module, localization);
             if (string.Equals(module.Category, "效率工具", StringComparison.OrdinalIgnoreCase))
                 EfficiencyModules.Add(item);
             else
@@ -52,7 +54,7 @@ public sealed class MainWindowViewModel : ObservableObject
             navigationService.Register(module.Id, module.CreateViewModel);
         }
 
-        _homeViewModel = new HomeViewModel(moduleRegistry, settingsService, Navigate, motionService);
+        _homeViewModel = new HomeViewModel(moduleRegistry, settingsService, Navigate, motionService, localization);
         navigationService.Register("home", () => _homeViewModel);
         navigationService.Register("settings", () => new SettingsViewModel(
             settingsService,
@@ -60,6 +62,7 @@ public sealed class MainWindowViewModel : ObservableObject
             moduleRegistry,
             new WindowsStartupRegistrationService(),
             motionService,
+            localization,
             quickLaunchHotkeyChanged));
         navigationService.Register("about", () => new AboutViewModel());
         navigationService.Navigated += OnNavigated;
@@ -67,7 +70,9 @@ public sealed class MainWindowViewModel : ObservableObject
         NavigateCommand = new RelayCommand<string>(Navigate);
         ToggleSidebarCommand = new RelayCommand(ToggleSidebar);
         ToggleThemeCommand = new RelayCommand(ToggleTheme);
+        SetLanguageCommand = new RelayCommand<string>(SetLanguage);
         ClearSearchCommand = new RelayCommand(() => SearchText = string.Empty);
+        _localization.LanguageChanged += Localization_LanguageChanged;
     }
 
     public ObservableCollection<ModuleItemViewModel> Modules { get; } = [];
@@ -92,12 +97,6 @@ public sealed class MainWindowViewModel : ObservableObject
         private set => SetProperty(ref _currentTitle, value);
     }
 
-    public string CurrentEnglishTitle
-    {
-        get => _currentEnglishTitle;
-        private set => SetProperty(ref _currentEnglishTitle, value);
-    }
-
     public string CurrentDescription
     {
         get => _currentDescription;
@@ -112,13 +111,7 @@ public sealed class MainWindowViewModel : ObservableObject
             if (!SetProperty(ref _searchText, value))
                 return;
 
-            SearchResults.Clear();
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                foreach (IToolModule module in _moduleRegistry.Search(value))
-                    SearchResults.Add(new ModuleItemViewModel(module));
-            }
-            IsSearchOpen = SearchResults.Count > 0;
+            RefreshSearchResults();
         }
     }
 
@@ -143,7 +136,14 @@ public sealed class MainWindowViewModel : ObservableObject
     public RelayCommand<string> NavigateCommand { get; }
     public RelayCommand ToggleSidebarCommand { get; }
     public RelayCommand ToggleThemeCommand { get; }
+    public RelayCommand<string> SetLanguageCommand { get; }
     public RelayCommand ClearSearchCommand { get; }
+    public string LanguageBadge => _localization.IsEnglish ? "EN" : "中";
+    public string LanguageToolTip => _localization.GetString("LanguageTooltip");
+    public string ChineseLanguageMenuLabel => _localization.IsEnglish ? "简体中文" : "✓  简体中文";
+    public string EnglishLanguageMenuLabel => _localization.IsEnglish ? "✓  English" : "English";
+    public bool IsChineseLanguage => !_localization.IsEnglish;
+    public bool IsEnglishLanguage => _localization.IsEnglish;
 
     public void Start()
     {
@@ -174,20 +174,58 @@ public sealed class MainWindowViewModel : ObservableObject
         IToolModule? toolModule = _moduleRegistry.Find(e.PageId);
         if (toolModule is not null)
         {
-            CurrentTitle = toolModule.DisplayName;
-            CurrentEnglishTitle = toolModule.EnglishName;
-            CurrentDescription = toolModule.Description;
+            UpdateHeader(toolModule);
             RememberRecent(toolModule.Id);
         }
         else
+            UpdateHeader(e.PageId);
+    }
+
+    private void UpdateHeader(IToolModule module)
+    {
+        CurrentTitle = _localization.IsEnglish ? module.EnglishName : module.DisplayName;
+        CurrentDescription = _localization.GetModuleDescription(module);
+    }
+
+    private void UpdateHeader(string pageId)
+    {
+        (string chinese, string english, string descriptionKey) = pageId switch
         {
-            (CurrentTitle, CurrentEnglishTitle, CurrentDescription) = e.PageId switch
-            {
-                "settings" => ("设置", "Settings", "调整主题、启动页面与操作偏好"),
-                "about" => ("关于", "About", "查看版本、安全与隐私信息"),
-                _ => ("首页", "Home", "集中管理常用的 Windows 小工具")
-            };
+            "settings" => ("设置", "Settings", "SettingsDescription"),
+            "about" => ("关于", "About", "AboutDescription"),
+            _ => ("首页", "Home", "HomeDescription")
+        };
+        CurrentTitle = _localization.IsEnglish ? english : chinese;
+        CurrentDescription = _localization.GetString(descriptionKey);
+    }
+
+    private void Localization_LanguageChanged(object? sender, EventArgs e)
+    {
+        foreach (ModuleItemViewModel module in Modules.Concat(EfficiencyModules))
+            module.RefreshLocalization();
+        _homeViewModel.RefreshLocalization();
+        RefreshSearchResults();
+        if (_moduleRegistry.Find(CurrentPageId) is IToolModule currentModule)
+            UpdateHeader(currentModule);
+        else
+            UpdateHeader(CurrentPageId);
+        OnPropertyChanged(nameof(LanguageBadge));
+        OnPropertyChanged(nameof(LanguageToolTip));
+        OnPropertyChanged(nameof(ChineseLanguageMenuLabel));
+        OnPropertyChanged(nameof(EnglishLanguageMenuLabel));
+        OnPropertyChanged(nameof(IsChineseLanguage));
+        OnPropertyChanged(nameof(IsEnglishLanguage));
+    }
+
+    private void RefreshSearchResults()
+    {
+        SearchResults.Clear();
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            foreach (IToolModule module in _moduleRegistry.Search(SearchText))
+                SearchResults.Add(new ModuleItemViewModel(module, _localization));
         }
+        IsSearchOpen = SearchResults.Count > 0;
     }
 
     private void RememberRecent(string moduleId)
@@ -232,6 +270,17 @@ public sealed class MainWindowViewModel : ObservableObject
             : ThemeMode.Dark;
         _settingsService.Settings.Theme = next;
         _themeService.Apply(next);
+        _ = SaveSettingsQuietlyAsync();
+    }
+
+    private void SetLanguage(string? language)
+    {
+        if (language is not (LocalizationService.Chinese or LocalizationService.English) ||
+            string.Equals(_localization.CurrentLanguage, language, StringComparison.Ordinal))
+            return;
+
+        _settingsService.Settings.Language = language;
+        _localization.Apply(language);
         _ = SaveSettingsQuietlyAsync();
     }
 }

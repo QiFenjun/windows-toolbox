@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Diagnostics;
 using WindowsToolbox.App.Services;
 using WindowsToolbox.App.ViewModels;
 using WindowsToolbox.Core.Interfaces;
@@ -32,6 +33,10 @@ public partial class App : System.Windows.Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
+        DispatcherUnhandledException += (_, eventArgs) => WriteExceptionDiagnostic("DispatcherUnhandledException", eventArgs.Exception);
+        TaskScheduler.UnobservedTaskException += (_, eventArgs) => WriteExceptionDiagnostic("UnobservedTaskException", eventArgs.Exception.GetBaseException());
+        AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) =>
+            WriteExceptionDiagnostic("AppDomain.UnhandledException", eventArgs.ExceptionObject as Exception);
         base.OnStartup(e);
 
         if (e.Args.Length == 2 && string.Equals(e.Args[0], "--network-monitor-helper", StringComparison.Ordinal))
@@ -43,6 +48,8 @@ public partial class App : System.Windows.Application
         ISettingsService settingsService = new SettingsService();
         await settingsService.LoadAsync();
 
+        LocalizationService localizationService = new();
+        localizationService.Apply(settingsService.Settings.Language);
         ThemeService themeService = new();
         themeService.Apply(settingsService.Settings.Theme);
         IMotionService motionService = new MotionService(settingsService.Settings.ReducedMotion);
@@ -88,6 +95,7 @@ public partial class App : System.Windows.Application
             settingsService,
             themeService,
             motionService,
+            localizationService,
             quickLaunchModule.SetHotkeyEnabled);
 
         MainWindow window = new(themeService, motionService)
@@ -130,6 +138,10 @@ public partial class App : System.Windows.Application
             _ = viewModel.StartAsyncForBackgroundAsync();
         }
     }
+
+    private static void WriteExceptionDiagnostic(string source, Exception? exception) =>
+        Trace.TraceError("{0}; exceptionType={1}; hresult=0x{2:X8}", source,
+            exception?.GetType().FullName ?? "Unknown", exception?.HResult ?? 0);
 
     protected override void OnExit(ExitEventArgs e)
     {
