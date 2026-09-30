@@ -1,0 +1,54 @@
+<UserControl x:Class="WindowsToolbox.Modules.Utilities.Image.Views.ImageToolsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AllowDrop="True" PreviewDragOver="Files_DragOver" Drop="Files_Drop">
+    <UserControl.Resources><BooleanToVisibilityConverter x:Key="ImageBoolVisibility"/></UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,0,12">
+            <TextBlock Text="图片工具 / Image Tools" Style="{DynamicResource SectionTitleStyle}"/>
+            <TextBlock Text="本地尺寸调整与格式转换。重新编码默认不保留 EXIF/GPS；自动应用 EXIF 方向。源图片不会被覆盖。" Style="{DynamicResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12"/>
+            <WrapPanel IsEnabled="{Binding IsIdle}">
+                <Button Content="添加图片…" Click="ChooseFiles_Click" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                <Button Content="清空列表" Command="{Binding ClearCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,8"/>
+                <TextBlock Text="支持拖入 PNG / JPEG / BMP，最多 500 张" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+            </WrapPanel>
+            <Border Style="{DynamicResource CardStyle}" Padding="14" Margin="0,4,0,12" IsEnabled="{Binding IsIdle}">
+                <StackPanel>
+                    <CheckBox Content="调整尺寸 / Resize" IsChecked="{Binding Resize}" Style="{DynamicResource ModernCheckBoxStyle}"/>
+                    <WrapPanel Margin="0,8,0,0">
+                        <StackPanel Width="140" Margin="0,0,12,8"><TextBlock Text="宽度 / Width" Style="{DynamicResource FieldLabelStyle}"/><TextBox Text="{Binding WidthText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="目标宽度" Style="{DynamicResource ModernTextBoxStyle}"/></StackPanel>
+                        <StackPanel Width="140" Margin="0,0,12,8"><TextBlock Text="高度 / Height" Style="{DynamicResource FieldLabelStyle}"/><TextBox Text="{Binding HeightText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="目标高度" Style="{DynamicResource ModernTextBoxStyle}"/></StackPanel>
+                    </WrapPanel>
+                    <CheckBox Content="保持宽高比（Fit，不裁剪）" IsChecked="{Binding KeepAspect}" Style="{DynamicResource ModernCheckBoxStyle}"/>
+                    <CheckBox Content="不放大小图片 / No Upscale" IsChecked="{Binding NoUpscale}" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,6,0,0"/>
+                    <TextBlock Text="关闭保持比例将按指定尺寸输出，可能改变图片比例。宽/高按当前选中图片联动；批次分别按各自原图 Fit。" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,6,0,8"/>
+                    <WrapPanel>
+                        <StackPanel Width="140" Margin="0,0,12,8"><TextBlock Text="输出格式" Style="{DynamicResource FieldLabelStyle}"/><ComboBox ItemsSource="{Binding Formats}" SelectedIndex="{Binding FormatIndex}" AutomationProperties.Name="输出格式" Style="{DynamicResource ModernComboBoxStyle}"/></StackPanel>
+                        <StackPanel Width="140" Margin="0,0,0,8" Visibility="{Binding IsJpeg, Converter={StaticResource ImageBoolVisibility}}"><TextBlock Text="JPEG 质量（1–100）" Style="{DynamicResource FieldLabelStyle}"/><TextBox Text="{Binding QualityText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="JPEG 质量" Style="{DynamicResource ModernTextBoxStyle}"/></StackPanel>
+                    </WrapPanel>
+                    <TextBlock Text="JPEG 不支持透明度，透明区域将使用白色背景；BMP 同样使用白底。PNG 保留透明度。" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap"/>
+                    <TextBlock Text="输出目录（留空使用源目录）" Style="{DynamicResource FieldLabelStyle}" Margin="0,10,0,4"/>
+                    <TextBox Text="{Binding OutputDirectory, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="输出目录" Style="{DynamicResource ModernTextBoxStyle}"/>
+                    <Button Content="选择输出目录…" Click="ChooseFolder_Click" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="0,6,0,0"/>
+                    <TextBlock Text="{Binding OutputPreview}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+            <TextBlock Text="{Binding InfoText}" Style="{DynamicResource SecondaryTextStyle}" TextWrapping="Wrap"/>
+            <Image Source="{Binding Preview}" Height="200" Stretch="Uniform" Margin="0,8,0,12"/>
+            <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Height="220" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Background="{DynamicResource InputBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource BorderBrush}" AutomationProperties.Name="图片处理列表">
+                <ListBox.ItemTemplate><DataTemplate><StackPanel Margin="4">
+                    <TextBlock Text="{Binding Source}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding Status}" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding Output}" TextWrapping="Wrap" Style="{DynamicResource CaptionTextStyle}"/>
+                </StackPanel></DataTemplate></ListBox.ItemTemplate>
+            </ListBox>
+            <WrapPanel Margin="0,12,0,8">
+                <Button Content="开始输出新文件" Command="{Binding RunCommand}" Style="{DynamicResource PrimaryButtonStyle}" Margin="0,0,8,4"/>
+                <Button Content="取消" Command="{Binding CancelCommand}" IsEnabled="{Binding IsBusy}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,4"/>
+            </WrapPanel>
+            <TextBlock Text="{Binding ProgressText}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding Status}" Style="{DynamicResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -69,6 +69,16 @@
                     <TextBlock Text="Developer Tools" Style="{DynamicResource NavSecondaryTextStyle}"/>
                 </StackPanel>
             </Button>
+            <Button Command="{Binding SelectToolCommand}" CommandParameter="image-tools"
+                    Tag="{Binding SelectedToolId, Converter={StaticResource StringEqualsConverter}, ConverterParameter=image-tools}"
+                    Style="{DynamicResource SidebarNavButtonStyle}" Margin="0,0,0,6">
+                <StackPanel><TextBlock Text="图片工具" Style="{DynamicResource NavTextStyle}"/><TextBlock Text="Image Tools" Style="{DynamicResource NavSecondaryTextStyle}"/></StackPanel>
+            </Button>
+            <Button Command="{Binding SelectToolCommand}" CommandParameter="regex-tools"
+                    Tag="{Binding SelectedToolId, Converter={StaticResource StringEqualsConverter}, ConverterParameter=regex-tools}"
+                    Style="{DynamicResource SidebarNavButtonStyle}" Margin="0,0,0,6">
+                <StackPanel><TextBlock Text="正则工具" Style="{DynamicResource NavTextStyle}"/><TextBlock Text="Regex Tools" Style="{DynamicResource NavSecondaryTextStyle}"/></StackPanel>
+            </Button>
         </StackPanel>
         <Border Grid.Column="2"
                 >

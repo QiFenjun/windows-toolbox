@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using WindowsToolbox.Modules.LockInspector.Models;
 using WindowsToolbox.Modules.LockInspector.Services;
 using WindowsToolbox.Modules.KeepAwake.Interop;
@@ -9,6 +11,10 @@ using WindowsToolbox.Modules.Utilities.QR.Models;
 using WindowsToolbox.Modules.Utilities.QR.Services;
 using WindowsToolbox.Modules.Utilities.Random.Models;
 using WindowsToolbox.Modules.Utilities.Random.Services;
+using WindowsToolbox.Modules.Utilities.Image.Models;
+using WindowsToolbox.Modules.Utilities.Image.Services;
+using WindowsToolbox.Modules.Utilities.Regex.Models;
+using WindowsToolbox.Modules.Utilities.Regex.Services;
 
 // Explicit opt-in executable; never run by dotnet test, never scans user files.
 if (args.Length == 1 && args[0] == "--ui-smoke") { UiSmoke.Run(); return; }
@@ -41,6 +47,43 @@ if (args.Length == 1 && args[0] == "--secure-rng")
     Console.WriteLine($"PASS: production RandomNumberGenerator API generated 100 UUIDs, strings, and bounded integers plus 1000 × 128 strings in {performance.ElapsedMilliseconds} ms; values were not logged. This smoke check is not a statistical security test.");
     return;
 }
+if (args.Length == 1 && args[0] == "--image-smoke")
+{
+    string fixtureRoot = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "WindowsToolbox.ImageTools.Integration", Guid.NewGuid().ToString("N"))).FullName;
+    try
+    {
+        var outcome = await ImageToolsService.OnWorkerAsync(() =>
+        {
+            string png = Path.Combine(fixtureRoot, "synthetic.png");
+            byte[] pixels = new byte[64 * 32 * 4];
+            for (int i = 0; i < 64 * 32; i++) { pixels[i * 4] = 0; pixels[i * 4 + 1] = 40; pixels[i * 4 + 2] = 220; pixels[i * 4 + 3] = i % 64 < 32 ? (byte)0 : (byte)255; }
+            BitmapSource bitmap = BitmapSource.Create(64, 32, 96, 96, PixelFormats.Bgra32, null, pixels, 64 * 4);
+            PngBitmapEncoder encoder = new(); encoder.Frames.Add(BitmapFrame.Create(bitmap)); using (FileStream file = File.Create(png)) encoder.Save(file);
+            ImageInfo info = ImageToolsService.ReadInfo(png);
+            Check(info.Format == "PNG" && info.Width == 64 && info.Height == 32, "PNG metadata mismatch");
+            Check(ImageToolsService.LoadPreview(png).IsFrozen, "Preview was not frozen");
+            string moved = png + ".rename-check"; File.Move(png, moved); File.Move(moved, png);
+            ImageResult output = ImageToolsService.Process(png, new(16, 16, Format: ImageOutputFormat.Jpeg, JpegQuality: 85));
+            Check(output.Status == ImageItemStatus.Succeeded && output.Output is not null, "PNG-to-JPEG resize failed");
+            ImageInfo outputInfo = ImageToolsService.ReadInfo(output.Output!);
+            Check(outputInfo.Format == "JPEG" && outputInfo.Width == 16 && outputInfo.Height == 8, "JPEG resize geometry or format mismatch");
+            Check(File.Exists(png), "Source PNG was modified or removed");
+            return (info, outputInfo);
+        });
+        Console.WriteLine($"PASS: generated temporary PNG {outcome.info.Width}×{outcome.info.Height}; read metadata, unlocked by rename after preview, resized/encoded JPEG {outcome.outputInfo.Width}×{outcome.outputInfo.Height}; source retained.");
+    }
+    finally { Directory.Delete(fixtureRoot, true); }
+    return;
+}
+if (args.Length == 1 && args[0] == "--regex-smoke")
+{
+    RegexResult match = RegexToolsService.Run(new("(?<name>\\w+)-(\\d+)", "alpha-42", "${name}:$1"));
+    Check(match.Status == RegexRunStatus.Matches && match.Replacement == "alpha:42" && match.Matches[0].Groups.Any(g => g.Name == "name" && g.Value == "alpha"), "Named group or replacement smoke failed");
+    RegexResult timeout = RegexToolsService.Run(new("(a+)+$", new string('a', 80) + "!", TimeoutMilliseconds: 100));
+    Check(timeout.Status == RegexRunStatus.TimedOut, "Catastrophic regex did not time out");
+    Console.WriteLine("PASS: local .NET Regex named group/replacement and catastrophic backtracking timeout; no input values logged.");
+    return;
+}
 if (args.Length == 1 && args[0] == "--screen-picker") { ScreenPickerIntegration.Run(); return; }
 if (args.Length == 1 && args[0] == "--keep-awake")
 {
@@ -56,7 +99,7 @@ if (args.Length == 1 && args[0] == "--keep-awake")
 }
 if (args.Length == 1 && args[0] == "--stress") { await StressCheck.RunAsync(); return; }
 if (args.Length != 1 || args[0] != "--restart-manager")
-    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering), --qr-roundtrip (real local QR codec), --secure-rng (real local CSPRNG smoke), --screen-picker (samples a test window only).");
+    throw new ArgumentException("Explicit checks: --restart-manager, --keep-awake (immediate release), --stress (20k temp files + Fake RM), --ui-smoke (offscreen WPF rendering), --image-smoke (synthetic local fixture), --regex-smoke (synthetic safe timeout case), --qr-roundtrip (real local QR codec), --secure-rng (real local CSPRNG smoke), --screen-picker (samples a test window only).");
 string root = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "WindowsToolbox.LockInspector.Tests", Guid.NewGuid().ToString("N"))).FullName;
 try
 {

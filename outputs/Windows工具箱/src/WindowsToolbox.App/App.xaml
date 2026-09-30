@@ -31,7 +31,11 @@
              xmlns:unitViews="clr-namespace:WindowsToolbox.Modules.Utilities.Unit.Views;assembly=WindowsToolbox.Modules.Utilities"
              xmlns:unitViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Unit.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
              xmlns:developerViews="clr-namespace:WindowsToolbox.Modules.Utilities.Developer.Views;assembly=WindowsToolbox.Modules.Utilities"
-             xmlns:developerViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Developer.ViewModels;assembly=WindowsToolbox.Modules.Utilities">
+             xmlns:developerViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Developer.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:imageViews="clr-namespace:WindowsToolbox.Modules.Utilities.Image.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:imageViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Image.ViewModels;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:regexViews="clr-namespace:WindowsToolbox.Modules.Utilities.Regex.Views;assembly=WindowsToolbox.Modules.Utilities"
+             xmlns:regexViewModels="clr-namespace:WindowsToolbox.Modules.Utilities.Regex.ViewModels;assembly=WindowsToolbox.Modules.Utilities">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -129,6 +133,8 @@
             <DataTemplate DataType="{x:Type developerViewModels:DeveloperToolsViewModel}">
                 <developerViews:DeveloperToolsView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type imageViewModels:ImageToolsViewModel}"><imageViews:ImageToolsView/></DataTemplate>
+            <DataTemplate DataType="{x:Type regexViewModels:RegexToolsViewModel}"><regexViews:RegexToolsView/></DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

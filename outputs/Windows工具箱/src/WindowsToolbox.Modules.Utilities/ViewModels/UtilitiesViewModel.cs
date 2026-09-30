@@ -9,6 +9,8 @@ using WindowsToolbox.Modules.Utilities.Time.ViewModels;
 using WindowsToolbox.Modules.Utilities.Random.ViewModels;
 using WindowsToolbox.Modules.Utilities.Unit.ViewModels;
 using WindowsToolbox.Modules.Utilities.Developer.ViewModels;
+using WindowsToolbox.Modules.Utilities.Image.ViewModels;
+using WindowsToolbox.Modules.Utilities.Regex.ViewModels;
 
 namespace WindowsToolbox.Modules.Utilities.ViewModels;
 
@@ -21,7 +23,9 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
         new("time-tools", "时间工具", "Time Tools", "Clock", "时间戳、时区与日期时间快速转换"),
         new("random-tools", "随机工具", "Random Tools", "Shuffle", "生成 UUID、安全随机字符串和随机数字"),
         new("unit-converter", "单位转换", "Unit Converter", "Scale", "长度、质量、温度、压力等常用单位快速转换"),
-        new("developer-tools", "开发者工具", "Developer Tools", "Code", "进制转换、文本哈希与 UUID 检查")
+        new("developer-tools", "开发者工具", "Developer Tools", "Code", "进制转换、文本哈希与 UUID 检查"),
+        new("image-tools", "图片工具", "Image Tools", "Image", "图片尺寸调整、格式转换与信息查看"),
+        new("regex-tools", "正则工具", "Regex Tools", "Code", "正则表达式匹配、分组与替换预览")
     ]);
 
     private string _selectedToolId = "qr";
@@ -57,6 +61,8 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
     public RandomToolsViewModel RandomTools { get; }
     public UnitConverterViewModel UnitConverter { get; }
     public DeveloperToolsViewModel DeveloperTools { get; }
+    public ImageToolsViewModel ImageTools { get; } = new();
+    public RegexToolsViewModel RegexTools { get; } = new();
     public RelayCommand<string> SelectToolCommand { get; }
 
     public UtilityToolDescriptor SelectedTool => Tools.First(tool => tool.Id == SelectedToolId);
@@ -68,6 +74,8 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
         "random-tools" => RandomTools,
         "unit-converter" => UnitConverter,
         "developer-tools" => DeveloperTools,
+        "image-tools" => ImageTools,
+        "regex-tools" => RegexTools,
         _ => SelectedTool
     };
 
@@ -94,5 +102,7 @@ public sealed class UtilitiesViewModel : ObservableObject, IDisposable
         ColorTools.Dispose();
         TimeTools.Dispose();
         RandomTools.Dispose();
+        ImageTools.Dispose();
+        RegexTools.Dispose();
     }
 }

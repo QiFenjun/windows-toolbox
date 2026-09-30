@@ -33,12 +33,14 @@ public sealed class UtilitiesQrCodeTests
         Assert.IsTrue(module.Keywords.Contains("颜色"));
         Assert.IsTrue(module.Keywords.Contains("Time"));
         Assert.IsTrue(module.Keywords.Contains("Random"));
+        Assert.IsTrue(module.Keywords.Contains("Image"));
+        Assert.IsTrue(module.Keywords.Contains("Regex"));
     }
 
     [TestMethod]
     public void UtilitiesNavigation_ContainsQrColorAndTimeToolsInOneModule()
     {
-        CollectionAssert.AreEqual(new[] { "qr", "color", "time-tools", "random-tools", "unit-converter", "developer-tools" },
+        CollectionAssert.AreEqual(new[] { "qr", "color", "time-tools", "random-tools", "unit-converter", "developer-tools", "image-tools", "regex-tools" },
             UtilitiesViewModel.Tools.Select(tool => tool.Id).ToArray());
 
         UtilitiesViewModel viewModel = new();

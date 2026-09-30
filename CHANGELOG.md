@@ -2,6 +2,28 @@
 
 本项目使用语义化版本号记录正式发布。
 
+## [1.12.0] - 2026-09-30
+
+### Added
+
+- Utilities 新增图片工具 / Image Tools 与正则工具 / Regex Tools 两个固定入口，不增加 Sidebar 模块
+- Image Tools 支持 PNG/JPEG/BMP 元数据与预览、比例/指定尺寸调整、批量处理、PNG/JPEG/BMP 转换和 JPEG 质量
+- Image Tools 应用 EXIF 方向、限制尺寸/像素/文件大小，透明像素转 JPEG 使用白底，默认不覆盖源文件或既有目标
+- Regex Tools 支持 .NET Regex 匹配、捕获组、替换预览、复制、取消、超时与常用匹配选项
+- Regex Tools 对输入、表达式、匹配数量和替换输出设上限；大型输入关闭实时执行
+
+### Privacy and safety
+
+- 图片与正则处理完全本地、无网络；不持久化图片、路径、正则表达式、输入或结果
+- 图片输出剥离 EXIF/GPS 等元数据；原图保持不变，输出使用同目录临时文件和原子创建
+- 每个用户正则使用 .NET Regex timeout；取消与页面切换会终止或丢弃旧结果
+
+### Validation
+
+- Release build 0 warnings / 0 errors；全量普通测试 708/708 通过
+- 本机图片转换、缩放、源文件释放及 Regex 灾难性回溯 timeout smoke 通过
+- Light/Dark UI 与资源加载 smoke 覆盖全部 11 个顶层模块及 8 个 Utilities 内页；人工 UI 和硬件相关验收以验证记录状态为准
+
 ## [1.11.0] - 2026-09-30
 
 ### Added

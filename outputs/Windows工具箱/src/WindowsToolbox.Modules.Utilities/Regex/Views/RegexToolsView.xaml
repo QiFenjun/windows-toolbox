@@ -1,0 +1,52 @@
+<UserControl x:Class="WindowsToolbox.Modules.Utilities.Regex.Views.RegexToolsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="View_Loaded" Unloaded="View_Unloaded">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,0,12">
+            <TextBlock Text="正则工具 / Regex Tools" Style="{DynamicResource SectionTitleStyle}"/>
+            <TextBlock Text="Engine: .NET Regular Expression · 完全离线。表达式使用执行超时，输入内容与结果仅保留在当前会话。" Style="{DynamicResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12"/>
+            <TextBlock Text="Pattern" Style="{DynamicResource FieldLabelStyle}"/>
+            <TextBox Text="{Binding Pattern, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="正则表达式" Style="{DynamicResource ModernTextBoxStyle}" Margin="0,4,0,8" ToolTip="用户表达式最长 16384 字符；每次执行均设置正则超时。"/>
+            <WrapPanel>
+                <CheckBox Content="IgnoreCase" IsChecked="{Binding IgnoreCase}" Click="Option_Click" Tag="0" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,0,12,6"/>
+                <CheckBox Content="Multiline" IsChecked="{Binding Multiline}" Click="Option_Click" Tag="1" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,0,12,6"/>
+                <CheckBox Content="Singleline" IsChecked="{Binding Singleline}" Click="Option_Click" Tag="2" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,0,12,6"/>
+                <CheckBox Content="CultureInvariant" IsChecked="{Binding CultureInvariant}" Click="Option_Click" Tag="3" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,0,12,6"/>
+                <CheckBox Content="ExplicitCapture" IsChecked="{Binding ExplicitCapture}" Click="Option_Click" Tag="4" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,0,12,6"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,2,0,8">
+                <CheckBox Content="实时更新（250 ms debounce）" IsChecked="{Binding LiveUpdate}" Style="{DynamicResource ModernCheckBoxStyle}" Margin="0,0,12,6"/>
+                <StackPanel Width="140"><TextBlock Text="Regex Timeout" Style="{DynamicResource FieldLabelStyle}"/><ComboBox ItemsSource="{Binding TimeoutChoices}" SelectedIndex="{Binding TimeoutIndex}" AutomationProperties.Name="正则执行超时" Style="{DynamicResource ModernComboBoxStyle}"/></StackPanel>
+            </WrapPanel>
+            <TextBlock Text="Test Text" Style="{DynamicResource FieldLabelStyle}"/>
+            <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="正则测试文本" Style="{DynamicResource ModernTextBoxStyle}" AcceptsReturn="True" MinHeight="110" MaxHeight="260" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,4,0,8" ToolTip="硬限制 10 MiB UTF-8；超过 5 MiB 时关闭实时执行，仅响应显式运行。"/>
+            <TextBlock Text="超过 1 MiB 会提示；超过 5 MiB 不实时执行；超过 10 MiB 拒绝。匹配列表最多 10,000 条。" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap"/>
+            <WrapPanel Margin="0,10,0,6">
+                <Button Content="运行" Command="{Binding RunCommand}" Style="{DynamicResource PrimaryButtonStyle}" Margin="0,0,8,4"/>
+                <Button Content="取消" Click="Cancel_Click" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,4"/>
+                <TextBlock Text="{Binding StatusText}" Style="{DynamicResource SecondaryTextStyle}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+            </WrapPanel>
+            <TextBlock Text="{Binding SoftLimitText}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+            <ListBox ItemsSource="{Binding Matches}" SelectedItem="{Binding SelectedMatch}" Height="170" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Background="{DynamicResource InputBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource BorderBrush}" AutomationProperties.Name="正则匹配列表">
+                <ListBox.ItemTemplate><DataTemplate><StackPanel Margin="3"><WrapPanel><TextBlock Text="Index: "/><TextBlock Text="{Binding Index}"/><TextBlock Text=" · Length: "/><TextBlock Text="{Binding Length}"/></WrapPanel><TextBlock Text="{Binding Preview}" TextWrapping="Wrap"/></StackPanel></DataTemplate></ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Text="选中匹配" Style="{DynamicResource FieldLabelStyle}" Margin="0,8,0,4"/>
+            <DockPanel LastChildFill="True"><Button DockPanel.Dock="Right" Content="Copy Match" Command="{Binding CopyCommand}" CommandParameter="{Binding SelectedValue}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/><TextBox Text="{Binding SelectedValue, Mode=OneWay}" IsReadOnly="True" AutomationProperties.Name="完整匹配值" Style="{DynamicResource ModernTextBoxStyle}" AcceptsReturn="True" MaxHeight="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"/></DockPanel>
+            <TextBlock Text="捕获组" Style="{DynamicResource FieldLabelStyle}" Margin="0,8,0,4"/>
+            <ListBox ItemsSource="{Binding SelectedGroups}" Height="130" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" Background="{DynamicResource InputBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource BorderBrush}" AutomationProperties.Name="正则捕获组列表">
+                <ListBox.ItemTemplate><DataTemplate><DockPanel Margin="3" LastChildFill="True"><Button DockPanel.Dock="Right" Content="Copy Group" Command="{Binding DataContext.CopyCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding Value}" Style="{DynamicResource SecondaryButtonStyle}" Margin="6,0,0,0" Padding="6,2"/><StackPanel><WrapPanel><TextBlock Text="Group: "/><TextBlock Text="{Binding Name}"/><TextBlock Text=" · Success: "/><TextBlock Text="{Binding Success}"/><TextBlock Text=" · Index: "/><TextBlock Text="{Binding Index}"/><TextBlock Text=" · Length: "/><TextBlock Text="{Binding Length}"/></WrapPanel><TextBlock Text="{Binding Preview}" TextWrapping="Wrap"/></StackPanel></DockPanel></DataTemplate></ListBox.ItemTemplate>
+            </ListBox>
+            <WrapPanel Margin="0,12,0,4">
+                <TextBlock Text="Replacement Pattern" Style="{DynamicResource FieldLabelStyle}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBox Text="{Binding Replacement, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="替换表达式" Style="{DynamicResource ModernTextBoxStyle}" MinWidth="160"/>
+            </WrapPanel>
+            <TextBlock Text="Replacement Preview（只读，不修改 Test Text）" Style="{DynamicResource FieldLabelStyle}" Margin="0,4,0,4"/>
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Right" Content="Copy Result" Command="{Binding CopyCommand}" CommandParameter="{Binding ReplacementPreview}" Style="{DynamicResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+                <TextBox Text="{Binding ReplacementPreview, Mode=OneWay}" IsReadOnly="True" AutomationProperties.Name="替换结果预览" Style="{DynamicResource ModernTextBoxStyle}" AcceptsReturn="True" MinHeight="60" MaxHeight="180" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"/>
+            </DockPanel>
+            <TextBlock Text="{Binding CopyStatus}" Style="{DynamicResource CaptionTextStyle}" Margin="0,5,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
